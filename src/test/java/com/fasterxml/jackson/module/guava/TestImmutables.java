@@ -9,6 +9,7 @@ import org.codehaus.jackson.type.TypeReference;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableSortedSet;
 
 /**
  * Unit tests for verifying that various immutable types
@@ -67,6 +68,13 @@ public class TestImmutables extends BaseTest
         }
 
         try {
+            mapper.readValue("[1,2,3]", new TypeReference<ImmutableSortedSet<Integer>>() { });
+            fail("Expected failure for missing deserializer");
+        } catch (JsonMappingException e) {
+            verifyException(e, "can not find a deserializer");
+        }
+        
+        try {
             mapper.readValue("{\"a\":true,\"b\":false}", new TypeReference<ImmutableMap<Integer,Boolean>>() { });
             fail("Expected failure for missing deserializer");
         } catch (JsonMappingException e) {
@@ -99,6 +107,17 @@ public class TestImmutables extends BaseTest
         assertEquals(Integer.valueOf(3), it.next());
         assertEquals(Integer.valueOf(7), it.next());
         assertEquals(Integer.valueOf(8), it.next());
+    }
+
+    public void testImmutableSortedSet() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+        ImmutableSortedSet<Integer> set = mapper.readValue("[5,1,2]", new TypeReference<ImmutableSortedSet<Integer>>() { });
+        assertEquals(3, set.size());
+        Iterator<Integer> it = set.iterator();
+        assertEquals(Integer.valueOf(1), it.next());
+        assertEquals(Integer.valueOf(2), it.next());
+        assertEquals(Integer.valueOf(5), it.next());
     }
     
     public void testImmutableMap() throws Exception

@@ -47,25 +47,22 @@ public class GuavaDeserializers
         throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
-
-        // First things first: find value deserializer, if it's missing so far:
-        if (elementDeser == null) {
-            // 'null' -> collections have no referring fields
-            elementDeser = provider.findValueDeserializer(config, type.getContentType(), type, null);            
-        }
         
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
-                return new ImmutableListDeserializer(type, elementTypeDeser, elementDeser);
+                return new ImmutableListDeserializer(type, elementTypeDeser,
+                        _verifyElementDeserializer(elementDeser, type, config, provider));
             }
             if (ImmutableSet.class.isAssignableFrom(raw)) {
                 // sorted one?
                 if (ImmutableSortedSet.class.isAssignableFrom(raw)) {
-                    // !!! TODO
+                    return new ImmutableSortedSetDeserializer(type, elementTypeDeser,
+                            _verifyElementDeserializer(elementDeser, type, config, provider));
                 }
                 // nah, just regular one
-                // !!! TODO
+                return new ImmutableSetDeserializer(type, elementTypeDeser,
+                        _verifyElementDeserializer(elementDeser, type, config, provider));
             }
         }
         // Multi-xxx collections?
@@ -108,5 +105,27 @@ public class GuavaDeserializers
             }
         }
         return null;
+    }
+
+    /*
+    /**********************************************************************
+    /* Helper methods
+    /**********************************************************************
+     */
+
+    /**
+     * Helper method used to ensure that we have a deserializer for elements
+     * of collection being deserialized.
+     */
+    JsonDeserializer<?> _verifyElementDeserializer(JsonDeserializer<?> deser,
+            CollectionType type,
+            DeserializationConfig config, DeserializerProvider provider)
+        throws JsonMappingException
+    {
+        if (deser == null) {
+            // 'null' -> collections have no referring fields
+            deser = provider.findValueDeserializer(config, type.getContentType(), type, null);            
+        }
+        return deser;
     }
 }

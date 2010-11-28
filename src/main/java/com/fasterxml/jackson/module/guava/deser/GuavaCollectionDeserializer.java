@@ -73,4 +73,8 @@ public abstract class GuavaCollectionDeserializer<T> extends JsonDeserializer<T>
     /* Helper methods
     /**********************************************************************
      */
+
+    protected Class<?> rawContentType() {
+        return _containerType.getContentType().getRawClass();
+    }
 }
