@@ -48,7 +48,7 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
   </organization>
 
   <dependencies>
-    <-- Extends Jackson; supports Guava datatypes, so: -->
+    <!-- Extends Jackson; supports Guava datatypes, so: -->
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
