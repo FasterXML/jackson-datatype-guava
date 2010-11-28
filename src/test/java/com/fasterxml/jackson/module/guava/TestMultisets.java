@@ -1,11 +1,17 @@
 package com.fasterxml.jackson.module.guava;
 
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.Multiset;
 
+/**
+ * Unit tests to verify handling of various {@link Multiset}s.
+ * 
+ * @author tsaloranta
+ */
 public class TestMultisets extends BaseTest
 {
 
@@ -35,11 +41,17 @@ public class TestMultisets extends BaseTest
     public void testWithoutDeserializers() throws Exception
     {
         ObjectMapper mapper = new ObjectMapper();
-        Multiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
+        try {
+            /*Multiset<String> set =*/ mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
+        } catch (JsonMappingException e) {
+            verifyException(e, "can not find a deserializer");
+        }
+        /*
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
         assertEquals(0, set.count("bar"));
+        */
     }
     
     /*
@@ -47,4 +59,14 @@ public class TestMultisets extends BaseTest
     /* Unit tests for actual registered module
     /**********************************************************************
      */
+
+    public void testDeserializers() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+        Multiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
 }
