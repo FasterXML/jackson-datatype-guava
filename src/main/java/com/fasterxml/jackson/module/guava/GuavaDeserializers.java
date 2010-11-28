@@ -5,6 +5,7 @@ import com.google.common.collect.*;
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.map.type.CollectionType;
 import org.codehaus.jackson.map.type.MapType;
+import org.codehaus.jackson.type.JavaType;
 
 import com.fasterxml.jackson.module.guava.deser.*;
 
@@ -57,6 +58,14 @@ public class GuavaDeserializers
             if (ImmutableSet.class.isAssignableFrom(raw)) {
                 // sorted one?
                 if (ImmutableSortedSet.class.isAssignableFrom(raw)) {
+                    /* 28-Nov-2010, tatu: With some more work would be able to use other things
+                     *   than natural ordering; but that'll have to do for now...
+                     */
+                    Class<?> elemType = type.getContentType().getRawClass();
+                    if (!Comparable.class.isAssignableFrom(elemType)) {
+                        throw new IllegalArgumentException("Can not handle ImmutableSortedSet with elements that are not Comparable<?> ("
+                                +raw.getName()+")");
+                    }
                     return new ImmutableSortedSetDeserializer(type, elementTypeDeser,
                             _verifyElementDeserializer(elementDeser, type, config, provider));
                 }
@@ -80,6 +89,7 @@ public class GuavaDeserializers
             DeserializationConfig config, DeserializerProvider provider,
             BeanDescription beanDesc, KeyDeserializer keyDeser,
             TypeDeserializer elementTypeDeser, JsonDeserializer<?> elementDeser)
+        throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
         // ImmutableXxxMap types?
@@ -91,6 +101,8 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             // Otherwise, plain old ImmutableMap...
+            return new ImmutableMapDeserializer(type, keyDeser, elementTypeDeser,
+                    _verifyElementDeserializer(elementDeser, type, config, provider));
         }
         // Multimaps?
         if (Multimap.class.isAssignableFrom(raw)) {
@@ -118,7 +130,7 @@ public class GuavaDeserializers
      * of collection being deserialized.
      */
     JsonDeserializer<?> _verifyElementDeserializer(JsonDeserializer<?> deser,
-            CollectionType type,
+            JavaType type,
             DeserializationConfig config, DeserializerProvider provider)
         throws JsonMappingException
     {

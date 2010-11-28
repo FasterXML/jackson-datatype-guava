@@ -123,10 +123,10 @@ public class TestImmutables extends BaseTest
     public void testImmutableMap() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
-        ImmutableMap<Integer,Boolean> map = mapper.readValue("{\"a\":true,\"b\":false}", new TypeReference<ImmutableMap<Integer,Boolean>>() { });
+        ImmutableMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableMap<Integer,Boolean>>() { });
         assertEquals(2, map.size());
-        assertEquals(Boolean.TRUE, map.get("a"));
-        assertEquals(Boolean.FALSE, map.get("b"));
+        assertEquals(Boolean.TRUE, map.get(Integer.valueOf(12)));
+        assertEquals(Boolean.FALSE, map.get(Integer.valueOf(4)));
     }
     
 }

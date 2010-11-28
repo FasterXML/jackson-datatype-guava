@@ -30,11 +30,6 @@ public class ImmutableSortedSetDeserializer  extends GuavaCollectionDeserializer
          * via annotations, or via custom serialization (bean style that includes ordering
          * aspects)
          */
-        // Hmmh. Must (for now...) assume Comparable
-        if (!Comparable.class.isAssignableFrom(rawContentType())) {
-            ctxt.mappingException("Can not handle ImmutableSortedSet with elements that are not Comparable<?> ("
-                    +rawContentType().getName()+")");
-        }
         @SuppressWarnings("unchecked")
         ImmutableSortedSet.Builder<?> builderComp = ImmutableSortedSet.<Comparable>naturalOrder();
         @SuppressWarnings("unchecked")
