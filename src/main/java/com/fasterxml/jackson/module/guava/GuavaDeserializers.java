@@ -2,19 +2,19 @@ package com.fasterxml.jackson.module.guava;
 
 import com.google.common.collect.*;
 
-import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.type.ArrayType;
 import org.codehaus.jackson.map.type.CollectionType;
 import org.codehaus.jackson.map.type.MapType;
-import org.codehaus.jackson.type.JavaType;
+
+import com.fasterxml.jackson.module.guava.deser.*;
 
 /**
  * Custom deserializers module offers.
  * 
  * @author tsaloranta
  */
-public class GuavaDeserializers implements Deserializers
+public class GuavaDeserializers
+    extends Deserializers.None
 {
     /**
      * Concrete implementation class to use for properties declared as
@@ -25,41 +25,46 @@ public class GuavaDeserializers implements Deserializers
 
 //    protected Class<? extends Multimap<?>> _cfgDefaultMultimap;
     
-    /**
-     * No need for overrides for array deserializers.
-     * fine.
-     */
-    public JsonDeserializer<?> findArrayDeserializer(ArrayType arg0,
-            DeserializationConfig arg1, DeserializerProvider arg2,
-            TypeDeserializer arg3, JsonDeserializer<?> arg4) {
-        return null;
-    }
-
-    /**
+    /*
      * No bean types to support yet; may need to add?
      */
-    public JsonDeserializer<?> findBeanDeserializer(JavaType arg0,
-            DeserializationConfig arg1, DeserializerProvider arg2,
-            BeanDescription arg3) {
+    /*
+    public JsonDeserializer<?> findBeanDeserializer(JavaType type,
+            DeserializationConfig config, DeserializerProvider provider,
+            BeanDescription beanDesc) {
         return null;
     }
+    */
 
     /**
      * We have plenty of collection types to support...
      */
+    @Override
     public JsonDeserializer<?> findCollectionDeserializer(CollectionType type,
             DeserializationConfig config, DeserializerProvider provider,
             BeanDescription beanDesc,
             TypeDeserializer elementTypeDeser, JsonDeserializer<?> elementDeser)
+        throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
+
+        // First things first: find value deserializer, if it's missing so far:
+        if (elementDeser == null) {
+            // 'null' -> collections have no referring fields
+            elementDeser = provider.findValueDeserializer(config, type.getContentType(), type, null);            
+        }
         
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new ImmutableListDeserializer(type, elementTypeDeser, elementDeser);
             }
             if (ImmutableSet.class.isAssignableFrom(raw)) {
+                // sorted one?
+                if (ImmutableSortedSet.class.isAssignableFrom(raw)) {
+                    // !!! TODO
+                }
+                // nah, just regular one
                 // !!! TODO
             }
         }
@@ -71,13 +76,9 @@ public class GuavaDeserializers implements Deserializers
     }
 
     /**
-     * No need for overrides for enumeration type deserializers.
+     * A few Map types to support.
      */
-    public JsonDeserializer<?> findEnumDeserializer(Class<?> enumType,
-            DeserializationConfig config, BeanDescription beanDesc) {
-        return null;
-    }
-
+    @Override
     public JsonDeserializer<?> findMapDeserializer(MapType type,
             DeserializationConfig config, DeserializerProvider provider,
             BeanDescription beanDesc, KeyDeserializer keyDeser,
@@ -108,13 +109,4 @@ public class GuavaDeserializers implements Deserializers
         }
         return null;
     }
-
-    /**
-     * No need for overrides for Tree Node deserializers.
-     */
-    public JsonDeserializer<?> findTreeNodeDeserializer(
-            Class<? extends JsonNode> arg0, DeserializationConfig arg1) {
-        return null;
-    }
-
 }

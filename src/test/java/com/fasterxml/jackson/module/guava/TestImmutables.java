@@ -80,23 +80,30 @@ public class TestImmutables extends BaseTest
     /**********************************************************************
      */
 
-    public void testWithDeserializers() throws Exception
+    public void testImmutableList() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
-
         ImmutableList<Integer> list = mapper.readValue("[1,2,3]", new TypeReference<ImmutableList<Integer>>() { });
         assertEquals(3, list.size());
         assertEquals(Integer.valueOf(1), list.get(0));
         assertEquals(Integer.valueOf(2), list.get(1));
         assertEquals(Integer.valueOf(3), list.get(2));
+    }
 
+    public void testImmutableSet() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
         ImmutableSet<Integer> set = mapper.readValue("[3,7,8]", new TypeReference<ImmutableSet<Integer>>() { });
-        assertEquals(3, list.size());
+        assertEquals(3, set.size());
         Iterator<Integer> it = set.iterator();
         assertEquals(Integer.valueOf(3), it.next());
         assertEquals(Integer.valueOf(7), it.next());
         assertEquals(Integer.valueOf(8), it.next());
-        
+    }
+    
+    public void testImmutableMap() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
         ImmutableMap<Integer,Boolean> map = mapper.readValue("{\"a\":true,\"b\":false}", new TypeReference<ImmutableMap<Integer,Boolean>>() { });
         assertEquals(2, map.size());
         assertEquals(Boolean.TRUE, map.get("a"));

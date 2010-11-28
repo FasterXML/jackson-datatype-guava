@@ -2,7 +2,6 @@ package com.fasterxml.jackson.module.guava;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.*;
-import org.codehaus.jackson.map.module.SimpleSerializers;
 
 public class GuavaModule extends Module // can't use just SimpleModule, due to generic types
 {
@@ -20,9 +19,9 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     @Override public Version version() { return VERSION; }
     
     @Override
-    public void setupModule(SetupContext arg0) {
-        // TODO Auto-generated method stub
-        
+    public void setupModule(SetupContext context)
+    {
+        context.addDeserializers(new GuavaDeserializers());
     }
 
 }

@@ -137,7 +137,7 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
               <Import-Package>
 </Import-Package>
               <Private-Package>
-com.fasterxml.classmate.util
+com.fasterxml.jackson.module.guava.deser
 </Private-Package>
               <Export-Package>
 com.fasterxml.jackson.module.guava
