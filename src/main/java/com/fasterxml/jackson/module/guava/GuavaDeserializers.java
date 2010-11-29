@@ -48,6 +48,26 @@ public class GuavaDeserializers
         throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
+
+        // Multi-xxx collections?
+        if (Multiset.class.isAssignableFrom(raw)) {
+            // Quite a few variations...
+            if (LinkedHashMultiset.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (HashMultiset.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (ImmutableMultiset.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (EnumMultiset.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (TreeMultiset.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+        }
         
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
@@ -73,10 +93,6 @@ public class GuavaDeserializers
                 return new ImmutableSetDeserializer(type, elementTypeDeser,
                         _verifyElementDeserializer(elementDeser, type, config, provider));
             }
-        }
-        // Multi-xxx collections?
-        if (Multiset.class.isAssignableFrom(raw)) {
-            // !!! TODO
         }
         return null;
     }
