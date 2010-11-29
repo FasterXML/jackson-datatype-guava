@@ -10,24 +10,23 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.TypeDeserializer;
 import org.codehaus.jackson.map.type.CollectionType;
 
-import com.google.common.collect.Multiset;
+import com.google.common.collect.HashMultiset;
 
-public class MultisetDeserializer  extends GuavaCollectionDeserializer<Multiset<Object>>
+public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashMultiset<Object>>
 {
-    public MultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public HashMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
         super(type, typeDeser, deser);
     }
 
     @Override
-    protected Multiset<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
+    protected HashMultiset<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
         JsonDeserializer<?> valueDes = _valueDeserializer;
         JsonToken t;
         final TypeDeserializer typeDeser = _typeDeserializerForValue;
-        // No way to pass actual type parameter; but does not matter, just compiler-time fluff:
-        Multiset.Builder<Object> builder = Multiset.builder();
+        HashMultiset<Object> set = HashMultiset.create();
 
         while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
             Object value;
@@ -39,8 +38,8 @@ public class MultisetDeserializer  extends GuavaCollectionDeserializer<Multiset<
             } else {
                 value = valueDes.deserializeWithType(jp, ctxt, typeDeser);
             }
-            builder.add(value);
+            set.add(value);
         }
-        return builder.build();
+        return set;
     }
 }

@@ -56,7 +56,8 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             if (HashMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new HashMultisetDeserializer(type, elementTypeDeser,
+                        _verifyElementDeserializer(elementDeser, type, config, provider));
             }
             if (ImmutableMultiset.class.isAssignableFrom(raw)) {
                 // !!! TODO
@@ -67,6 +68,10 @@ public class GuavaDeserializers
             if (TreeMultiset.class.isAssignableFrom(raw)) {
                 // !!! TODO
             }
+
+            // TODO: make configurable (for now just default blindly)
+            return new HashMultisetDeserializer(type, elementTypeDeser,
+                    _verifyElementDeserializer(elementDeser, type, config, provider));
         }
         
         // ImmutableXxx types?
