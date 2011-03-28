@@ -43,7 +43,7 @@ public class GuavaDeserializers
     @Override
     public JsonDeserializer<?> findCollectionDeserializer(CollectionType type,
             DeserializationConfig config, DeserializerProvider provider,
-            BeanDescription beanDesc,
+            BeanDescription beanDesc, BeanProperty property,
             TypeDeserializer elementTypeDeser, JsonDeserializer<?> elementDeser)
         throws JsonMappingException
     {
@@ -108,7 +108,7 @@ public class GuavaDeserializers
     @Override
     public JsonDeserializer<?> findMapDeserializer(MapType type,
             DeserializationConfig config, DeserializerProvider provider,
-            BeanDescription beanDesc, KeyDeserializer keyDeser,
+            BeanDescription beanDesc, BeanProperty property, KeyDeserializer keyDeser,
             TypeDeserializer elementTypeDeser, JsonDeserializer<?> elementDeser)
         throws JsonMappingException
     {
