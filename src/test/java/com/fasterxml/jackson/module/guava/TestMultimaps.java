@@ -18,12 +18,6 @@ import com.google.common.collect.SetMultimap;
  */
 public class TestMultimaps extends BaseTest
 {
-    /*
-    /**********************************************************************
-    /* Unit tests for actual registered module
-    /**********************************************************************
-     */
-
     public void testSerializers() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
