@@ -125,8 +125,27 @@ public class GuavaDeserializers
             return new ImmutableMapDeserializer(type, keyDeser, elementTypeDeser,
                     _verifyElementDeserializer(elementDeser, type, config, provider));
         }
-        // Multimaps?
+        return null;
+    }
+
+    @Override
+    public JsonDeserializer<?> findBeanDeserializer(JavaType type,
+            DeserializationConfig config, DeserializerProvider provider,
+            BeanDescription beanDesc, BeanProperty property)
+    throws JsonMappingException {
+        Class<?> raw = type.getRawClass();
         if (Multimap.class.isAssignableFrom(raw)) {
+            if (ImmutableMultimap.class.isAssignableFrom(raw)) {
+                final ImmutableMultimap.Builder<Object, Object> builder;
+                if (ImmutableListMultimap.class.isAssignableFrom(raw)) {
+                    builder = ImmutableListMultimap.builder();
+                } else if (ImmutableSetMultimap.class.isAssignableFrom(raw)) {
+                    builder = ImmutableSetMultimap.builder();
+                } else {
+                    builder = ImmutableMultimap.builder();
+                }
+                return new ImmutableMultimapDeserializer(builder, type, property);
+            }
             if (ListMultimap.class.isAssignableFrom(raw)) {
                 // !!! TODO
             }
