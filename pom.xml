@@ -133,8 +133,6 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
             <instructions>
               <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
-              <Import-Package>
-</Import-Package>
               <Private-Package>
 com.fasterxml.jackson.module.guava.deser
 </Private-Package>
