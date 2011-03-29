@@ -16,10 +16,8 @@ import com.google.common.collect.SetMultimap;
  *
  * @author Steven Schlansker &lt;stevenschlansker@gmail.com&gt;
  */
-public class TestMultimaps extends BaseTest
-{
-    public void testSerializers() throws Exception
-    {
+public class TestMultimaps extends BaseTest {
+    public void testSerializers() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         Multimap<String, String> map = LinkedHashMultimap.create();
         map.put("abc", "def");
@@ -28,8 +26,7 @@ public class TestMultimaps extends BaseTest
         assertEquals("{\"abc\":[\"def\",\"xyz\"],\"foo\":[\"bar\"]}", mapper.writeValueAsString(map));
     }
 
-    public void testImmutableListMultimapDeserializer() throws Exception
-    {
+    public void testImmutableListMultimapDeserializer() throws Exception {
         ObjectMapper mapper = mapperWithModule();
         Multimap<String, String> map = mapper.readValue("{\"abc\":[\"def\",\"xyz\"],\"foo\":[\"bar\"]}",
                 new TypeReference<ImmutableListMultimap<String, String>>() { });
