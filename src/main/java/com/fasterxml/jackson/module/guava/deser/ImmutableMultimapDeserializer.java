@@ -18,7 +18,6 @@ import org.codehaus.jackson.type.JavaType;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
-import com.google.common.collect.Multimap;
 
 public class ImmutableMultimapDeserializer extends JsonDeserializer<ImmutableMultimap<Object, Object>>
 {
@@ -29,7 +28,11 @@ public class ImmutableMultimapDeserializer extends JsonDeserializer<ImmutableMul
     {
         this.builder = builder;
         this.type = type;
-        JavaType[] types = TypeFactory.findParameterTypes(type, Multimap.class);
+        // XXX: why does TypeFactory return the wrong result?
+        // JavaType[] types = TypeFactory.findParameterTypes(type, Multimap.class);
+        JavaType[] types = new JavaType[2];
+        types[0] = type.containedType(0);
+        types[1] = type.containedType(1);
         this.keyType = types[0];
         // V is deserialized as Collection<V> so we can putAll on the builder
         this.valueType = TypeFactory.collectionType(Collection.class, types[1]);
