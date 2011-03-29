@@ -11,7 +11,7 @@ import com.fasterxml.jackson.module.guava.deser.*;
 
 /**
  * Custom deserializers module offers.
- * 
+ *
  * @author tsaloranta
  */
 public class GuavaDeserializers
@@ -20,12 +20,12 @@ public class GuavaDeserializers
     /**
      * Concrete implementation class to use for properties declared as
      * {@link Multiset}s.
-     * Defaults to using 
+     * Defaults to using
      */
 //    protected Class<? extends Multiset<?>> _cfgDefaultMultiset;
 
 //    protected Class<? extends Multimap<?>> _cfgDefaultMultimap;
-    
+
     /*
      * No bean types to support yet; may need to add?
      */
@@ -73,7 +73,7 @@ public class GuavaDeserializers
             return new HashMultisetDeserializer(type, elementTypeDeser,
                     _verifyElementDeserializer(elementDeser, type, config, provider));
         }
-        
+
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
@@ -176,7 +176,7 @@ public class GuavaDeserializers
     {
         if (deser == null) {
             // 'null' -> collections have no referring fields
-            deser = provider.findValueDeserializer(config, type.getContentType(), type, null);            
+            deser = provider.findValueDeserializer(config, type.getContentType(), type, null);
         }
         return deser;
     }
