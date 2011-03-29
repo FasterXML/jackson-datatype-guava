@@ -10,6 +10,10 @@ import org.codehaus.jackson.type.JavaType;
 import com.fasterxml.jackson.module.guava.deser.MultimapSerializer;
 import com.google.common.collect.Multimap;
 
+/**
+ * Installed by the {@link GuavaModule}; provides {@link JsonSerializer}
+ * implementations for Guava classes.  Right now only covers Multimaps.
+ */
 public class GuavaSerializers implements Serializers {
     public JsonSerializer<?> findSerializer(SerializationConfig config,
             JavaType type, BeanDescription beanDesc, BeanProperty property) {
