@@ -5,8 +5,11 @@ import org.codehaus.jackson.type.TypeReference;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 
 /**
  * Unit tests to verify handling of various {@link Multimap}s.
@@ -44,5 +47,72 @@ public class TestMultimaps extends BaseTest
 
         assertEquals(3, map.size());
         assertEquals(expected.build(), map);
+    }
+
+    public void testSetMultimapWithBean() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        SetMultimap<Long, SimpleBean> map = HashMultimap.create();
+
+        map.put(1L, new SimpleBean("foo", 3));
+        map.put(1L, new SimpleBean("bar", 4));
+        map.put(2L, new SimpleBean("baz", 3));
+
+        assertEquals(map, mapper.readValue(mapper.writeValueAsString(map),
+                new TypeReference<ImmutableSetMultimap<Long, SimpleBean>>() {}));
+    }
+
+
+
+    public static class SimpleBean {
+        private String string;
+        private Integer integer;
+        public SimpleBean() {}
+        public SimpleBean(String string, Integer integer) {
+            this.string = string;
+            this.integer = integer;
+        }
+        public String getString() {
+            return string;
+        }
+        public void setString(String string) {
+            this.string = string;
+        }
+        public Integer getInteger() {
+            return integer;
+        }
+        public void setInteger(Integer integer) {
+            this.integer = integer;
+        }
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result
+                    + ((integer == null) ? 0 : integer.hashCode());
+            result = prime * result
+                    + ((string == null) ? 0 : string.hashCode());
+            return result;
+        }
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SimpleBean other = (SimpleBean) obj;
+            if (integer == null) {
+                if (other.integer != null)
+                    return false;
+            } else if (!integer.equals(other.integer))
+                return false;
+            if (string == null) {
+                if (other.string != null)
+                    return false;
+            } else if (!string.equals(other.string))
+                return false;
+            return true;
+        }
     }
 }
