@@ -1,11 +1,15 @@
 package com.fasterxml.jackson.module.guava;
 
+import org.codehaus.jackson.annotate.JsonTypeInfo;
+import org.codehaus.jackson.annotate.JsonTypeInfo.As;
+import org.codehaus.jackson.annotate.JsonTypeInfo.Id;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
@@ -50,6 +54,22 @@ public class TestMultimaps extends BaseTest {
 
         assertEquals(map, mapper.readValue(mapper.writeValueAsString(map),
                 new TypeReference<ImmutableSetMultimap<Long, SimpleBean>>() {}));
+    }
+
+    @JsonTypeInfo(use=Id.CLASS, include=As.PROPERTY)
+    public static class Super {
+        @Override
+        public boolean equals(Object obj) {
+            return getClass().equals(obj.getClass());
+        }
+    }
+    public static class A extends Super {}
+    public static class B extends Super {}
+    public void testTypedPolymorphicWriter() throws Exception {
+        Multimap<Long, Super> map = ImmutableMultimap.of(1L, new A(), 2L, new B());
+        ObjectMapper mapper = mapperWithModule();
+        TypeReference<Multimap<Long, Super>> type = new TypeReference<Multimap<Long, Super>>() {};
+        assertEquals(map, mapper.readValue(mapper.typedWriter(type).writeValueAsString(map), type));
     }
 
 
