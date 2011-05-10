@@ -135,26 +135,15 @@ public class GuavaDeserializers
     throws JsonMappingException {
         Class<?> raw = type.getRawClass();
         if (Multimap.class.isAssignableFrom(raw)) {
-            if (ImmutableMultimap.class.isAssignableFrom(raw) || Multimap.class.equals(raw)) {
-                final ImmutableMultimap.Builder<Object, Object> builder;
-                if (ImmutableListMultimap.class.isAssignableFrom(raw)) {
-                    builder = ImmutableListMultimap.builder();
-                } else if (ImmutableSetMultimap.class.isAssignableFrom(raw)) {
-                    builder = ImmutableSetMultimap.builder();
-                } else {
-                    builder = ImmutableMultimap.builder();
-                }
-                return new ImmutableMultimapDeserializer(builder, type, property);
-            }
+            final ImmutableMultimap.Builder<Object, Object> builder;
             if (ListMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                builder = ImmutableListMultimap.builder();
+            } else if (SetMultimap.class.isAssignableFrom(raw)) {
+                builder = ImmutableSetMultimap.builder();
+            } else {
+                builder = ImmutableMultimap.builder();
             }
-            if (SetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (SortedSetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
+            return new ImmutableMultimapDeserializer(builder, type, property);
         }
         return null;
     }
