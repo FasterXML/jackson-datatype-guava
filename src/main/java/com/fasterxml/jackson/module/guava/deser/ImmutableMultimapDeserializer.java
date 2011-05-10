@@ -13,7 +13,6 @@ import org.codehaus.jackson.map.DeserializerProvider;
 import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.KeyDeserializer;
 import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.TypeFactory;
 import org.codehaus.jackson.type.JavaType;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -22,7 +21,7 @@ import com.google.common.collect.ImmutableMultimap.Builder;
 public class ImmutableMultimapDeserializer extends JsonDeserializer<ImmutableMultimap<Object, Object>>
 {
     private final Builder<Object, Object> builder;
-    private final JavaType type, keyType, valueType;
+    private final JavaType type, keyType, rawValueType;
     private final BeanProperty property;
     public ImmutableMultimapDeserializer(Builder<Object, Object> builder, JavaType type, BeanProperty property)
     {
@@ -35,7 +34,7 @@ public class ImmutableMultimapDeserializer extends JsonDeserializer<ImmutableMul
         types[1] = type.containedType(1);
         this.keyType = types[0];
         // V is deserialized as Collection<V> so we can putAll on the builder
-        this.valueType = TypeFactory.collectionType(Collection.class, types[1]);
+        this.rawValueType = types[1];
         this.property = property;
     }
 
@@ -75,7 +74,8 @@ public class ImmutableMultimapDeserializer extends JsonDeserializer<ImmutableMul
         DeserializerProvider provider = ctxt.getDeserializerProvider();
         DeserializationConfig config = ctxt.getConfig();
         final KeyDeserializer keyDes = provider.findKeyDeserializer(config, keyType, property);
-        final JsonDeserializer<?> valueDes = provider.findValueDeserializer(config, valueType, property);
+        final JsonDeserializer<?> valueDes = provider.findValueDeserializer(config,
+                config.getTypeFactory().constructCollectionType(Collection.class, rawValueType), property);
         final TypeDeserializer typeDeser = null; // XXX
 
         for (; jp.getCurrentToken() == JsonToken.FIELD_NAME; jp.nextToken()) {
