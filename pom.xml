@@ -6,18 +6,18 @@
     <version>5</version>
   </parent>
   <groupId>com.fasterxml</groupId>
-  <artifactId>jackson-module-guava</artifactId>
-  <name>Jackson-module-Guava</name>
-  <version>0.5.0-SNAPSHOT</version>
+  <artifactId>jackson-datatype-guava</artifactId>
+  <name>Jackson-datatype-Guava</name>
+  <version>0.5.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <description>Add-on module for Jackson (http://jackson.codehaus.org) to support
 Guava (http://code.google.com/p/guava-libraries/) collection types.
   </description>
   <url>http://wiki.fasterxml.com/JacksonModuleGuava</url>
   <scm>
-    <connection>scm:git:git@github.com:FasterXML/jackson-module-guava.git</connection>
-    <developerConnection>scm:git:git@github.com:FasterXML/jackson-module-guava.git</developerConnection>
-    <url>http://github.com/FasterXML/jackson-module-guava</url>    
+    <connection>scm:git:git@github.com:FasterXML/jackson-datatype-guava.git</connection>
+    <developerConnection>scm:git:git@github.com:FasterXML/jackson-datatype-guava.git</developerConnection>
+    <url>http://github.com/FasterXML/jackson-datatype-guava</url>    
   </scm>
   <developers>
         <developer>
@@ -52,8 +52,8 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
-      <!-- For now, assume module interface stable enough to support 1.x since 1.7 -->
-      <version>1.7.0</version>
+      <!-- For now, 1.8 might work as well, but module interface of 1.7 is not compatible -->
+      <version>1.9.1</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -75,6 +75,7 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
@@ -91,6 +92,7 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
         <plugin><!-- plug-in to attach source bundle in repo -->
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
+          <version>2.1.2</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -101,9 +103,9 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
           </executions>
         </plugin>
         <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.6</version>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.6.1</version>
                 <configuration>
                     <source>1.5</source>
                     <target>1.5</target>
@@ -128,18 +130,24 @@ Guava (http://code.google.com/p/guava-libraries/) collection types.
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
+          <version>2.3.4</version>
           <extensions>true</extensions>
           <configuration>
             <instructions>
               <Bundle-SymbolicName>${pom.artifactId}</Bundle-SymbolicName>
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <Import-Package>
+com.google.common.collect,
+org.codehaus.jackson,
+org.codehaus.jackson.map,
+org.codehaus.jackson.map.type,
+org.codehaus.jackson.type
 </Import-Package>
               <Private-Package>
-com.fasterxml.jackson.module.guava.deser
 </Private-Package>
               <Export-Package>
-com.fasterxml.jackson.module.guava
+com.fasterxml.jackson.module.guava,
+com.fasterxml.jackson.module.guava.deser
 </Export-Package>
             </instructions>
           </configuration>

@@ -15,7 +15,7 @@ import com.fasterxml.jackson.module.guava.deser.*;
  * @author tsaloranta
  */
 public class GuavaDeserializers
-    extends Deserializers.None
+    extends Deserializers.Base
 {
     /**
      * Concrete implementation class to use for properties declared as
@@ -37,14 +37,21 @@ public class GuavaDeserializers
     }
     */
 
+    /*
+    public JsonDeserializer<?> findCollectionDeserializer(CollectionType type, DeserializationConfig config,
+            DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+            TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
+        throws JsonMappingException;
+     */
+    
     /**
      * We have plenty of collection types to support...
      */
     @Override
     public JsonDeserializer<?> findCollectionDeserializer(CollectionType type,
             DeserializationConfig config, DeserializerProvider provider,
-            BeanDescription beanDesc,
-            TypeDeserializer elementTypeDeser, JsonDeserializer<?> elementDeser)
+            BeanDescription beanDesc, BeanProperty property,
+            TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
@@ -56,8 +63,8 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             if (HashMultiset.class.isAssignableFrom(raw)) {
-                return new HashMultisetDeserializer(type, elementTypeDeser,
-                        _verifyElementDeserializer(elementDeser, type, config, provider));
+                return new HashMultisetDeserializer(type, elementTypeDeserializer,
+                        _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
             }
             if (ImmutableMultiset.class.isAssignableFrom(raw)) {
                 // !!! TODO
@@ -70,15 +77,15 @@ public class GuavaDeserializers
             }
 
             // TODO: make configurable (for now just default blindly)
-            return new HashMultisetDeserializer(type, elementTypeDeser,
-                    _verifyElementDeserializer(elementDeser, type, config, provider));
+            return new HashMultisetDeserializer(type, elementTypeDeserializer,
+                    _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
         }
         
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
-                return new ImmutableListDeserializer(type, elementTypeDeser,
-                        _verifyElementDeserializer(elementDeser, type, config, provider));
+                return new ImmutableListDeserializer(type, elementTypeDeserializer,
+                        _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
             }
             if (ImmutableSet.class.isAssignableFrom(raw)) {
                 // sorted one?
@@ -91,12 +98,12 @@ public class GuavaDeserializers
                         throw new IllegalArgumentException("Can not handle ImmutableSortedSet with elements that are not Comparable<?> ("
                                 +raw.getName()+")");
                     }
-                    return new ImmutableSortedSetDeserializer(type, elementTypeDeser,
-                            _verifyElementDeserializer(elementDeser, type, config, provider));
+                    return new ImmutableSortedSetDeserializer(type, elementTypeDeserializer,
+                            _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
                 }
                 // nah, just regular one
-                return new ImmutableSetDeserializer(type, elementTypeDeser,
-                        _verifyElementDeserializer(elementDeser, type, config, provider));
+                return new ImmutableSetDeserializer(type, elementTypeDeserializer,
+                        _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
             }
         }
         return null;
@@ -106,10 +113,10 @@ public class GuavaDeserializers
      * A few Map types to support.
      */
     @Override
-    public JsonDeserializer<?> findMapDeserializer(MapType type,
-            DeserializationConfig config, DeserializerProvider provider,
-            BeanDescription beanDesc, KeyDeserializer keyDeser,
-            TypeDeserializer elementTypeDeser, JsonDeserializer<?> elementDeser)
+    public JsonDeserializer<?> findMapDeserializer(MapType type, DeserializationConfig config,
+            DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+            KeyDeserializer keyDeserializer,
+            TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
@@ -122,8 +129,8 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             // Otherwise, plain old ImmutableMap...
-            return new ImmutableMapDeserializer(type, keyDeser, elementTypeDeser,
-                    _verifyElementDeserializer(elementDeser, type, config, provider));
+            return new ImmutableMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                    _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
         }
         // Multimaps?
         if (Multimap.class.isAssignableFrom(raw)) {
@@ -150,14 +157,14 @@ public class GuavaDeserializers
      * Helper method used to ensure that we have a deserializer for elements
      * of collection being deserialized.
      */
-    JsonDeserializer<?> _verifyElementDeserializer(JsonDeserializer<?> deser,
-            JavaType type,
-            DeserializationConfig config, DeserializerProvider provider)
+    protected JsonDeserializer<?> _verifyElementDeserializer(JsonDeserializer<?> deser,
+            DeserializationConfig config, DeserializerProvider provider,
+            BeanProperty prop, JavaType type)
         throws JsonMappingException
     {
         if (deser == null) {
             // 'null' -> collections have no referring fields
-            deser = provider.findValueDeserializer(config, type.getContentType(), type, null);            
+            deser = provider.findValueDeserializer(config, type.getContentType(), prop);     
         }
         return deser;
     }
