@@ -1,8 +1,6 @@
-package com.fasterxml.jackson.module.guava.deser;
+package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
-
-import com.google.common.collect.ImmutableList;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
@@ -12,22 +10,23 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.TypeDeserializer;
 import org.codehaus.jackson.map.type.CollectionType;
 
-public class ImmutableListDeserializer extends GuavaCollectionDeserializer<ImmutableList<Object>>
+import com.google.common.collect.HashMultiset;
+
+public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashMultiset<Object>>
 {
-    public ImmutableListDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public HashMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
         super(type, typeDeser, deser);
     }
 
     @Override
-    protected ImmutableList<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
+    protected HashMultiset<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
         JsonDeserializer<?> valueDes = _valueDeserializer;
         JsonToken t;
         final TypeDeserializer typeDeser = _typeDeserializerForValue;
-        // No way to pass actual type parameter; but does not matter, just compiler-time fluff:
-        ImmutableList.Builder<Object> builder = ImmutableList.builder();
+        HashMultiset<Object> set = HashMultiset.create();
 
         while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
             Object value;
@@ -39,8 +38,8 @@ public class ImmutableListDeserializer extends GuavaCollectionDeserializer<Immut
             } else {
                 value = valueDes.deserializeWithType(jp, ctxt, typeDeser);
             }
-            builder.add(value);
+            set.add(value);
         }
-        return builder.build();
+        return set;
     }
 }

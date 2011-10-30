@@ -10,8 +10,8 @@
   <name>Jackson-datatype-Guava</name>
   <version>0.5.1-SNAPSHOT</version>
   <packaging>bundle</packaging>
-  <description>Add-on module for Jackson (http://jackson.codehaus.org) to support
-Guava (http://code.google.com/p/guava-libraries/) collection types.
+  <description>Add-on datatype-support module for Jackson (http://jackson.codehaus.org) that handles
+Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just collection ones)
   </description>
   <url>http://wiki.fasterxml.com/JacksonModuleGuava</url>
   <scm>
@@ -146,8 +146,8 @@ org.codehaus.jackson.type
               <Private-Package>
 </Private-Package>
               <Export-Package>
-com.fasterxml.jackson.module.guava,
-com.fasterxml.jackson.module.guava.deser
+com.fasterxml.jackson.datatype.guava,
+com.fasterxml.jackson.datatype.guava.deser
 </Export-Package>
             </instructions>
           </configuration>

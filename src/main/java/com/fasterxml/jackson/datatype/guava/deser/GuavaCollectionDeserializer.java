@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.guava.deser;
+package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
@@ -7,36 +7,30 @@ import org.codehaus.jackson.JsonProcessingException;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.DeserializationContext;
 import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.KeyDeserializer;
 import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.MapType;
+import org.codehaus.jackson.map.type.CollectionType;
 
-public abstract class GuavaMapDeserializer<T> extends JsonDeserializer<T>
+public abstract class GuavaCollectionDeserializer<T> extends JsonDeserializer<T>
 {
-    protected final MapType _mapType;
-
+    protected final CollectionType _containerType;
+    
     /**
-     * Key deserializer used, if not null. If null, String from JSON
-     * content is used as is.
-     */
-    protected final KeyDeserializer _keyDeserializer;
-
-    /**
-     * Value deserializer.
+     * Deserializer used for values contained in collection being deserialized;
+     * null if it can not be dynamically determined.
      */
     protected final JsonDeserializer<?> _valueDeserializer;
 
     /**
      * If value instances have polymorphic type information, this
-     * is the type deserializer that can handle it
+     * is the type deserializer that can deserialize required type
+     * information
      */
     protected final TypeDeserializer _typeDeserializerForValue;
-
-    protected GuavaMapDeserializer(MapType type, KeyDeserializer keyDeser,
+    
+    protected GuavaCollectionDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        _mapType = type;
-        _keyDeserializer = keyDeser;
+        _containerType = type;
         _typeDeserializerForValue = typeDeser;
         _valueDeserializer = deser;
     }
@@ -58,17 +52,11 @@ public abstract class GuavaMapDeserializer<T> extends JsonDeserializer<T>
     public T deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
-        // Ok: must point to START_OBJECT or FIELD_NAME
-        JsonToken t = jp.getCurrentToken();
-        if (t == JsonToken.START_OBJECT) { // If START_OBJECT, move to next; may also be END_OBJECT
-            t = jp.nextToken();
-            if (t != JsonToken.FIELD_NAME && t != JsonToken.END_OBJECT) {
-                throw ctxt.mappingException(_mapType.getRawClass());
-            }
-        } else if (t != JsonToken.FIELD_NAME) {
-            throw ctxt.mappingException(_mapType.getRawClass());
+        // Ok: must point to START_ARRAY
+        if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
+            throw ctxt.mappingException(_containerType.getRawClass());
         }
-        return _deserializeEntries(jp, ctxt);
+        return _deserializeContents(jp, ctxt);
     }
 
     /*
@@ -77,13 +65,12 @@ public abstract class GuavaMapDeserializer<T> extends JsonDeserializer<T>
     /**********************************************************************
      */
 
-    protected abstract T _deserializeEntries(JsonParser jp, DeserializationContext ctxt)
-        throws IOException, JsonProcessingException;
+    protected abstract T _deserializeContents(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException;
     
     /*
     /**********************************************************************
     /* Helper methods
     /**********************************************************************
      */
-
 }

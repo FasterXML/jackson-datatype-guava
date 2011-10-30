@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.guava;
+package com.fasterxml.jackson.datatype.guava;
 
 import com.google.common.collect.*;
 
@@ -7,7 +7,7 @@ import org.codehaus.jackson.map.type.CollectionType;
 import org.codehaus.jackson.map.type.MapType;
 import org.codehaus.jackson.type.JavaType;
 
-import com.fasterxml.jackson.module.guava.deser.*;
+import com.fasterxml.jackson.datatype.guava.deser.*;
 
 /**
  * Custom deserializers module offers.

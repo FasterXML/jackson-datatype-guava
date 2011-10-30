@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.guava;
+package com.fasterxml.jackson.datatype.guava;
 
 import org.codehaus.jackson.Version;
 import org.codehaus.jackson.map.*;

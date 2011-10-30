@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.guava.deser;
+package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.guava.deser;
+package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
@@ -10,23 +10,30 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.TypeDeserializer;
 import org.codehaus.jackson.map.type.CollectionType;
 
-import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableSortedSet;
 
-public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashMultiset<Object>>
+public class ImmutableSortedSetDeserializer  extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
 {
-    public HashMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableSortedSetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
         super(type, typeDeser, deser);
     }
 
     @Override
-    protected HashMultiset<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
+    protected ImmutableSortedSet<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
         JsonDeserializer<?> valueDes = _valueDeserializer;
         JsonToken t;
         final TypeDeserializer typeDeser = _typeDeserializerForValue;
-        HashMultiset<Object> set = HashMultiset.create();
+        /* Not quite sure what to do with sorting/ordering; may require better support either
+         * via annotations, or via custom serialization (bean style that includes ordering
+         * aspects)
+         */
+        @SuppressWarnings("unchecked")
+        ImmutableSortedSet.Builder<?> builderComp = ImmutableSortedSet.<Comparable>naturalOrder();
+        @SuppressWarnings("unchecked")
+        ImmutableSortedSet.Builder<Object> builder = (ImmutableSortedSet.Builder<Object>) builderComp;
 
         while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
             Object value;
@@ -38,8 +45,8 @@ public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashM
             } else {
                 value = valueDes.deserializeWithType(jp, ctxt, typeDeser);
             }
-            set.add(value);
+            builder.add(value);
         }
-        return set;
+        return builder.build();
     }
 }

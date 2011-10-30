@@ -1,6 +1,8 @@
-package com.fasterxml.jackson.module.guava.deser;
+package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
+
+import com.google.common.collect.ImmutableList;
 
 import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonProcessingException;
@@ -10,30 +12,22 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.TypeDeserializer;
 import org.codehaus.jackson.map.type.CollectionType;
 
-import com.google.common.collect.ImmutableSortedSet;
-
-public class ImmutableSortedSetDeserializer  extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
+public class ImmutableListDeserializer extends GuavaCollectionDeserializer<ImmutableList<Object>>
 {
-    public ImmutableSortedSetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableListDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
         super(type, typeDeser, deser);
     }
 
     @Override
-    protected ImmutableSortedSet<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
+    protected ImmutableList<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
         JsonDeserializer<?> valueDes = _valueDeserializer;
         JsonToken t;
         final TypeDeserializer typeDeser = _typeDeserializerForValue;
-        /* Not quite sure what to do with sorting/ordering; may require better support either
-         * via annotations, or via custom serialization (bean style that includes ordering
-         * aspects)
-         */
-        @SuppressWarnings("unchecked")
-        ImmutableSortedSet.Builder<?> builderComp = ImmutableSortedSet.<Comparable>naturalOrder();
-        @SuppressWarnings("unchecked")
-        ImmutableSortedSet.Builder<Object> builder = (ImmutableSortedSet.Builder<Object>) builderComp;
+        // No way to pass actual type parameter; but does not matter, just compiler-time fluff:
+        ImmutableList.Builder<Object> builder = ImmutableList.builder();
 
         while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
             Object value;
