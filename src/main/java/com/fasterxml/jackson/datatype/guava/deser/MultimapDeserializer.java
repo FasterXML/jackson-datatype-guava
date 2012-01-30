@@ -41,10 +41,6 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
     private static final List<String> METHOD_NAMES = ImmutableList.of("create", "copyOf");
 
     private final MapLikeType type;
-    private final DeserializationConfig config;
-    private final DeserializerProvider provider;
-    private final BeanDescription beanDesc;
-    private final BeanProperty property;
     private final KeyDeserializer keyDeserializer;
     private final TypeDeserializer elementTypeDeserializer;
     private final JsonDeserializer<?> elementDeserializer;
@@ -58,10 +54,6 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
         JavaType valueType = type.getContentType();
 
         this.type = type;
-        this.config = config;
-        this.provider = provider;
-        this.beanDesc = beanDesc;
-        this.property = property;
         this.keyDeserializer = keyDeserializer == null ? provider.findKeyDeserializer(config, keyType, property) : keyDeserializer;
         this.elementTypeDeserializer = elementTypeDeserializer;
         this.elementDeserializer = elementDeserializer == null ? provider.findValueDeserializer(config, valueType, property) : elementDeserializer;
