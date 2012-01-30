@@ -1,1 +1,3 @@
+NOTE: this project is obsolete!  Use https://github.com/FasterXML/jackson-datatype-guava instead!
+
 Project to build Jackson (http://jackson.codehaus.org) module (jar) to support JSON serialization and deserialization of Guava (http://code.google.com/p/guava-libraries/) collection types.
