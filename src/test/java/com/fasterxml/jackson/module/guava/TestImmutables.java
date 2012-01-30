@@ -2,9 +2,10 @@ package com.fasterxml.jackson.module.guava;
 
 import java.util.Iterator;
 
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
+
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -54,7 +55,8 @@ public class TestImmutables extends BaseTest
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            mapper.readValue("[1,2,3]", new TypeReference<ImmutableList<Integer>>() { });
+            mapper.readValue("[1,2,3]",
+                    new TypeReference<ImmutableList<Integer>>() { });
             fail("Expected failure for missing deserializer");
         } catch (JsonMappingException e) {
             verifyException(e, "can not find a deserializer");
