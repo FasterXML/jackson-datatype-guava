@@ -12,9 +12,10 @@ import com.google.common.collect.HashMultiset;
 
 public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashMultiset<Object>>
 {
-    public HashMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public HashMultisetDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
     @Override

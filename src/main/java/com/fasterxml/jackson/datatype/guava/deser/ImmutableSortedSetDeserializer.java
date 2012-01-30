@@ -10,11 +10,13 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import com.google.common.collect.ImmutableSortedSet;
 
-public class ImmutableSortedSetDeserializer  extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
+public class ImmutableSortedSetDeserializer
+    extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
 {
-    public ImmutableSortedSetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableSortedSetDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
     @Override

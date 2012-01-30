@@ -64,8 +64,8 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             if (HashMultiset.class.isAssignableFrom(raw)) {
-                return new HashMultisetDeserializer(type, elementTypeDeserializer,
-                        _verifyElementDeserializer(elementDeserializer, config, property, type));
+                return new HashMultisetDeserializer(type, property,
+                        elementTypeDeserializer, elementDeserializer);
             }
             if (ImmutableMultiset.class.isAssignableFrom(raw)) {
                 // !!! TODO
@@ -78,15 +78,15 @@ public class GuavaDeserializers
             }
 
             // TODO: make configurable (for now just default blindly)
-            return new HashMultisetDeserializer(type, elementTypeDeserializer,
-                    _verifyElementDeserializer(elementDeserializer, config, property, type));
+            return new HashMultisetDeserializer(type, property,
+                    elementTypeDeserializer, elementDeserializer);
         }
         
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
-                return new ImmutableListDeserializer(type, elementTypeDeserializer,
-                        _verifyElementDeserializer(elementDeserializer, config, property, type));
+                return new ImmutableListDeserializer(type, property,
+                        elementTypeDeserializer, elementDeserializer);
             }
             if (ImmutableSet.class.isAssignableFrom(raw)) {
                 // sorted one?
@@ -99,12 +99,12 @@ public class GuavaDeserializers
                         throw new IllegalArgumentException("Can not handle ImmutableSortedSet with elements that are not Comparable<?> ("
                                 +raw.getName()+")");
                     }
-                    return new ImmutableSortedSetDeserializer(type, elementTypeDeserializer,
-                            _verifyElementDeserializer(elementDeserializer, config, property, type));
+                    return new ImmutableSortedSetDeserializer(type, property,
+                            elementTypeDeserializer, elementDeserializer);
                 }
                 // nah, just regular one
-                return new ImmutableSetDeserializer(type, elementTypeDeserializer,
-                        _verifyElementDeserializer(elementDeserializer, config,  property, type));
+                return new ImmutableSetDeserializer(type, property,
+                        elementTypeDeserializer, elementDeserializer);
             }
         }
         return null;
@@ -130,8 +130,8 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             // Otherwise, plain old ImmutableMap...
-            return new ImmutableMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
-                    _verifyElementDeserializer(elementDeserializer, config, property, type));
+            return new ImmutableMapDeserializer(type, property,
+                    keyDeserializer, elementTypeDeserializer, elementDeserializer);
         }
         // Multimaps?
         if (Multimap.class.isAssignableFrom(raw)) {
@@ -146,29 +146,5 @@ public class GuavaDeserializers
             }
         }
         return null;
-    }
-
-    /*
-    /**********************************************************************
-    /* Helper methods
-    /**********************************************************************
-     */
-
-    /**
-     * Helper method used to ensure that we have a deserializer for elements
-     * of collection being deserialized.
-     */
-    protected JsonDeserializer<?> _verifyElementDeserializer(JsonDeserializer<?> deser,
-            DeserializationConfig config,
-            BeanProperty prop, JavaType type)
-        throws JsonMappingException
-    {
-        /*
-        if (deser == null) {
-            // 'null' -> collections have no referring fields
-            deser = provider.findValueDeserializer(config, type.getContentType(), prop);     
-        }
-        */
-        return deser;
     }
 }

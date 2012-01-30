@@ -10,13 +10,21 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
-public class ImmutableListDeserializer extends GuavaCollectionDeserializer<ImmutableList<Object>>
+public class ImmutableListDeserializer
+    extends GuavaCollectionDeserializer<ImmutableList<Object>>
 {
-    public ImmutableListDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableListDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
+    /*
+    /**********************************************************
+    /* Deserialization
+    /**********************************************************
+     */
+    
     @Override
     protected ImmutableList<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException

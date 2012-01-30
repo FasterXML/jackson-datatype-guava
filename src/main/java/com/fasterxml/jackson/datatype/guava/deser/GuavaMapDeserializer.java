@@ -5,23 +5,28 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.*;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.MapType;
 
-public abstract class GuavaMapDeserializer<T> extends JsonDeserializer<T>
+public abstract class GuavaMapDeserializer<T>
+    extends JsonDeserializer<T>
+    implements ResolvableDeserializer
 {
     protected final MapType _mapType;
 
+    protected final BeanProperty _property;
+    
     /**
      * Key deserializer used, if not null. If null, String from JSON
      * content is used as is.
      */
-    protected final KeyDeserializer _keyDeserializer;
+    protected KeyDeserializer _keyDeserializer;
 
     /**
      * Value deserializer.
      */
-    protected final JsonDeserializer<?> _valueDeserializer;
+    protected JsonDeserializer<?> _valueDeserializer;
 
     /**
      * If value instances have polymorphic type information, this
@@ -29,14 +34,43 @@ public abstract class GuavaMapDeserializer<T> extends JsonDeserializer<T>
      */
     protected final TypeDeserializer _typeDeserializerForValue;
 
-    protected GuavaMapDeserializer(MapType type, KeyDeserializer keyDeser,
+    protected GuavaMapDeserializer(MapType type, BeanProperty prop,
+            KeyDeserializer keyDeser,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
         _mapType = type;
+        _property = prop;
         _keyDeserializer = keyDeser;
         _typeDeserializerForValue = typeDeser;
         _valueDeserializer = deser;
     }
+
+    /*
+    /**********************************************************
+    /* Validation, post-processing (ResolvableDeserializer)
+    /**********************************************************
+     */
+    
+    /**
+     * Method called to finalize setup of this deserializer,
+     * after deserializer itself has been registered. This
+     * is needed to handle recursive and transitive dependencies.
+     */
+    public void resolve(DeserializationContext ctxt) throws JsonMappingException
+    {
+        if (_keyDeserializer == null) {
+            _keyDeserializer = ctxt.findKeyDeserializer(_mapType.getKeyType(), _property);
+        }
+        if (_valueDeserializer == null) {
+            _valueDeserializer = ctxt.findValueDeserializer(_mapType.getContentType(), _property);
+        }
+    }
+
+    /*
+    /**********************************************************
+    /* Deserialization interface
+    /**********************************************************
+     */
 
     /**
      * Base implementation that does not assume specific type

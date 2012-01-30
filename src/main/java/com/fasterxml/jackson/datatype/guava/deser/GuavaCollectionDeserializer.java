@@ -5,18 +5,24 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.*;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
-public abstract class GuavaCollectionDeserializer<T> extends JsonDeserializer<T>
+public abstract class GuavaCollectionDeserializer<T>
+    extends StdDeserializer<T>
+    implements ResolvableDeserializer
 {
     protected final CollectionType _containerType;
+
+    protected final BeanProperty _property;
     
     /**
      * Deserializer used for values contained in collection being deserialized;
-     * null if it can not be dynamically determined.
+     * either assigned on constructor, or during resolve().
      */
-    protected final JsonDeserializer<?> _valueDeserializer;
+    protected JsonDeserializer<?> _valueDeserializer;
 
     /**
      * If value instances have polymorphic type information, this
@@ -25,14 +31,42 @@ public abstract class GuavaCollectionDeserializer<T> extends JsonDeserializer<T>
      */
     protected final TypeDeserializer _typeDeserializerForValue;
     
-    protected GuavaCollectionDeserializer(CollectionType type,
+    protected GuavaCollectionDeserializer(CollectionType type, BeanProperty prop,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
+        super(type);
         _containerType = type;
+        _property = prop;
         _typeDeserializerForValue = typeDeser;
         _valueDeserializer = deser;
     }
+    
+    /*
+    /**********************************************************
+    /* Validation, post-processing (ResolvableDeserializer)
+    /**********************************************************
+     */
 
+    /**
+     * Method called to finalize setup of this deserializer,
+     * after deserializer itself has been registered. This
+     * is needed to handle recursive and transitive dependencies.
+     */
+    public void resolve(DeserializationContext ctxt) throws JsonMappingException
+    {
+        // also, often value deserializer is resolved here:
+        if (_valueDeserializer == null) {
+            _valueDeserializer = ctxt.findValueDeserializer(_containerType.getContentType(),
+                    _property);
+        }
+    }
+
+    /*
+    /**********************************************************
+    /* Deserialization interface
+    /**********************************************************
+     */
+    
     /**
      * Base implementation that does not assume specific type
      * inclusion mechanism. Sub-classes are expected to override
@@ -65,10 +99,4 @@ public abstract class GuavaCollectionDeserializer<T> extends JsonDeserializer<T>
 
     protected abstract T _deserializeContents(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException;
-    
-    /*
-    /**********************************************************************
-    /* Helper methods
-    /**********************************************************************
-     */
 }

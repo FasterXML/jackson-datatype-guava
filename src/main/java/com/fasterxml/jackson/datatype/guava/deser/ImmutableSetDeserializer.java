@@ -12,9 +12,10 @@ import com.google.common.collect.ImmutableSet;
 
 public class ImmutableSetDeserializer extends GuavaCollectionDeserializer<ImmutableSet<Object>>
 {
-    public ImmutableSetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableSetDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
     @Override
