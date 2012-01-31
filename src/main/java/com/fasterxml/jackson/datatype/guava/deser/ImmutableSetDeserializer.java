@@ -10,14 +10,22 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import com.google.common.collect.ImmutableSet;
 
-public class ImmutableSetDeserializer extends GuavaCollectionDeserializer<ImmutableSet<Object>>
+public class ImmutableSetDeserializer
+    extends GuavaCollectionDeserializer<ImmutableSet<Object>>
 {
-    public ImmutableSetDeserializer(CollectionType type, BeanProperty prop,
+    public ImmutableSetDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, prop, typeDeser, deser);
+        super(type, typeDeser, deser);
     }
 
+    @Override
+    public ImmutableSetDeserializer withResolved(TypeDeserializer typeDeser,
+            JsonDeserializer<?> valueDeser) {
+        return new ImmutableSetDeserializer(_containerType,
+                typeDeser, valueDeser);
+    }
+    
     @Override
     protected ImmutableSet<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException

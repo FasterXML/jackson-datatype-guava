@@ -19,6 +19,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     public void setupModule(SetupContext context)
     {
         context.addDeserializers(new GuavaDeserializers());
+        context.addSerializers(new GuavaSerializers());
+        context.addTypeModifier(new MultimapTypeModifier());
     }
-
 }

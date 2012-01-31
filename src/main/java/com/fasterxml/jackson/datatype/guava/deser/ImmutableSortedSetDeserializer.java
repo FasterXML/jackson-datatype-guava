@@ -13,28 +13,34 @@ import com.google.common.collect.ImmutableSortedSet;
 public class ImmutableSortedSetDeserializer
     extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
 {
-    public ImmutableSortedSetDeserializer(CollectionType type, BeanProperty prop,
+    public ImmutableSortedSetDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, prop, typeDeser, deser);
+        super(type, typeDeser, deser);
     }
 
+    @Override
+    public ImmutableSortedSetDeserializer withResolved(TypeDeserializer typeDeser,
+            JsonDeserializer<?> valueDeser) {
+        return new ImmutableSortedSetDeserializer(_containerType,
+                typeDeser, valueDeser);
+    }
+    
+    @SuppressWarnings("unchecked")
     @Override
     protected ImmutableSortedSet<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
     {
         JsonDeserializer<?> valueDes = _valueDeserializer;
-        JsonToken t;
         final TypeDeserializer typeDeser = _typeDeserializerForValue;
         /* Not quite sure what to do with sorting/ordering; may require better support either
          * via annotations, or via custom serialization (bean style that includes ordering
          * aspects)
          */
-        @SuppressWarnings("unchecked")
         ImmutableSortedSet.Builder<?> builderComp = ImmutableSortedSet.<Comparable>naturalOrder();
-        @SuppressWarnings("unchecked")
         ImmutableSortedSet.Builder<Object> builder = (ImmutableSortedSet.Builder<Object>) builderComp;
 
+        JsonToken t;
         while ((t = jp.nextToken()) != JsonToken.END_ARRAY) {
             Object value;
             

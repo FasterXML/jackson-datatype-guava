@@ -10,14 +10,22 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 
 import com.google.common.collect.HashMultiset;
 
-public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashMultiset<Object>>
+public class HashMultisetDeserializer
+    extends GuavaCollectionDeserializer<HashMultiset<Object>>
 {
-    public HashMultisetDeserializer(CollectionType type, BeanProperty prop,
+    public HashMultisetDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, prop, typeDeser, deser);
+        super(type, typeDeser, deser);
     }
 
+    @Override
+    public HashMultisetDeserializer withResolved(TypeDeserializer typeDeser,
+            JsonDeserializer<?> valueDeser) {
+        return new HashMultisetDeserializer(_containerType,
+                typeDeser, valueDeser);
+    }
+    
     @Override
     protected HashMultiset<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException

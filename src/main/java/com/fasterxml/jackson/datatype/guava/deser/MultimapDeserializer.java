@@ -6,21 +6,12 @@ import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import static org.codehaus.jackson.JsonToken.*;
-import org.codehaus.jackson.map.BeanDescription;
-import org.codehaus.jackson.map.BeanProperty;
-import org.codehaus.jackson.map.DeserializationConfig;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.DeserializerProvider;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.KeyDeserializer;
-import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.MapLikeType;
-import org.codehaus.jackson.type.JavaType;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.type.MapLikeType;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
@@ -30,8 +21,9 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
-public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
-
+public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>>
+    implements ContextualDeserializer
+{
     private static final List<Class<?>> KNOWN_IMPLEMENTATIONS =
             ImmutableList.<Class<?>>of(
                 ImmutableListMultimap.class,
@@ -45,20 +37,40 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
     private final TypeDeserializer elementTypeDeserializer;
     private final JsonDeserializer<?> elementDeserializer;
 
-    public MultimapDeserializer(MapLikeType type, DeserializationConfig config, DeserializerProvider provider,
-            BeanDescription beanDesc, BeanProperty property, KeyDeserializer keyDeserializer,
+    public MultimapDeserializer(MapLikeType type,
+            KeyDeserializer keyDeserializer,
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException
     {
-        JavaType keyType = type.getKeyType();
-        JavaType valueType = type.getContentType();
-
         this.type = type;
-        this.keyDeserializer = keyDeserializer == null ? provider.findKeyDeserializer(config, keyType, property) : keyDeserializer;
+        this.keyDeserializer = keyDeserializer;
         this.elementTypeDeserializer = elementTypeDeserializer;
-        this.elementDeserializer = elementDeserializer == null ? provider.findValueDeserializer(config, valueType, property) : elementDeserializer;
+        this.elementDeserializer = elementDeserializer;
     }
 
+    /**
+     * We need to use this method to properly handle possible contextual
+     * variants of key and value deserializers, as well as type deserializers.
+     */
+    public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
+            BeanProperty property) throws JsonMappingException
+    {
+        KeyDeserializer kd = keyDeserializer;
+        if (kd == null) {
+            kd = ctxt.findKeyDeserializer(type.getKeyType(), property);
+        }
+        JsonDeserializer<?> ed = elementDeserializer;
+        if (ed == null) {
+            ed = ctxt.findValueDeserializer(type.getContentType(), property);
+        }
+        // Type deserializer is slightly different; must be passed, but needs to become contextual:
+        TypeDeserializer etd = elementTypeDeserializer;
+        if (etd != null) {
+//            etd = etd.forProperty(property);
+        }
+        return new MultimapDeserializer(type, kd, etd, ed);
+    }
+    
     @Override
     public Multimap<?, ?> deserialize(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException
@@ -66,7 +78,7 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
         // Picked LLM since it is preserves both K, V ordering and supports nulls.
         LinkedListMultimap<Object, Object> builder = LinkedListMultimap.create();
 
-        while (jp.nextToken() != END_OBJECT)
+        while (jp.nextToken() != JsonToken.END_OBJECT)
         {
             final Object key;
             if (keyDeserializer != null)
@@ -79,9 +91,9 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
             }
 
             jp.nextToken();
-            expect(jp, START_ARRAY);
+            expect(jp, JsonToken.START_ARRAY);
 
-            while (jp.nextToken() != END_ARRAY)
+            while (jp.nextToken() != JsonToken.END_ARRAY)
             {
                 if (elementDeserializer != null)
                 {

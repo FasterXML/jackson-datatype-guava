@@ -13,12 +13,19 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 public class ImmutableListDeserializer
     extends GuavaCollectionDeserializer<ImmutableList<Object>>
 {
-    public ImmutableListDeserializer(CollectionType type, BeanProperty prop,
+    public ImmutableListDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, prop, typeDeser, deser);
+        super(type, typeDeser, deser);
     }
 
+    @Override
+    public ImmutableListDeserializer withResolved(TypeDeserializer typeDeser,
+            JsonDeserializer<?> valueDeser) {
+        return new ImmutableListDeserializer(_containerType,
+                typeDeser, valueDeser);
+    }
+    
     /*
     /**********************************************************
     /* Deserialization

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.*;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
+import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
 
 import com.fasterxml.jackson.datatype.guava.deser.*;
@@ -19,39 +20,11 @@ public class GuavaDeserializers
     extends Deserializers.Base
 {
     /**
-     * Concrete implementation class to use for properties declared as
-     * {@link Multiset}s.
-     * Defaults to using 
-     */
-//    protected Class<? extends Multiset<?>> _cfgDefaultMultiset;
-
-//    protected Class<? extends Multimap<?>> _cfgDefaultMultimap;
-    
-    /*
-     * No bean types to support yet; may need to add?
-     */
-    /*
-    public JsonDeserializer<?> findBeanDeserializer(JavaType type,
-            DeserializationConfig config, DeserializerProvider provider,
-            BeanDescription beanDesc) {
-        return null;
-    }
-    */
-
-    /*
-    public JsonDeserializer<?> findCollectionDeserializer(CollectionType type, DeserializationConfig config,
-            DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
-            TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
-        throws JsonMappingException;
-     */
-    
-    /**
      * We have plenty of collection types to support...
      */
     @Override
     public JsonDeserializer<?> findCollectionDeserializer(CollectionType type,
-            DeserializationConfig config,
-            BeanDescription beanDesc, BeanProperty property,
+            DeserializationConfig config, BeanDescription beanDesc,
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException
     {
@@ -64,8 +37,7 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             if (HashMultiset.class.isAssignableFrom(raw)) {
-                return new HashMultisetDeserializer(type, property,
-                        elementTypeDeserializer, elementDeserializer);
+                return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
             }
             if (ImmutableMultiset.class.isAssignableFrom(raw)) {
                 // !!! TODO
@@ -78,14 +50,13 @@ public class GuavaDeserializers
             }
 
             // TODO: make configurable (for now just default blindly)
-            return new HashMultisetDeserializer(type, property,
-                    elementTypeDeserializer, elementDeserializer);
+            return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
         }
         
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
-                return new ImmutableListDeserializer(type, property,
+                return new ImmutableListDeserializer(type,
                         elementTypeDeserializer, elementDeserializer);
             }
             if (ImmutableSet.class.isAssignableFrom(raw)) {
@@ -99,11 +70,11 @@ public class GuavaDeserializers
                         throw new IllegalArgumentException("Can not handle ImmutableSortedSet with elements that are not Comparable<?> ("
                                 +raw.getName()+")");
                     }
-                    return new ImmutableSortedSetDeserializer(type, property,
+                    return new ImmutableSortedSetDeserializer(type,
                             elementTypeDeserializer, elementDeserializer);
                 }
                 // nah, just regular one
-                return new ImmutableSetDeserializer(type, property,
+                return new ImmutableSetDeserializer(type,
                         elementTypeDeserializer, elementDeserializer);
             }
         }
@@ -114,8 +85,8 @@ public class GuavaDeserializers
      * A few Map types to support.
      */
     @Override
-    public JsonDeserializer<?> findMapDeserializer(MapType type, DeserializationConfig config,
-            BeanDescription beanDesc, BeanProperty property,
+    public JsonDeserializer<?> findMapDeserializer(MapType type,
+            DeserializationConfig config, BeanDescription beanDesc,
             KeyDeserializer keyDeserializer,
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException
@@ -130,21 +101,25 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             // Otherwise, plain old ImmutableMap...
-            return new ImmutableMapDeserializer(type, property,
+            return new ImmutableMapDeserializer(type,
                     keyDeserializer, elementTypeDeserializer, elementDeserializer);
-        }
-        // Multimaps?
-        if (Multimap.class.isAssignableFrom(raw)) {
-            if (ListMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (SetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (SortedSetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
         }
         return null;
     }
+
+    @Override
+    public JsonDeserializer<?> findMapLikeDeserializer(MapLikeType type,
+            DeserializationConfig config, BeanDescription beanDesc,
+            KeyDeserializer keyDeserializer, TypeDeserializer elementTypeDeserializer,
+            JsonDeserializer<?> elementDeserializer)
+        throws JsonMappingException
+    {
+        if (Multimap.class.isAssignableFrom(type.getRawClass())) {
+            return new MultimapDeserializer(type,
+                    keyDeserializer, elementTypeDeserializer, elementDeserializer);
+        }
+
+        return null;
+    }
+
 }
