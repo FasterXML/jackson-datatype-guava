@@ -4,6 +4,7 @@ import com.google.common.collect.*;
 
 import org.codehaus.jackson.map.*;
 import org.codehaus.jackson.map.type.CollectionType;
+import org.codehaus.jackson.map.type.MapLikeType;
 import org.codehaus.jackson.map.type.MapType;
 import org.codehaus.jackson.type.JavaType;
 
@@ -11,7 +12,7 @@ import com.fasterxml.jackson.datatype.guava.deser.*;
 
 /**
  * Custom deserializers module offers.
- * 
+ *
  * @author tsaloranta
  */
 public class GuavaDeserializers
@@ -20,12 +21,12 @@ public class GuavaDeserializers
     /**
      * Concrete implementation class to use for properties declared as
      * {@link Multiset}s.
-     * Defaults to using 
+     * Defaults to using
      */
 //    protected Class<? extends Multiset<?>> _cfgDefaultMultiset;
 
 //    protected Class<? extends Multimap<?>> _cfgDefaultMultimap;
-    
+
     /*
      * No bean types to support yet; may need to add?
      */
@@ -43,7 +44,7 @@ public class GuavaDeserializers
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException;
      */
-    
+
     /**
      * We have plenty of collection types to support...
      */
@@ -80,7 +81,7 @@ public class GuavaDeserializers
             return new HashMultisetDeserializer(type, elementTypeDeserializer,
                     _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
         }
-        
+
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
@@ -132,18 +133,21 @@ public class GuavaDeserializers
             return new ImmutableMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
                     _verifyElementDeserializer(elementDeserializer, config, provider, property, type));
         }
-        // Multimaps?
-        if (Multimap.class.isAssignableFrom(raw)) {
-            if (ListMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (SetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (SortedSetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
+        return null;
+    }
+
+    @Override
+    public JsonDeserializer<?> findMapLikeDeserializer(MapLikeType type, DeserializationConfig config,
+            DeserializerProvider provider, BeanDescription beanDesc, BeanProperty property,
+            KeyDeserializer keyDeserializer, TypeDeserializer elementTypeDeserializer,
+            JsonDeserializer<?> elementDeserializer)
+        throws JsonMappingException
+    {
+        if (Multimap.class.isAssignableFrom(type.getRawClass())) {
+            return new MultimapDeserializer(type, config, provider, beanDesc, property,
+                    keyDeserializer, elementTypeDeserializer, elementDeserializer);
         }
+
         return null;
     }
 
@@ -164,7 +168,7 @@ public class GuavaDeserializers
     {
         if (deser == null) {
             // 'null' -> collections have no referring fields
-            deser = provider.findValueDeserializer(config, type.getContentType(), prop);     
+            deser = provider.findValueDeserializer(config, type.getContentType(), prop);
         }
         return deser;
     }
