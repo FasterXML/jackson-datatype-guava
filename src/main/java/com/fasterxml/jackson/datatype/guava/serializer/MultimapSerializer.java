@@ -70,5 +70,14 @@ public class MultimapSerializer extends JsonSerializer<Multimap<?, ?>> {
                 provider.defaultSerializeValue(Lists.newArrayList(e.getValue()), jgen);
             }
         }
+
+        if (elementTypeSerializer == null)
+        {
+            jgen.writeEndObject();
+        }
+        else
+        {
+            elementTypeSerializer.writeTypeSuffixForObject(value, jgen);
+        }
     }
 }
