@@ -2,23 +2,22 @@ package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.KeyDeserializer;
-import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.MapType;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.type.MapType;
 
 import com.google.common.collect.ImmutableMap;
 
-public class ImmutableMapDeserializer extends GuavaMapDeserializer<ImmutableMap<Object,Object>>
+public class ImmutableMapDeserializer
+    extends GuavaMapDeserializer<ImmutableMap<Object,Object>>
 {
-    public ImmutableMapDeserializer(MapType type, KeyDeserializer keyDeser,
+    public ImmutableMapDeserializer(MapType type, BeanProperty prop,
+            KeyDeserializer keyDeser,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, keyDeser, typeDeser, deser);
+        super(type, prop, keyDeser, typeDeser, deser);
     }
     
     @Override

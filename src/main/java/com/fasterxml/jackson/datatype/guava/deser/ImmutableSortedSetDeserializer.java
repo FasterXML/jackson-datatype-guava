@@ -2,21 +2,21 @@ package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.CollectionType;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 import com.google.common.collect.ImmutableSortedSet;
 
-public class ImmutableSortedSetDeserializer  extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
+public class ImmutableSortedSetDeserializer
+    extends GuavaCollectionDeserializer<ImmutableSortedSet<Object>>
 {
-    public ImmutableSortedSetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableSortedSetDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
     @Override

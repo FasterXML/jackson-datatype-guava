@@ -2,7 +2,7 @@ package com.fasterxml.jackson.module.guava;
 
 import java.util.Arrays;
 
-import org.codehaus.jackson.map.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 

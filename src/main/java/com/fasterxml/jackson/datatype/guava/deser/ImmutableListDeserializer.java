@@ -4,21 +4,27 @@ import java.io.IOException;
 
 import com.google.common.collect.ImmutableList;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.CollectionType;
+import com.fasterxml.jackson.core.*;
 
-public class ImmutableListDeserializer extends GuavaCollectionDeserializer<ImmutableList<Object>>
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.type.CollectionType;
+
+public class ImmutableListDeserializer
+    extends GuavaCollectionDeserializer<ImmutableList<Object>>
 {
-    public ImmutableListDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public ImmutableListDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
+    /*
+    /**********************************************************
+    /* Deserialization
+    /**********************************************************
+     */
+    
     @Override
     protected ImmutableList<Object> _deserializeContents(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException

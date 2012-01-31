@@ -2,21 +2,20 @@ package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonProcessingException;
-import org.codehaus.jackson.JsonToken;
-import org.codehaus.jackson.map.DeserializationContext;
-import org.codehaus.jackson.map.JsonDeserializer;
-import org.codehaus.jackson.map.TypeDeserializer;
-import org.codehaus.jackson.map.type.CollectionType;
+import com.fasterxml.jackson.core.*;
+
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 import com.google.common.collect.HashMultiset;
 
 public class HashMultisetDeserializer  extends GuavaCollectionDeserializer<HashMultiset<Object>>
 {
-    public HashMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser)
+    public HashMultisetDeserializer(CollectionType type, BeanProperty prop,
+            TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, typeDeser, deser);
+        super(type, prop, typeDeser, deser);
     }
 
     @Override
