@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 
-import com.fasterxml.jackson.datatype.guava.serializer.MultimapSerializer;
+import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 
 import com.google.common.collect.Multimap;
 

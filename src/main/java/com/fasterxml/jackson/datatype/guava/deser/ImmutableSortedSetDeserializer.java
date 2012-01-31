@@ -37,6 +37,7 @@ public class ImmutableSortedSetDeserializer
          * via annotations, or via custom serialization (bean style that includes ordering
          * aspects)
          */
+        @SuppressWarnings("rawtypes")
         ImmutableSortedSet.Builder<?> builderComp = ImmutableSortedSet.<Comparable>naturalOrder();
         ImmutableSortedSet.Builder<Object> builder = (ImmutableSortedSet.Builder<Object>) builderComp;
 

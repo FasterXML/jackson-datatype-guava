@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.guava.serializer;
+package com.fasterxml.jackson.datatype.guava.ser;
 
 import java.io.IOException;
 import java.util.Collection;

@@ -161,7 +161,8 @@ com.fasterxml.jackson.databind.type
 </Private-Package>
               <Export-Package>
 com.fasterxml.jackson.datatype.guava,
-com.fasterxml.jackson.datatype.guava.deser
+com.fasterxml.jackson.datatype.guava.deser,
+com.fasterxml.jackson.datatype.guava.ser
 </Export-Package>
             </instructions>
           </configuration>

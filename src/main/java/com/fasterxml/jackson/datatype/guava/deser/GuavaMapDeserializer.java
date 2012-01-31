@@ -5,17 +5,15 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.*;
 
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.ResolvableDeserializer;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.MapType;
 
 public abstract class GuavaMapDeserializer<T>
     extends JsonDeserializer<T>
-    implements ResolvableDeserializer
+    implements ContextualDeserializer
 {
     protected final MapType _mapType;
-
-    protected final BeanProperty _property;
     
     /**
      * Key deserializer used, if not null. If null, String from JSON
@@ -34,36 +32,59 @@ public abstract class GuavaMapDeserializer<T>
      */
     protected final TypeDeserializer _typeDeserializerForValue;
 
-    protected GuavaMapDeserializer(MapType type, BeanProperty prop,
-            KeyDeserializer keyDeser,
+    /*
+    /**********************************************************
+    /* Life-cycle
+    /**********************************************************
+     */
+    
+    protected GuavaMapDeserializer(MapType type, KeyDeserializer keyDeser,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
         _mapType = type;
-        _property = prop;
         _keyDeserializer = keyDeser;
         _typeDeserializerForValue = typeDeser;
         _valueDeserializer = deser;
     }
 
+    /**
+     * Overridable fluent factory method used for creating contextual
+     * instances.
+     */
+    public abstract GuavaMapDeserializer<T> withResolved(KeyDeserializer keyDeser,
+            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser);
+    
     /*
     /**********************************************************
-    /* Validation, post-processing (ResolvableDeserializer)
+    /* Validation, post-processing
     /**********************************************************
      */
-    
+
     /**
      * Method called to finalize setup of this deserializer,
      * after deserializer itself has been registered. This
      * is needed to handle recursive and transitive dependencies.
      */
-    public void resolve(DeserializationContext ctxt) throws JsonMappingException
+    public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
+            BeanProperty property) throws JsonMappingException
     {
-        if (_keyDeserializer == null) {
-            _keyDeserializer = ctxt.findKeyDeserializer(_mapType.getKeyType(), _property);
+        KeyDeserializer keyDeser = _keyDeserializer;
+        JsonDeserializer<?> deser = _valueDeserializer;
+        TypeDeserializer typeDeser = _typeDeserializerForValue;
+        // Do we need any contextualization?
+        if ((keyDeser != null) && (deser != null) && (typeDeser == null)) { // nope
+            return this;
         }
-        if (_valueDeserializer == null) {
-            _valueDeserializer = ctxt.findValueDeserializer(_mapType.getContentType(), _property);
+        if (keyDeser == null) {
+            keyDeser = ctxt.findKeyDeserializer(_mapType.getKeyType(), property);
         }
+        if (deser == null) {
+            deser = ctxt.findValueDeserializer(_mapType.getContentType(), property);
+        }
+        if (typeDeser != null) {
+            typeDeser = typeDeser.forProperty(property);
+        }
+        return withResolved(keyDeser, typeDeser, deser);
     }
 
     /*

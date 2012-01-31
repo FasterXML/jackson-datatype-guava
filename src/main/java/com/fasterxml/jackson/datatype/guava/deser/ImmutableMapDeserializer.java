@@ -13,11 +13,17 @@ import com.google.common.collect.ImmutableMap;
 public class ImmutableMapDeserializer
     extends GuavaMapDeserializer<ImmutableMap<Object,Object>>
 {
-    public ImmutableMapDeserializer(MapType type, BeanProperty prop,
-            KeyDeserializer keyDeser,
+    public ImmutableMapDeserializer(MapType type, KeyDeserializer keyDeser,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
-        super(type, prop, keyDeser, typeDeser, deser);
+        super(type, keyDeser, typeDeser, deser);
+    }
+
+    @Override
+    public ImmutableMapDeserializer withResolved(KeyDeserializer keyDeser,
+            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser) {
+        return new ImmutableMapDeserializer(_mapType, keyDeser,
+                typeDeser, valueDeser);
     }
     
     @Override

@@ -47,7 +47,7 @@ public abstract class GuavaCollectionDeserializer<T>
     
     /*
     /**********************************************************
-    /* Validation, post-processing (ResolvableDeserializer)
+    /* Validation, post-processing
     /**********************************************************
      */
 
