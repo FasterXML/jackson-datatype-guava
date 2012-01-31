@@ -8,7 +8,7 @@
   <groupId>com.fasterxml.jackson</groupId>
   <artifactId>jackson-datatype-guava</artifactId>
   <name>Jackson-datatype-Guava</name>
-  <version>0.6.1-SNAPSHOT</version>
+  <version>1.9.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <description>Add-on datatype-support module for Jackson (http://jackson.codehaus.org) that handles
 Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just collection ones)
@@ -53,7 +53,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
       <groupId>org.codehaus.jackson</groupId>
       <artifactId>jackson-mapper-asl</artifactId>
       <!-- For now, 1.8 might work as well, but module interface of 1.7 is not compatible -->
-      <version>1.9.1</version>
+      <version>1.9.4</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -136,7 +136,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
         <plugin>
           <groupId>org.apache.felix</groupId>
           <artifactId>maven-bundle-plugin</artifactId>
-          <version>2.3.4</version>
+          <version>2.3.6</version>
           <extensions>true</extensions>
           <configuration>
             <instructions>
