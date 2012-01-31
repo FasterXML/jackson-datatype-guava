@@ -153,7 +153,8 @@ org.codehaus.jackson.type
 </Private-Package>
               <Export-Package>
 com.fasterxml.jackson.datatype.guava,
-com.fasterxml.jackson.datatype.guava.deser
+com.fasterxml.jackson.datatype.guava.deser,
+com.fasterxml.jackson.datatype.guava.serializer
 </Export-Package>
             </instructions>
           </configuration>
