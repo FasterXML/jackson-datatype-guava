@@ -100,6 +100,9 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
     private Multimap<?, ?> transform(Class<?> rawClass, Multimap<Object, Object> map)
         throws JsonMappingException
     {
+        // TODO: this is reflective and probably a bit slow.  Given the sheer number of
+        // Multimap implementations, writing it out by hand is probably a lot of code.
+        // A better approach would be a nice optimization (scs 1/30/2012)
         LinkedList<Class<?>> classesToTry = Lists.newLinkedList(KNOWN_IMPLEMENTATIONS);
         classesToTry.addFirst(rawClass);
 
