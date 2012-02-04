@@ -79,7 +79,7 @@ public abstract class GuavaMapDeserializer<T>
             keyDeser = ctxt.findKeyDeserializer(_mapType.getKeyType(), property);
         }
         if (deser == null) {
-            deser = ctxt.findValueDeserializer(_mapType.getContentType(), property);
+            deser = ctxt.findContextualValueDeserializer(_mapType.getContentType(), property);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);

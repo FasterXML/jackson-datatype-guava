@@ -42,8 +42,8 @@ public abstract class GuavaCollectionDeserializer<T>
      * Overridable fluent factory method used for creating contextual
      * instances.
      */
-    public abstract GuavaCollectionDeserializer<T> withResolved(TypeDeserializer typeDeser,
-            JsonDeserializer<?> valueDeser);
+    public abstract GuavaCollectionDeserializer<T> withResolved(
+            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser);
     
     /*
     /**********************************************************
@@ -61,15 +61,14 @@ public abstract class GuavaCollectionDeserializer<T>
     {
         JsonDeserializer<?> deser = _valueDeserializer;
         TypeDeserializer typeDeser = _typeDeserializerForValue;
-        // Do we need any contextualization?
-        if ((deser != null) && (typeDeser == null)) { // nope
-            return this;
-        }
         if (deser == null) {
-            deser = ctxt.findValueDeserializer(_containerType.getContentType(), property);
+            deser = ctxt.findContextualValueDeserializer(_containerType.getContentType(), property);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
+        }
+        if (deser == _valueDeserializer && typeDeser == _typeDeserializerForValue) {
+            return this;
         }
         return withResolved(typeDeser, deser);
     }

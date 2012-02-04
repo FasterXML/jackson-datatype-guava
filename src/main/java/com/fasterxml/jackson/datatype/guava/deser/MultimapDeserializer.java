@@ -61,7 +61,7 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>>
         }
         JsonDeserializer<?> ed = elementDeserializer;
         if (ed == null) {
-            ed = ctxt.findValueDeserializer(type.getContentType(), property);
+            ed = ctxt.findContextualValueDeserializer(type.getContentType(), property);
         }
         // Type deserializer is slightly different; must be passed, but needs to become contextual:
         TypeDeserializer etd = elementTypeDeserializer;
