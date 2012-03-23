@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>5</version>
+    <version>7</version>
   </parent>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-guava</artifactId>
@@ -52,18 +52,18 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.0.0-RC2</version>
+      <version>2.0.0-RC3</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.0.0-RC2</version>
+      <version>2.0.0-RC3</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <!-- Guava has the weirdest versioning system... r07 is the latest as of Nov-2010 -->
-      <version>r07</version>
+      <!-- Guava has the weirdest versioning system... r09 is the latest as of Feb-2012 -->
+      <version>r09</version>
     </dependency>
 
      <!-- and for testing, JUnit is needed -->
