@@ -40,7 +40,7 @@ public class GuavaDeserializers
                 return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
             }
             if (ImmutableMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new ImmutableMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
             }
             if (EnumMultiset.class.isAssignableFrom(raw)) {
                 // !!! TODO
