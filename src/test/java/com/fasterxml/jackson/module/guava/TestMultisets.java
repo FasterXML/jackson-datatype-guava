@@ -4,8 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.*;
 
-import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.Multiset;
+import com.google.common.collect.*;
 
 /**
  * Unit tests to verify handling of various {@link Multiset}s.
@@ -61,10 +60,46 @@ public class TestMultisets extends BaseTest
     /**********************************************************************
      */
 
-    public void testDeserializers() throws Exception
+    public void testDefault() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
         Multiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
+    
+    public void testLinkedHashMultiset() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        LinkedHashMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<LinkedHashMultiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
+    
+    public void testHashMultiset() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        HashMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<HashMultiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
+    
+    public void testTreeMultiset() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        TreeMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<TreeMultiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
+    
+    public void testImmutableMultiset() throws Exception {
+        ObjectMapper mapper = mapperWithModule();
+        ImmutableMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<ImmutableMultiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));

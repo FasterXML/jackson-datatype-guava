@@ -1,15 +1,13 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import com.google.common.collect.*;
-
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
-
 import com.fasterxml.jackson.datatype.guava.deser.*;
+import com.google.common.collect.*;
 
 /**
  * Custom deserializers module offers.
@@ -30,34 +28,16 @@ public class GuavaDeserializers
     {
         Class<?> raw = type.getRawClass();
 
-        // Multi-xxx collections?
-        if (Multiset.class.isAssignableFrom(raw)) {
-            // Quite a few variations...
-            if (LinkedHashMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (HashMultiset.class.isAssignableFrom(raw)) {
-                return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
-            }
-            if (ImmutableMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (EnumMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-            if (TreeMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
-            }
-
-            // TODO: make configurable (for now just default blindly)
-            return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
-        }
-        
         // ImmutableXxx types?
         if (ImmutableCollection.class.isAssignableFrom(raw)) {
             if (ImmutableList.class.isAssignableFrom(raw)) {
                 return new ImmutableListDeserializer(type,
                         elementTypeDeserializer, elementDeserializer);
+            }
+            if (ImmutableMultiset.class.isAssignableFrom(raw)) {
+                // 15-May-2012, pgelinas: There is no ImmutableSortedMultiset
+                // available yet
+                return new ImmutableMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
             }
             if (ImmutableSet.class.isAssignableFrom(raw)) {
                 // sorted one?
@@ -77,7 +57,30 @@ public class GuavaDeserializers
                 return new ImmutableSetDeserializer(type,
                         elementTypeDeserializer, elementDeserializer);
             }
+            // TODO: make configurable (for now just default blindly to a list)
+            return new ImmutableListDeserializer(type, elementTypeDeserializer, elementDeserializer);
         }
+
+        // Multi-xxx collections?
+        if (Multiset.class.isAssignableFrom(raw)) {
+            // Quite a few variations...
+            if (LinkedHashMultiset.class.isAssignableFrom(raw)) {
+                return new LinkedHashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
+            }
+            if (HashMultiset.class.isAssignableFrom(raw)) {
+                return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
+            }
+            if (EnumMultiset.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (TreeMultiset.class.isAssignableFrom(raw)) {
+                return new TreeMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
+            }
+
+            // TODO: make configurable (for now just default blindly)
+            return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
+        }
+
         return null;
     }
 
@@ -92,18 +95,36 @@ public class GuavaDeserializers
         throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
+
         // ImmutableXxxMap types?
         if (ImmutableMap.class.isAssignableFrom(raw)) {
             if (ImmutableSortedMap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new ImmutableSortedMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                        elementDeserializer);
             }
             if (ImmutableBiMap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new ImmutableBiMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                        elementDeserializer);
             }
             // Otherwise, plain old ImmutableMap...
-            return new ImmutableMapDeserializer(type,
-                    keyDeserializer, elementTypeDeserializer, elementDeserializer);
+            return new ImmutableMapDeserializer(type, keyDeserializer, elementTypeDeserializer, elementDeserializer);
         }
+
+        // XxxBiMap types?
+        if (BiMap.class.isAssignableFrom(raw)) {
+            if (EnumBiMap.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (EnumHashBiMap.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (HashBiMap.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            // !!! TODO default
+        }
+
+
         return null;
     }
 
@@ -114,9 +135,25 @@ public class GuavaDeserializers
             JsonDeserializer<?> elementDeserializer)
         throws JsonMappingException
     {
-        if (Multimap.class.isAssignableFrom(type.getRawClass())) {
-            return new MultimapDeserializer(type,
-                    keyDeserializer, elementTypeDeserializer, elementDeserializer);
+        Class<?> raw = type.getRawClass();
+
+        // ImmutableMultimap
+        if (ImmutableMultimap.class.isAssignableFrom(raw)) {
+            if (ImmutableListMultimap.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            if (ImmutableSetMultimap.class.isAssignableFrom(raw)) {
+                // !!! TODO
+            }
+            // TODO plain immutable multimap
+        }
+
+        if (Multimap.class.isAssignableFrom(raw)) {
+            return new MultimapDeserializer(type, keyDeserializer, elementTypeDeserializer, elementDeserializer);
+        }
+
+        if (Table.class.isAssignableFrom(raw)) {
+            // !!! TODO
         }
 
         return null;
