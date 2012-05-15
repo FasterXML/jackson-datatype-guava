@@ -65,7 +65,7 @@ public class GuavaDeserializers
         if (Multiset.class.isAssignableFrom(raw)) {
             // Quite a few variations...
             if (LinkedHashMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new LinkedHashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
             }
             if (HashMultiset.class.isAssignableFrom(raw)) {
                 return new HashMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
@@ -74,7 +74,7 @@ public class GuavaDeserializers
                 // !!! TODO
             }
             if (TreeMultiset.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new TreeMultisetDeserializer(type, elementTypeDeserializer, elementDeserializer);
             }
 
             // TODO: make configurable (for now just default blindly)
