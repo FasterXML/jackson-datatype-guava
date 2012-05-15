@@ -57,6 +57,8 @@ public class GuavaDeserializers
                 return new ImmutableSetDeserializer(type,
                         elementTypeDeserializer, elementDeserializer);
             }
+            // TODO: make configurable (for now just default blindly to a list)
+            return new ImmutableListDeserializer(type, elementTypeDeserializer, elementDeserializer);
         }
 
         // Multi-xxx collections?
