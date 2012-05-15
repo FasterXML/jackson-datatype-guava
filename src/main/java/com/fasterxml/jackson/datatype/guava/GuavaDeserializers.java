@@ -1,15 +1,13 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import com.google.common.collect.*;
-
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.deser.*;
+import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
-
 import com.fasterxml.jackson.datatype.guava.deser.*;
+import com.google.common.collect.*;
 
 /**
  * Custom deserializers module offers.
@@ -109,10 +107,12 @@ public class GuavaDeserializers
         // ImmutableXxxMap types?
         if (ImmutableMap.class.isAssignableFrom(raw)) {
             if (ImmutableSortedMap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new ImmutableSortedMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                        elementDeserializer);
             }
             if (ImmutableBiMap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                return new ImmutableBiMapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                        elementDeserializer);
             }
             // Otherwise, plain old ImmutableMap...
             return new ImmutableMapDeserializer(type,
