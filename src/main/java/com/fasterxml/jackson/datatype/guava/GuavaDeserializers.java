@@ -152,6 +152,10 @@ public class GuavaDeserializers
             return new MultimapDeserializer(type, keyDeserializer, elementTypeDeserializer, elementDeserializer);
         }
 
+        if (Table.class.isAssignableFrom(raw)) {
+            // !!! TODO
+        }
+
         return null;
     }
 
