@@ -7,10 +7,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSortedSet;
+import com.google.common.collect.*;
 
 /**
  * Unit tests for verifying that various immutable types
@@ -129,6 +126,26 @@ public class TestImmutables extends BaseTest
         assertEquals(2, map.size());
         assertEquals(Boolean.TRUE, map.get(Integer.valueOf(12)));
         assertEquals(Boolean.FALSE, map.get(Integer.valueOf(4)));
+    }
+    
+    public void testImmutableSortedMap() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+        ImmutableSortedMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableSortedMap<Integer,Boolean>>() { });
+        assertEquals(2, map.size());
+        assertEquals(Boolean.TRUE, map.get(Integer.valueOf(12)));
+        assertEquals(Boolean.FALSE, map.get(Integer.valueOf(4)));
+    }
+    
+    public void testImmutableBiMap() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule();
+        ImmutableBiMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableBiMap<Integer,Boolean>>() { });
+        assertEquals(2, map.size());
+        assertEquals(Boolean.TRUE, map.get(12));
+        assertEquals(Boolean.FALSE, map.get(4));
+        assertEquals(map.get(12), Boolean.TRUE);
+        assertEquals(map.get(4), Boolean.FALSE);
     }
     
 }
