@@ -63,7 +63,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <!-- Guava has the weirdest versioning system... r09 is the latest as of Feb-2012 -->
-      <version>r09</version>
+      <version>11.0.2</version>
     </dependency>
 
      <!-- and for testing, JUnit is needed -->
