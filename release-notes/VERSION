@@ -1,19 +1,26 @@
-Version: 2.0.2
+Version: 2.0.3
 
 Release date:
-  16-May-2012
+  xx-Jun-2012
 
 Description:
-  A patch relese for 2.0
+  Another patch relese for 2.0
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.0.2 (16-May-2012)
+
+Fixes:
+
+* Issue-3: (Tree)MultiMaps not serialized properly
 
 Improvements:
 
 * Add for a wider set of Collections
  (contributed by Pascal G)
 
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.0.0 (25-Mar-2012)
 
