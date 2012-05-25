@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.datatype.guava;
 
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
@@ -7,6 +8,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.datatype.guava.deser.*;
+import com.google.common.base.Optional;
 import com.google.common.collect.*;
 
 /**
@@ -17,6 +19,16 @@ import com.google.common.collect.*;
 public class GuavaDeserializers
     extends Deserializers.Base
 {
+    @Override
+    public JsonDeserializer<?> findBeanDeserializer(final JavaType type, DeserializationConfig config,
+            BeanDescription beanDesc) throws JsonMappingException {
+        Class<?> raw = type.getRawClass();
+        if(Optional.class.isAssignableFrom(raw)){
+            return new GuavaOptionalDeserializer(type);
+        }
+        return super.findBeanDeserializer(type, config, beanDesc);
+    }
+    
     /**
      * We have plenty of collection types to support...
      */
