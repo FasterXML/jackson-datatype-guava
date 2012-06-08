@@ -148,6 +148,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <Import-Package>
 com.google.common.collect,
+com.google.common.base,
 com.fasterxml.jackson.core,
 com.fasterxml.jackson.core.util,
 com.fasterxml.jackson.databind,
@@ -155,6 +156,7 @@ com.fasterxml.jackson.databind.deser,
 com.fasterxml.jackson.databind.deser.std,
 com.fasterxml.jackson.databind.jsontype,
 com.fasterxml.jackson.databind.ser,
+com.fasterxml.jackson.databind.ser.std,
 com.fasterxml.jackson.databind.type
 </Import-Package>
               <Private-Package>
