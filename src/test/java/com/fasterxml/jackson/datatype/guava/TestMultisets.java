@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.module.guava;
+package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
