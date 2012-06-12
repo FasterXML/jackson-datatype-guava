@@ -1,5 +1,6 @@
 package com.fasterxml.jackson.datatype.guava;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.*;
 
 import org.codehaus.jackson.map.*;
@@ -18,6 +19,19 @@ import com.fasterxml.jackson.datatype.guava.deser.*;
 public class GuavaDeserializers
     extends Deserializers.Base
 {
+    @Override
+    public JsonDeserializer<?> findBeanDeserializer(final JavaType type, DeserializationConfig config,
+            DeserializerProvider provider, BeanDescription beanDesc,
+            BeanProperty property) throws JsonMappingException {
+        Class<?> raw = type.getRawClass();
+        if(Optional.class.isAssignableFrom(raw)){
+            final JavaType referenceType = type.containedType(0);
+            return new GuavaOptionalDeserializer(type,
+                provider.findTypedValueDeserializer(config, referenceType, property));
+        }
+        return super.findBeanDeserializer(type, config, provider, beanDesc, property);
+    }
+
     /**
      * Concrete implementation class to use for properties declared as
      * {@link Multiset}s.

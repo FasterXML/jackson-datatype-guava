@@ -59,7 +59,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <!-- Guava has the weirdest versioning system... r07 is the latest as of Nov-2010 -->
-      <version>r07</version>
+      <version>11.0.2</version>
     </dependency>
 
      <!-- and for testing, JUnit is needed -->
@@ -144,8 +144,10 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <Import-Package>
 com.google.common.collect,
+com.google.common.base,
 org.codehaus.jackson,
 org.codehaus.jackson.map,
+org.codehaus.jackson.map.deser.std,
 org.codehaus.jackson.map.type,
 org.codehaus.jackson.type
 </Import-Package>
