@@ -1,0 +1,15 @@
+Version: 1.9.1
+
+Release date:
+  12-Jun-2012
+
+Description:
+  A patch relese for 1.9
+
+Improvements:
+
+* Backported support for Optional types from 2.0
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
