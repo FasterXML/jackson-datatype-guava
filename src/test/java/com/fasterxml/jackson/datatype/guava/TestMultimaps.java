@@ -2,16 +2,15 @@ package com.fasterxml.jackson.datatype.guava;
 
 import java.util.Map;
 
-import org.junit.Before;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.TreeMultimap;
 import static com.google.common.collect.TreeMultimap.create;
 
@@ -22,29 +21,46 @@ import static com.google.common.collect.TreeMultimap.create;
  */
 public class TestMultimaps extends BaseTest
 {
-    private static final String EXPECTED = "{\"false\":[false],\"maybe\":[false,true],\"true\":[true]}";
     private final ObjectMapper MAPPER =  mapperWithModule();
 
     public void testMultimap() throws Exception
     {
-        Multimap<String, Boolean> map = TreeMultimap.create();
+        _testMultimap(TreeMultimap.create(), true,
+                "{\"false\":[false],\"maybe\":[false,true],\"true\":[true]}");
+        _testMultimap(LinkedListMultimap.create(), false,
+                "{\"true\":[true],\"false\":[false],\"maybe\":[true,false]}");
+        _testMultimap(LinkedHashMultimap.create(), false, null);
+    }
+    
+    private void _testMultimap(Multimap<?,?> map0, boolean fullyOrdered, String EXPECTED) throws Exception
+    {
+        @SuppressWarnings("unchecked")
+        Multimap<String,Boolean> map = (Multimap<String,Boolean>) map0;
         map.put("true", Boolean.TRUE);
         map.put("false", Boolean.FALSE);
         map.put("maybe", Boolean.TRUE);
         map.put("maybe", Boolean.FALSE);
 
         // Test that typed writes work
-        assertEquals(EXPECTED, MAPPER.writerWithType(new TypeReference<Multimap<String, Boolean>>() {}).writeValueAsString(map));
+        if (EXPECTED != null) {
+            String json =  MAPPER.writerWithType(new TypeReference<Multimap<String, Boolean>>() {}).writeValueAsString(map);
+            assertEquals(EXPECTED, json);
+        }
 
         // And untyped too
         String serializedForm = MAPPER.writeValueAsString(map);
 
-        assertEquals(EXPECTED, serializedForm);
+        if (EXPECTED != null) {
+            assertEquals(EXPECTED, serializedForm);
+        }
 
-        assertEquals(map, MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<TreeMultimap<String, Boolean>>() {}));
-        assertEquals(map, create(MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<Multimap<String, Boolean>>() {})));
-        assertEquals(map, create(MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<HashMultimap<String, Boolean>>() {})));
-        assertEquals(map, create(MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<ImmutableMultimap<String, Boolean>>() {})));
+        // these seem to be order-sensitive as well, so only use for ordered-maps
+        if (fullyOrdered) {
+            assertEquals(map, MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<TreeMultimap<String, Boolean>>() {}));
+            assertEquals(map, create(MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<Multimap<String, Boolean>>() {})));
+            assertEquals(map, create(MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<HashMultimap<String, Boolean>>() {})));
+            assertEquals(map, create(MAPPER.<Multimap<String, Boolean>>readValue(serializedForm, new TypeReference<ImmutableMultimap<String, Boolean>>() {})));
+        }
     }
 
     public void testMultimapIssue3() throws Exception
