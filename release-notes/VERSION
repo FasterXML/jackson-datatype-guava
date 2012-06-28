@@ -1,7 +1,7 @@
-Version: 2.0.3
+Version: 2.0.4
 
 Release date:
-  xx-Jun-2012
+  xx-Jul-2012
 
 Description:
   Another patch relese for 2.0
@@ -9,6 +9,10 @@ Description:
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.0.3 (14-Jun-2012)
+
+* Issue-6: An NPE in MultimapDeserializer
 
 2.0.2 (16-May-2012)
 
