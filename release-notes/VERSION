@@ -1,15 +1,20 @@
-Version: 2.0.6
+Version: 2.1.0
 
 Release date:
-  30-Sep-2012
+  xx-Oct-2012
 
 Description:
-  Another patch relese for 2.0.
-  No functional changes, just dependency updates.
+  New minor update to work with Jackson 2.1
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.0.6 (30-Sep-2012)
+
+  No functional changes, just dependency updates.
+
+2.0.4, 2.0.5: not released
 
 2.0.3 (14-Jun-2012)
 
