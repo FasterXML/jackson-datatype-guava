@@ -3,6 +3,7 @@ package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Optional;
 
@@ -69,6 +70,13 @@ public class TestOptional extends BaseTest {
         data.myData = Optional.of("simpleString");
         String value = mapperWithModule().writeValueAsString(Optional.of(data));
         assertEquals("{\"myData\":\"simpleString\"}", value);
+    }
+
+    public void testSerNonNull() throws Exception {
+        OptionalData data = new OptionalData();
+        data.myString = Optional.absent();
+        String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
+        assertEquals("{}", value);
     }
     
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
