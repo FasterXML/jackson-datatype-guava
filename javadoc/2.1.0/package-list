@@ -1,0 +1,3 @@
+com.fasterxml.jackson.datatype.guava
+com.fasterxml.jackson.datatype.guava.deser
+com.fasterxml.jackson.datatype.guava.ser
