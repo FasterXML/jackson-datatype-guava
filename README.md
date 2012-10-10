@@ -16,7 +16,7 @@ To use module on Maven-based projects, use following dependency:
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-guava</artifactId>
-      <version>2.0.2</version>
+      <version>2.1.0</version>
     </dependency>    
 
 (or whatever version is most up-to-date at the moment)
