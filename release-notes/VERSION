@@ -8,7 +8,7 @@ Description:
 
 Improvements:
 
-- Handling of Optional values
+- [Issue#9]: Handling of Optional values, wrt NON_NULL inclusion
 
 ------------------------------------------------------------------------
 === History: ===
