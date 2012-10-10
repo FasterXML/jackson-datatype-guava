@@ -52,12 +52,12 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.1.0-SNAPSHOT</version>
+      <version>2.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>2.1.0-SNAPSHOT</version>
+      <version>2.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -144,7 +144,8 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
           <extensions>true</extensions>
           <configuration>
             <instructions>
-              <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+              <Bundle-Name>${project.name}</Bundle-Name>
+              <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
               <Bundle-Vendor>fasterml.com</Bundle-Vendor>
               <Import-Package>
 com.google.common.collect,
