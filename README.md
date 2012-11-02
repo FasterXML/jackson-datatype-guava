@@ -34,5 +34,5 @@ after which functionality is available for all normal Jackson operations.
 
 ## More
 
-See [Wiki](jackson-dataformat-yaml/wiki) for more information (javadocs, downloads).
+See [Wiki](jackson-datatype-guava/wiki) for more information (javadocs, downloads).
 
