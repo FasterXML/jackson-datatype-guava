@@ -79,6 +79,13 @@ public class TestOptional extends BaseTest {
         assertEquals("{}", value);
     }
     
+    public void testSerOptNull() throws Exception {
+        OptionalData data = new OptionalData();
+        data.myString = null;
+        String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
+        assertEquals("{}", value);
+    }
+    
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
     public static final class OptionalData{
         private Optional<String> myString;
