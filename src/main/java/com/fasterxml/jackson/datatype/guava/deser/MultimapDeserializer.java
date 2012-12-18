@@ -83,7 +83,7 @@ public class MultimapDeserializer extends JsonDeserializer<Multimap<?, ?>> {
 
             while (jp.nextToken() != END_ARRAY)
             {
-                if (elementDeserializer != null)
+                if (elementTypeDeserializer != null)
                 {
                     builder.put(key, elementDeserializer.deserializeWithType(jp, ctxt, elementTypeDeserializer));
                 }
