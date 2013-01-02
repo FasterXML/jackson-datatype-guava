@@ -18,7 +18,7 @@ public class MultimapTypeModifier extends TypeModifier
 
             if (keyType == null)
             {
-                keyType = typeFactory.constructType(String.class);
+                keyType = typeFactory.constructType(Object.class);
             }
 
             if (contentType == null)

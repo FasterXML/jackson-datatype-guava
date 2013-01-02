@@ -92,4 +92,24 @@ public class TestMultimaps extends BaseTest
         javaMap = o.readValue(t4, Map.class);
         assertEquals(2, javaMap.size());
     }
+    
+    // Test for issue #13 on github, provided by stevenschlansker
+    public static enum MyEnum {
+        YAY,
+        BOO
+    }
+
+    public void testEnumKey() throws Exception
+    {
+        final TypeReference<TreeMultimap<MyEnum, Integer>> type = new TypeReference<TreeMultimap<MyEnum, Integer>>() {};
+        final Multimap<MyEnum, Integer> map = TreeMultimap.create();
+
+        map.put(MyEnum.YAY, 5);
+        map.put(MyEnum.BOO, 2);
+
+        final String serializedForm = MAPPER.writerWithType(type).writeValueAsString(map);
+
+        assertEquals(serializedForm, MAPPER.writeValueAsString(map));
+        assertEquals(map, MAPPER.readValue(serializedForm, type));
+    }
 }
