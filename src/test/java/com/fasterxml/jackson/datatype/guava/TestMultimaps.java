@@ -2,6 +2,8 @@ package com.fasterxml.jackson.datatype.guava;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +13,7 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;
 import static com.google.common.collect.TreeMultimap.create;
 
@@ -91,5 +94,55 @@ public class TestMultimaps extends BaseTest
         String t4 = o.writerWithType(new TypeReference<Multimap<String, String>>(){}).writeValueAsString(m2);
         javaMap = o.readValue(t4, Map.class);
         assertEquals(2, javaMap.size());
+    }
+    
+    public static enum MyEnum {
+        YAY,
+        BOO
+    }
+
+    public void testEnumKey() throws Exception
+    {
+        final TypeReference<SetMultimap<MyEnum, Integer>> type = new TypeReference<SetMultimap<MyEnum, Integer>>() {};
+        final Multimap<MyEnum, Integer> map = TreeMultimap.create();
+
+        map.put(MyEnum.YAY, 5);
+        map.put(MyEnum.BOO, 2);
+
+        final String serializedForm = MAPPER.writerWithType(type).writeValueAsString(map);
+
+        assertEquals(serializedForm, MAPPER.writeValueAsString(map));
+        assertEquals(map, MAPPER.readValue(serializedForm, type));
+    }
+    
+    public static class Wat
+    {
+        private final String wat;
+
+        @JsonCreator
+        Wat(String wat)
+        {
+            this.wat = wat;
+        }
+        
+        @JsonValue
+        public String getWat() 
+        {
+            return wat;
+        }
+    }
+    
+    public void testJsonValueKey() throws Exception
+    {
+        final TypeReference<SetMultimap<Wat, Integer>> type = new TypeReference<SetMultimap<Wat, Integer>>() {};
+        final Multimap<Wat, Integer> map = HashMultimap.create();
+
+        map.put(new Wat("3"), 5);
+        map.put(new Wat("x"), 2);
+
+        final String serializedForm = MAPPER.writerWithType(type).writeValueAsString(map);
+
+        assertEquals(serializedForm, MAPPER.writeValueAsString(map));
+        assertEquals(map, MAPPER.readValue(serializedForm, type));
     }
 }
