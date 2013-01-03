@@ -1,15 +1,17 @@
-Version: 1.9.1
-
-Release date:
-  12-Jun-2012
+Version: 1.9.2 (xx-Jan-2012)
 
 Description:
   A patch relese for 1.9
 
 Improvements:
 
-* Backported support for Optional types from 2.0
+* [Issue#12]: (backport) Fix for Multimap deserialization problem (NPE)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+1.9.1 (12-Jun-2012)
+
+* Backported support for Optional types from 2.0
+
