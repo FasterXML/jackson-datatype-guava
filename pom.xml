@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion> 
   <parent>
-    <groupId>org.sonatype.oss</groupId>
+    <groupId>com.fasterxml</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <version>5-SNAPSHOT</version>
   </parent>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-guava</artifactId>
@@ -34,12 +34,9 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <version.jackson>2.1.2</version.jackson>
 
-    <!-- Package version class (generated from template -->
-    <version.template.dir>src/main/java/com/fasterxml/jackson/datatype/guava</version.template.dir>
-    <version.template.packageversion>PackageVersion.java</version.template.packageversion>
-    <version.template.file>${version.template.dir}/${version.template.packageversion}.in</version.template.file>
-    <version.file>${version.template.dir}/${version.template.packageversion}</version.file>
-    <version.package>${project.groupId}.guava</version.package>
+    <!-- Generate PackageVersion.java into this directory. -->
+    <packageVersion.dir>src/main/java/com/fasterxml/jackson/datatype/guava</packageVersion.dir>
+    <packageVersion.package>com.fasterxml.jackson.datatype.guava</packageVersion.package>
   </properties>
 
   <!-- Licensing -->
@@ -180,38 +177,13 @@ com.fasterxml.jackson.datatype.guava.ser
         </plugin>
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
-        <artifactId>maven-replacer-plugin</artifactId>
-        <version>1.4.0</version>
+        <artifactId>replacer</artifactId>
         <executions>
           <execution>
-            <phase>process-sources</phase>
-            <goals>
-                <goal>replace</goal>
-            </goals>
+            <id>process-packageVersion</id>
+            <phase>generate-sources</phase>
           </execution>
         </executions>
-        <configuration>
-          <file>${version.template.file}</file>
-          <outputFile>${version.file}</outputFile>
-          <replacements>
-              <replacement>
-                <token>@package@</token>
-                <value>${version.package}</value>
-              </replacement>
-              <replacement>
-                <token>@projectversion@</token>
-                <value>${project.version}</value>
-              </replacement>
-              <replacement>
-                <token>@projectgroupid@</token>
-                <value>${project.groupId}</value>
-              </replacement>
-              <replacement>
-                <token>@projectartifactid@</token>
-                <value>${project.artifactId}</value>
-              </replacement>
-            </replacements>
-        </configuration>
       </plugin>
     </plugins>
   </build>
