@@ -14,7 +14,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     }
 
     @Override public String getModuleName() { return NAME; }
-    @Override public Version version() { return ModuleVersion.instance.version(); }
+    @Override public Version version() { return PackageVersion.VERSION; }
     
     @Override
     public void setupModule(SetupContext context)
