@@ -3,7 +3,7 @@
   <parent>
     <groupId>com.fasterxml</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>7-SNAPSHOT</version>
+    <version>7</version>
   </parent>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-guava</artifactId>
@@ -59,7 +59,7 @@ com.fasterxml.jackson.databind.type
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
       <!-- Guava has the weirdest versioning system... r11 is the current as of May 2012 -->
-      <version>11.0.2</version>
+      <version>12.0</version>
     </dependency>
 
      <!-- and for testing, JUnit is needed -->
