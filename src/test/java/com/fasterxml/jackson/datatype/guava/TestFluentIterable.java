@@ -1,13 +1,11 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Sets;
-import org.junit.Test;
-
 import java.util.Iterator;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.Sets;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Unit tests to verify serialization of {@link FluentIterable}s.
