@@ -149,15 +149,47 @@ public class GuavaDeserializers
     {
         Class<?> raw = type.getRawClass();
 
-        // ImmutableMultimap
-        if (ImmutableMultimap.class.isAssignableFrom(raw)) {
+        // ListMultimaps
+        if (ListMultimap.class.isAssignableFrom(raw)) {
             if (ImmutableListMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                // TODO
             }
+            if (ArrayListMultimap.class.isAssignableFrom(raw)) {
+                // TODO
+            }
+            if (LinkedListMultimap.class.isAssignableFrom(raw)) {
+                // TODO
+            }
+            if (ForwardingListMultimap.class.isAssignableFrom(raw)) {
+                // TODO
+            }
+        }
+
+        // SetMultimaps
+        if (SetMultimap.class.isAssignableFrom(raw)) {
+            
+            // SortedSetMultimap
+            if (SortedSetMultimap.class.isAssignableFrom(raw)) {
+                if (TreeMultimap.class.isAssignableFrom(raw)) {
+                    // TODO
+                }
+                if (ForwardingSortedSetMultimap.class.isAssignableFrom(raw)) {
+                    // TODO
+                }
+            }
+
             if (ImmutableSetMultimap.class.isAssignableFrom(raw)) {
-                // !!! TODO
+                // TODO
             }
-            // TODO plain immutable multimap
+            if (HashMultimap.class.isAssignableFrom(raw)) {
+                // TODO
+            }
+            if (LinkedHashMultimap.class.isAssignableFrom(raw)) {
+                // TODO
+            }
+            if (ForwardingSetMultimap.class.isAssignableFrom(raw)) {
+                // TODO
+            }
         }
 
         if (Multimap.class.isAssignableFrom(raw)) {
