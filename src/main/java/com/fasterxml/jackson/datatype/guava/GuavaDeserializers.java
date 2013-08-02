@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
 import com.fasterxml.jackson.datatype.guava.deser.*;
+import com.fasterxml.jackson.datatype.guava.deser.multimap.set.HashMultimapDeserializer;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 
@@ -167,7 +168,7 @@ public class GuavaDeserializers
 
         // SetMultimaps
         if (SetMultimap.class.isAssignableFrom(raw)) {
-            
+
             // SortedSetMultimap
             if (SortedSetMultimap.class.isAssignableFrom(raw)) {
                 if (TreeMultimap.class.isAssignableFrom(raw)) {
@@ -182,7 +183,8 @@ public class GuavaDeserializers
                 // TODO
             }
             if (HashMultimap.class.isAssignableFrom(raw)) {
-                // TODO
+                return new HashMultimapDeserializer(type, keyDeserializer,
+                        elementTypeDeserializer, elementDeserializer);
             }
             if (LinkedHashMultimap.class.isAssignableFrom(raw)) {
                 // TODO

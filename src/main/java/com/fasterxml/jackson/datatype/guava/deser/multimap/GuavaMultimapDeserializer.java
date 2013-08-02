@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.guava.deser;
+package com.fasterxml.jackson.datatype.guava.deser.multimap;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * @author mvolkhart
  */
-abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
+public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
         Object>> extends JsonDeserializer<T> implements ContextualDeserializer {
 
     private static final List<String> METHOD_NAMES = ImmutableList.of("copyOf", "create");
@@ -112,8 +112,12 @@ abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
         if (etd != null && property != null) {
             etd = etd.forProperty(property);
         }
-        return new MultimapDeserializer(type, kd, etd, ed, this.creatorMethod);
+        return (_createContextual(type, kd, etd, ed, creatorMethod));
     }
+
+    protected abstract JsonDeserializer<?> _createContextual(MapLikeType type,
+            KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
+            JsonDeserializer elementDeserializer, Method method);
 
     @Override
     public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
