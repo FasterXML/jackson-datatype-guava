@@ -5,39 +5,39 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.GuavaMultimapDeserializer;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 
 import java.lang.reflect.Method;
 
 /**
- * Provides deserialization for the Guava HashMultimap class.
+ * Provides deserialization for the Guava LinkedHashMultimap class.
  *
  * @author mvolkhart
  */
-public class HashMultimapDeserializer extends GuavaMultimapDeserializer<HashMultimap<Object,
-        Object>> {
+public class LinkedHashMultimapDeserializer extends
+        GuavaMultimapDeserializer<LinkedHashMultimap<Object, Object>> {
 
-    public HashMultimapDeserializer(MapLikeType type, KeyDeserializer keyDeserializer,
+    public LinkedHashMultimapDeserializer(MapLikeType type, KeyDeserializer keyDeserializer,
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer) {
         super(type, keyDeserializer, elementTypeDeserializer, elementDeserializer);
     }
 
-    public HashMultimapDeserializer(MapLikeType type, KeyDeserializer keyDeserializer,
+    public LinkedHashMultimapDeserializer(MapLikeType type, KeyDeserializer keyDeserializer,
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer,
             Method creatorMethod) {
         super(type, keyDeserializer, elementTypeDeserializer, elementDeserializer, creatorMethod);
     }
 
     @Override
-    protected HashMultimap<Object, Object> createMultimap() {
-        return HashMultimap.create();
+    protected LinkedHashMultimap<Object, Object> createMultimap() {
+        return LinkedHashMultimap.create();
     }
 
     @Override
     protected JsonDeserializer<?> _createContextual(MapLikeType type,
             KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
             JsonDeserializer elementDeserializer, Method method) {
-        return new HashMultimapDeserializer(type, keyDeserializer, typeDeserializer,
+        return new LinkedHashMultimapDeserializer(type, keyDeserializer, typeDeserializer,
                 elementDeserializer, method);
     }
 }

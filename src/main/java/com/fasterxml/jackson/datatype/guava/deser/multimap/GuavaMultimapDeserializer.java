@@ -125,9 +125,7 @@ public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
 
         T multimap = createMultimap();
 
-        if (jp.getCurrentToken() != JsonToken.START_OBJECT) {
-            throw ctxt.mappingException(type.getRawClass());
-        }
+        expect(jp, JsonToken.START_OBJECT);
 
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             final Object key;
