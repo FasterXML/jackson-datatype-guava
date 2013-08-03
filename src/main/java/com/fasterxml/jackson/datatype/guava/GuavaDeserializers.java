@@ -22,7 +22,6 @@ import com.fasterxml.jackson.datatype.guava.deser.ImmutableSetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedMapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedSetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.LinkedHashMultisetDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.MultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.TreeMultisetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
@@ -54,6 +53,7 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedHashMultiset;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.SortedSetMultimap;
@@ -239,17 +239,16 @@ public class GuavaDeserializers
                 // TODO
             }
 
-            return new MultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
-                                        elementDeserializer);
             // TODO: Remove the default fall-through once all implementations are covered.
-//            return new HashMultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
-//                    elementDeserializer);
+            return new HashMultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                    elementDeserializer);
         }
 
-//        if (Multimap.class.isAssignableFrom(raw)) {
-//            return new MultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
-//                    elementDeserializer);
-//        }
+        // Handle the case where nothing more specific was provided.
+        if (Multimap.class.isAssignableFrom(raw)) {
+            return new LinkedListMultimapDeserializer(type, keyDeserializer,
+                    elementTypeDeserializer, elementDeserializer);
+        }
 
         if (Table.class.isAssignableFrom(raw)) {
             // !!! TODO
