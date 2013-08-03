@@ -139,20 +139,24 @@ public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
             expect(jp, JsonToken.START_ARRAY);
 
             while (jp.nextToken() != JsonToken.END_ARRAY) {
-                if (elementTypeDeserializer != null) {
-                    multimap.put(key, elementDeserializer.deserializeWithType(jp, ctxt,
-                            elementTypeDeserializer));
+                final Object value;
+                if (jp.getCurrentToken() == JsonToken.VALUE_NULL) {
+                    value = null;
+                } else if (elementTypeDeserializer != null) {
+                    value = elementDeserializer.deserializeWithType(jp, ctxt,
+                            elementTypeDeserializer);
                 } else {
-                    multimap.put(key, elementDeserializer.deserialize(jp, ctxt));
+                    value = elementDeserializer.deserialize(jp, ctxt);
                 }
+                multimap.put(key, value);
             }
         }
         if (creatorMethod == null) {
             return multimap;
         }
         try {
-            // TODO marius: try using instanceof
-            return (T) creatorMethod.invoke(null, multimap);
+            @SuppressWarnings("unchecked") T map = (T) creatorMethod.invoke(null, multimap);
+            return map;
         } catch (InvocationTargetException e) {
             throw new JsonMappingException("Could not map to " + type, _peel(e));
         } catch (IllegalArgumentException e) {

@@ -22,6 +22,7 @@ import com.fasterxml.jackson.datatype.guava.deser.ImmutableSetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedMapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedSetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.LinkedHashMultisetDeserializer;
+import com.fasterxml.jackson.datatype.guava.deser.MultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.TreeMultisetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
@@ -238,9 +239,11 @@ public class GuavaDeserializers
                 // TODO
             }
 
+            return new MultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+                                        elementDeserializer);
             // TODO: Remove the default fall-through once all implementations are covered.
-            return new HashMultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
-                    elementDeserializer);
+//            return new HashMultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
+//                    elementDeserializer);
         }
 
 //        if (Multimap.class.isAssignableFrom(raw)) {
