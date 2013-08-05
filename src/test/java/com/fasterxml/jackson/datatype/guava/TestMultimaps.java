@@ -1,17 +1,20 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.SetMultimap;
 import com.google.common.collect.TreeMultimap;
+
+import java.io.IOException;
+import java.util.Map;
+
 import static com.google.common.collect.TreeMultimap.create;
 
 /**
@@ -21,6 +24,9 @@ import static com.google.common.collect.TreeMultimap.create;
  */
 public class TestMultimaps extends BaseTest
 {
+    private static final String StringStringMultimap =
+            "{\"first\":[\"abc\",\"abc\",\"foo\"]," + "\"second\":[\"bar\"]}";
+
     private final ObjectMapper MAPPER =  mapperWithModule();
 
     public void testMultimap() throws Exception
@@ -111,5 +117,79 @@ public class TestMultimaps extends BaseTest
 
         assertEquals(serializedForm, MAPPER.writeValueAsString(map));
         assertEquals(map, MAPPER.readValue(serializedForm, type));
+    }
+
+    /*
+    /**********************************************************************
+    /* Unit tests for set-based multimaps
+    /**********************************************************************
+     */
+    public void testTreeMultimap() {
+
+    }
+
+    public void testForwardingSortedSetMultimap() {
+
+    }
+
+    public void testImmutableSetMultimap() {
+        // TODO look at others
+    }
+
+    public void testHashMultimap() throws IOException {
+        SetMultimap<String, String> map =
+                setBasedHelper(new TypeReference<HashMultimap<String, String>>() {
+                });
+        assertTrue(map instanceof HashMultimap);
+    }
+
+    public void testLinkedHashMultimap() throws IOException {
+        SetMultimap<String, String> map =
+                setBasedHelper(new TypeReference<LinkedHashMultimap<String, String>>() {
+                });
+        assertTrue(map instanceof LinkedHashMultimap);
+    }
+
+    public void testForwardingSetMultimap() {
+
+    }
+
+    private SetMultimap<String, String> setBasedHelper(TypeReference type) throws IOException {
+        SetMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
+        assertEquals(3, map.size());
+        assertTrue(map.containsEntry("first", "abc"));
+        assertTrue(map.containsEntry("first", "foo"));
+        assertTrue(map.containsEntry("second", "bar"));
+        return map;
+    }
+
+    /*
+    /**********************************************************************
+    /* Unit tests for list-based multimaps
+    /**********************************************************************
+     */
+
+    public void testArrayListMultimap() throws IOException {
+        ListMultimap<String, String> map =
+                listBasedHelper(new TypeReference<ArrayListMultimap<String, String>>() {
+                });
+        assertTrue(map instanceof ArrayListMultimap);
+    }
+
+    public void testLinkedListMultimap() throws IOException {
+        ListMultimap<String, String> map =
+                listBasedHelper(new TypeReference<LinkedListMultimap<String, String>>() {
+                });
+        assertTrue(map instanceof LinkedListMultimap);
+    }
+
+    private ListMultimap<String, String> listBasedHelper(TypeReference type) throws IOException {
+        ListMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
+        assertEquals(4, map.size());
+        assertTrue(map.remove("first", "abc"));
+        assertTrue(map.containsEntry("first", "abc"));
+        assertTrue(map.containsEntry("first", "foo"));
+        assertTrue(map.containsEntry("second", "bar"));
+        return map;
     }
 }
