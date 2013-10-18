@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 
 public class TestOptional extends BaseTest {
@@ -85,6 +86,20 @@ public class TestOptional extends BaseTest {
         String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
         assertEquals("{}", value);
     }
+    
+    public void testWithTypingEnabled() throws Exception {
+		final ObjectMapper objectMapper = mapperWithModule();
+		// ENABLE TYPING
+		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);
+
+		final OptionalData myData = new OptionalData();
+		myData.myString = Optional.fromNullable("");
+		
+		final String json = objectMapper.writeValueAsString(myData);
+		
+		final OptionalData deserializedMyData = objectMapper.readValue(json, OptionalData.class);
+		assertEquals(myData.myString, deserializedMyData.myString);
+	}
     
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
     public static final class OptionalData{
