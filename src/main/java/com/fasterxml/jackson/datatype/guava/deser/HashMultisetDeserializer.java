@@ -7,8 +7,10 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.HashMultiset;
 
 public class HashMultisetDeserializer
- extends GuavaMultisetDeserializer<HashMultiset<Object>>
+    extends GuavaMultisetDeserializer<HashMultiset<Object>>
 {
+    private static final long serialVersionUID = 1L;
+
     public HashMultisetDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {

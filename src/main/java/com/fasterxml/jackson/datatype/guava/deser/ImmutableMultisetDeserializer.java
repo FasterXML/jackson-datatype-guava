@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.ImmutableCollection.Builder;
 import com.google.common.collect.ImmutableMultiset;
 
-public class ImmutableMultisetDeserializer extends GuavaImmutableCollectionDeserializer<ImmutableMultiset<Object>> {
+public class ImmutableMultisetDeserializer extends GuavaImmutableCollectionDeserializer<ImmutableMultiset<Object>>
+{
+    private static final long serialVersionUID = 1L;
 
     public ImmutableMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser) {
         super(type, typeDeser, deser);

@@ -18,11 +18,11 @@ public class MultimapSerializer
     extends JsonSerializer<Multimap<?, ?>>
     implements ContextualSerializer
 {
-    private final MapLikeType type;
-    private final BeanProperty property;
-    private final JsonSerializer<Object> keySerializer;
-    private final TypeSerializer valueTypeSerializer;
-    private final JsonSerializer<Object> valueSerializer;
+    private final MapLikeType _type;
+    private final BeanProperty _property;
+    private final JsonSerializer<Object> _keySerializer;
+    private final TypeSerializer _valueTypeSerializer;
+    private final JsonSerializer<Object> _valueSerializer;
 
     public MultimapSerializer(SerializationConfig config,
             MapLikeType type,
@@ -31,11 +31,11 @@ public class MultimapSerializer
             TypeSerializer valueTypeSerializer,
             JsonSerializer<Object> valueSerializer)
     {
-        this.type = type;
-        this.property = null;
-        this.keySerializer = keySerializer;
-        this.valueTypeSerializer = valueTypeSerializer;
-        this.valueSerializer = valueSerializer;
+        _type = type;
+        _property = null;
+        _keySerializer = keySerializer;
+        _valueTypeSerializer = valueTypeSerializer;
+        _valueSerializer = valueSerializer;
     }
 
     @SuppressWarnings("unchecked")
@@ -43,20 +43,18 @@ public class MultimapSerializer
                 JsonSerializer<?> keySerializer,
                 TypeSerializer valueTypeSerializer, JsonSerializer<?> valueSerializer)
     {
-        this.type = src.type;
-        this.property = property;
-        this.keySerializer = (JsonSerializer<Object>) keySerializer;
-        this.valueTypeSerializer = valueTypeSerializer;
-        this.valueSerializer = (JsonSerializer<Object>) valueSerializer;
+        _type = src._type;
+        _property = property;
+        _keySerializer = (JsonSerializer<Object>) keySerializer;
+        _valueTypeSerializer = valueTypeSerializer;
+        _valueSerializer = (JsonSerializer<Object>) valueSerializer;
     }
-            
-    
+
     protected MultimapSerializer withResolved(BeanProperty property,
-            JsonSerializer<?> keySerializer,
-            TypeSerializer valueTypeSerializer, JsonSerializer<?> valueSerializer)
+            JsonSerializer<?> keySer,
+            TypeSerializer vts, JsonSerializer<?> valueSer)
     {
-        return new MultimapSerializer(this, property, keySerializer,
-                valueTypeSerializer, valueSerializer);
+        return new MultimapSerializer(this, property, keySer, vts, valueSer);
     }
     
     /*
@@ -65,26 +63,27 @@ public class MultimapSerializer
     /**********************************************************
      */
 
+    @Override
     public JsonSerializer<?> createContextual(SerializerProvider provider,
             BeanProperty property) throws JsonMappingException
     {
-        JsonSerializer<?> valueSer = valueSerializer;
+        JsonSerializer<?> valueSer = _valueSerializer;
         if (valueSer == null) { // if type is final, can actually resolve:
-            JavaType valueType = type.getContentType();
+            JavaType valueType = _type.getContentType();
             if (valueType.isFinal()) {
                 valueSer = provider.findValueSerializer(valueType, property);
             }
         } else if (valueSer instanceof ContextualSerializer) {
             valueSer = ((ContextualSerializer) valueSer).createContextual(provider, property);
         }
-        JsonSerializer<?> keySer = keySerializer;
+        JsonSerializer<?> keySer = _keySerializer;
         if (keySer == null) {
-            keySer = provider.findKeySerializer(type.getKeyType(), property);
+            keySer = provider.findKeySerializer(_type.getKeyType(), property);
         } else if (keySer instanceof ContextualSerializer) {
             keySer = ((ContextualSerializer) keySer).createContextual(provider, property);
         }
         // finally, TypeSerializers may need contextualization as well
-        TypeSerializer typeSer = valueTypeSerializer;
+        TypeSerializer typeSer = _valueTypeSerializer;
         if (typeSer != null) {
             typeSer = typeSer.forProperty(property);
         }
@@ -122,17 +121,17 @@ public class MultimapSerializer
             throws IOException, JsonProcessingException
     {
         for (Entry<?, ? extends Collection<?>> e : value.asMap().entrySet()) {
-            if (keySerializer != null) {
-                keySerializer.serialize(e.getKey(), jgen, provider);
+            if (_keySerializer != null) {
+                _keySerializer.serialize(e.getKey(), jgen, provider);
             } else {
-                provider.findKeySerializer(provider.constructType(String.class), property)
+                provider.findKeySerializer(provider.constructType(String.class), _property)
                     .serialize(e.getKey(), jgen, provider);
             }
-            if (valueSerializer != null) {
+            if (_valueSerializer != null) {
                 // note: value is a List, but generic type is for contents... so:
                 jgen.writeStartArray();
                 for (Object vv : e.getValue()) {
-                    valueSerializer.serialize(vv, jgen, provider);
+                    _valueSerializer.serialize(vv, jgen, provider);
                 }
                 jgen.writeEndArray();
             } else {

@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.LinkedHashMultiset;
 
-public class LinkedHashMultisetDeserializer extends GuavaMultisetDeserializer<LinkedHashMultiset<Object>> {
+public class LinkedHashMultisetDeserializer extends GuavaMultisetDeserializer<LinkedHashMultiset<Object>>
+{
+    private static final long serialVersionUID = 1L;
 
     public LinkedHashMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser) {
         super(type, typeDeser, deser);

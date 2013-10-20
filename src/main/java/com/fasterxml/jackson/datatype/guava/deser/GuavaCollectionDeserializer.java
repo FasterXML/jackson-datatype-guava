@@ -14,6 +14,8 @@ public abstract class GuavaCollectionDeserializer<T>
     extends StdDeserializer<T>
     implements ContextualDeserializer
 {
+    private static final long serialVersionUID = 1L;
+
     protected final CollectionType _containerType;
     
     /**
@@ -56,6 +58,7 @@ public abstract class GuavaCollectionDeserializer<T>
      * after deserializer itself has been registered. This
      * is needed to handle recursive and transitive dependencies.
      */
+    @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
             BeanProperty property) throws JsonMappingException
     {

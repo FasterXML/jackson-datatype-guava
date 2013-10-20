@@ -7,7 +7,10 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 public class ImmutableListDeserializer extends
-        GuavaImmutableCollectionDeserializer<ImmutableList<Object>> {
+        GuavaImmutableCollectionDeserializer<ImmutableList<Object>>
+{
+    private static final long serialVersionUID = 1L;
+
     public ImmutableListDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser) {
         super(type, typeDeser, deser);

@@ -65,6 +65,7 @@ public abstract class GuavaMapDeserializer<T>
      * after deserializer itself has been registered. This
      * is needed to handle recursive and transitive dependencies.
      */
+    @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
             BeanProperty property) throws JsonMappingException
     {

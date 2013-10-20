@@ -97,6 +97,7 @@ public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
      * We need to use this method to properly handle possible contextual variants of key and value
      * deserializers, as well as type deserializers.
      */
+    @Override
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
             BeanProperty property) throws JsonMappingException {
         KeyDeserializer kd = keyDeserializer;
@@ -117,7 +118,7 @@ public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
 
     protected abstract JsonDeserializer<?> _createContextual(MapLikeType type,
             KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
-            JsonDeserializer elementDeserializer, Method method);
+            JsonDeserializer<?> elementDeserializer, Method method);
 
     @Override
     public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,

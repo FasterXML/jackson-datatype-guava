@@ -10,7 +10,10 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.google.common.base.Optional;
 
-public final class GuavaOptionalDeserializer extends StdDeserializer<Optional<?>> {
+public final class GuavaOptionalDeserializer extends StdDeserializer<Optional<?>>
+{
+    private static final long serialVersionUID = 1L;
+
     private final JavaType _referenceType;
 
     public GuavaOptionalDeserializer(JavaType valueType) {

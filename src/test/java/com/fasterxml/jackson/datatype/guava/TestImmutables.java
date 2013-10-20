@@ -3,10 +3,9 @@ package com.fasterxml.jackson.datatype.guava;
 import java.util.Iterator;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.google.common.collect.*;
 
 /**
@@ -122,10 +121,16 @@ public class TestImmutables extends BaseTest
     public void testImmutableMap() throws Exception
     {
         ObjectMapper mapper = mapperWithModule();
-        ImmutableMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableMap<Integer,Boolean>>() { });
+        final JavaType type = mapper.getTypeFactory().constructType(new TypeReference<ImmutableMap<Integer,Boolean>>() { });
+        ImmutableMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", type);
         assertEquals(2, map.size());
         assertEquals(Boolean.TRUE, map.get(Integer.valueOf(12)));
         assertEquals(Boolean.FALSE, map.get(Integer.valueOf(4)));
+
+        // [Issue#29]
+        map = mapper.readValue("{}", type);
+        assertNotNull(map);
+        assertEquals(0, map.size());
     }
     
     public void testImmutableSortedMap() throws Exception

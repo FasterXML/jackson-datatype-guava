@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.TreeMultiset;
 
-public class TreeMultisetDeserializer extends GuavaMultisetDeserializer<TreeMultiset<Object>> {
+public class TreeMultisetDeserializer extends GuavaMultisetDeserializer<TreeMultiset<Object>>
+{
+    private static final long serialVersionUID = 1L;
 
     public TreeMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser) {
         super(type, typeDeser, deser);

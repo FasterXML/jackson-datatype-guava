@@ -154,7 +154,9 @@ public class TestMultimaps extends BaseTest
 
     }
 
-    private SetMultimap<String, String> setBasedHelper(TypeReference type) throws IOException {
+    private SetMultimap<String, String> setBasedHelper(TypeReference<?> type)
+            throws IOException
+    {
         SetMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
         assertEquals(3, map.size());
         assertTrue(map.containsEntry("first", "abc"));
@@ -183,7 +185,7 @@ public class TestMultimaps extends BaseTest
         assertTrue(map instanceof LinkedListMultimap);
     }
 
-    private ListMultimap<String, String> listBasedHelper(TypeReference type) throws IOException {
+    private ListMultimap<String, String> listBasedHelper(TypeReference<?> type) throws IOException {
         ListMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
         assertEquals(4, map.size());
         assertTrue(map.remove("first", "abc"));

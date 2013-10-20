@@ -36,7 +36,7 @@ public class HashMultimapDeserializer extends GuavaMultimapDeserializer<HashMult
     @Override
     protected JsonDeserializer<?> _createContextual(MapLikeType type,
             KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
-            JsonDeserializer elementDeserializer, Method method) {
+            JsonDeserializer<?> elementDeserializer, Method method) {
         return new HashMultimapDeserializer(type, keyDeserializer, typeDeserializer,
                 elementDeserializer, method);
     }

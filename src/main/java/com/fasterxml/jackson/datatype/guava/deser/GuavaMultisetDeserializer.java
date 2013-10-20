@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.Multiset;
 
-abstract class GuavaMultisetDeserializer<T extends Multiset<Object>> extends GuavaCollectionDeserializer<T> {
+abstract class GuavaMultisetDeserializer<T extends Multiset<Object>> extends GuavaCollectionDeserializer<T>
+{
+    private static final long serialVersionUID = 1L;
 
     GuavaMultisetDeserializer(CollectionType type, TypeDeserializer typeDeser, JsonDeserializer<?> deser) {
         super(type, typeDeser, deser);

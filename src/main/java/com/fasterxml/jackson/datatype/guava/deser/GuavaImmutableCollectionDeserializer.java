@@ -12,7 +12,9 @@ import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.ImmutableCollection;
 
 abstract class GuavaImmutableCollectionDeserializer<T extends ImmutableCollection<Object>>
-        extends GuavaCollectionDeserializer<T> {
+        extends GuavaCollectionDeserializer<T>
+{
+    private static final long serialVersionUID = 1L;
 
     GuavaImmutableCollectionDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser) {

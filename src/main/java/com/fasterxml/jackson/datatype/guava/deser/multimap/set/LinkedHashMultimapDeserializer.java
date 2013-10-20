@@ -36,7 +36,7 @@ public class LinkedHashMultimapDeserializer extends
     @Override
     protected JsonDeserializer<?> _createContextual(MapLikeType type,
             KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
-            JsonDeserializer elementDeserializer, Method method) {
+            JsonDeserializer<?> elementDeserializer, Method method) {
         return new LinkedHashMultimapDeserializer(type, keyDeserializer, typeDeserializer,
                 elementDeserializer, method);
     }

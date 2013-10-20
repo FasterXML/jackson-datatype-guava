@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
  *
  * @author mvolkhart
  */
-public class LinkedListMultimapDeserializer extends GuavaMultimapDeserializer<LinkedListMultimap<Object,
-        Object>> {
-
+public class LinkedListMultimapDeserializer
+    extends GuavaMultimapDeserializer<LinkedListMultimap<Object,Object>>
+{
     public LinkedListMultimapDeserializer(MapLikeType type, KeyDeserializer keyDeserializer,
             TypeDeserializer elementTypeDeserializer, JsonDeserializer<?> elementDeserializer) {
         super(type, keyDeserializer, elementTypeDeserializer, elementDeserializer);
@@ -36,7 +36,7 @@ public class LinkedListMultimapDeserializer extends GuavaMultimapDeserializer<Li
     @Override
     protected JsonDeserializer<?> _createContextual(MapLikeType type,
             KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
-            JsonDeserializer elementDeserializer, Method method) {
+            JsonDeserializer<?> elementDeserializer, Method method) {
         return new LinkedListMultimapDeserializer(type, keyDeserializer, typeDeserializer,
                 elementDeserializer, method);
     }

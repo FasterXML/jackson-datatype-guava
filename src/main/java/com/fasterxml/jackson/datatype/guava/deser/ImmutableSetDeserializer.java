@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableSet;
 
 public class ImmutableSetDeserializer extends GuavaImmutableCollectionDeserializer<ImmutableSet<Object>>
 {
+    private static final long serialVersionUID = 1L;
+
     public ImmutableSetDeserializer(CollectionType type,
             TypeDeserializer typeDeser, JsonDeserializer<?> deser)
     {
