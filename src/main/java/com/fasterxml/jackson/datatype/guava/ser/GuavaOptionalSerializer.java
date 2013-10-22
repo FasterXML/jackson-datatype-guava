@@ -11,9 +11,16 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.Optional;
 
-public final class GuavaOptionalSerializer extends StdSerializer<Optional<?>> {
+public final class GuavaOptionalSerializer extends StdSerializer<Optional<?>>
+{
     public GuavaOptionalSerializer(JavaType type) {
         super(type);
+    }
+
+    // implemented since 2.3
+    @Override
+    public boolean isEmpty(Optional<?> value) {
+        return (value == null) || !value.isPresent();
     }
 
     @Override

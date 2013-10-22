@@ -12,9 +12,13 @@ public class GuavaOptionalBeanPropertyWriter extends BeanPropertyWriter {
     }
 
     @Override
-    public void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception {
-        if ((get(bean) == null || Optional.absent().equals(get(bean))) && _nullSerializer == null) {
-            return;
+    public void serializeAsField(Object bean, JsonGenerator jgen, SerializerProvider prov) throws Exception
+    {
+        if (_nullSerializer == null) {
+            Object value = get(bean);
+            if (value == null || Optional.absent().equals(value)) {
+                return;
+            }
         }
         super.serializeAsField(bean, jgen, prov);
     }
