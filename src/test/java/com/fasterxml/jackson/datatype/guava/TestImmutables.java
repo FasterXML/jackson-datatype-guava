@@ -2,6 +2,7 @@ package com.fasterxml.jackson.datatype.guava;
 
 import java.util.Iterator;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -17,6 +18,18 @@ import com.google.common.collect.*;
  */
 public class TestImmutables extends BaseTest
 {
+    private final ObjectMapper MAPPER = mapperWithModule();
+
+    static class Holder {
+        @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS)
+        public Object value;
+
+        public Holder() { }
+        public Holder(Object v) {
+            value = v;
+        }
+    }
+    
     /*
     /**********************************************************************
     /* Unit tests for verifying handling in absence of module registration
@@ -31,16 +44,15 @@ public class TestImmutables extends BaseTest
     {
         ImmutableList<Integer> list = ImmutableList.<Integer>builder()
             .add(1).add(2).add(3).build();
-        ObjectMapper mapper = new ObjectMapper();
-        assertEquals("[1,2,3]", mapper.writeValueAsString(list));
+        assertEquals("[1,2,3]", MAPPER.writeValueAsString(list));
 
         ImmutableSet<String> set = ImmutableSet.<String>builder()
             .add("abc").add("def").build();
-        assertEquals("[\"abc\",\"def\"]", mapper.writeValueAsString(set));
+        assertEquals("[\"abc\",\"def\"]", MAPPER.writeValueAsString(set));
 
         ImmutableMap<String,Integer> map = ImmutableMap.<String,Integer>builder()
             .put("a", 1).put("b", 2).build();
-        assertEquals("{\"a\":1,\"b\":2}", mapper.writeValueAsString(map));
+        assertEquals("{\"a\":1,\"b\":2}", MAPPER.writeValueAsString(map));
     }
 
     /**
@@ -49,7 +61,6 @@ public class TestImmutables extends BaseTest
     public void testWithoutDeserializers() throws Exception
     {
         ObjectMapper mapper = new ObjectMapper();
-
         try {
             mapper.readValue("[1,2,3]",
                     new TypeReference<ImmutableList<Integer>>() { });
@@ -88,8 +99,7 @@ public class TestImmutables extends BaseTest
 
     public void testImmutableList() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        ImmutableList<Integer> list = mapper.readValue("[1,2,3]", new TypeReference<ImmutableList<Integer>>() { });
+        ImmutableList<Integer> list = MAPPER.readValue("[1,2,3]", new TypeReference<ImmutableList<Integer>>() { });
         assertEquals(3, list.size());
         assertEquals(Integer.valueOf(1), list.get(0));
         assertEquals(Integer.valueOf(2), list.get(1));
@@ -98,19 +108,54 @@ public class TestImmutables extends BaseTest
 
     public void testImmutableSet() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        ImmutableSet<Integer> set = mapper.readValue("[3,7,8]", new TypeReference<ImmutableSet<Integer>>() { });
+        ImmutableSet<Integer> set = MAPPER.readValue("[3,7,8]",
+                new TypeReference<ImmutableSet<Integer>>() { });
         assertEquals(3, set.size());
         Iterator<Integer> it = set.iterator();
         assertEquals(Integer.valueOf(3), it.next());
         assertEquals(Integer.valueOf(7), it.next());
         assertEquals(Integer.valueOf(8), it.next());
+
+        set = MAPPER.readValue("[  ]",
+                new TypeReference<ImmutableSet<Integer>>() { });
+        assertEquals(0, set.size());
     }
 
+    public void testTypedImmutableset() throws Exception
+    {
+        ImmutableSet<Integer> set;
+        Holder h;
+        String json;
+        Holder result;
+
+        // First, with one entry
+        set = new ImmutableSet.Builder<Integer>()
+                .add(1).build();
+        h = new Holder(set);
+        json = MAPPER.writeValueAsString(h);
+
+        // so far so good. and back?
+        result = MAPPER.readValue(json, Holder.class);
+        assertNotNull(result.value);
+        if (!(result.value instanceof ImmutableSet<?>)) {
+            fail("Expected ImmutableSet, got "+result.value.getClass());
+        }
+        assertEquals(1, ((ImmutableSet<?>) result.value).size());
+        // and then an empty version:
+        set = new ImmutableSet.Builder<Integer>().build();
+        h = new Holder(set);
+        json = MAPPER.writeValueAsString(h);
+        result = MAPPER.readValue(json, Holder.class);
+        assertNotNull(result.value);
+        if (!(result.value instanceof ImmutableSet<?>)) {
+            fail("Expected ImmutableSet, got "+result.value.getClass());
+        }
+        assertEquals(0, ((ImmutableSet<?>) result.value).size());
+    }
+    
     public void testImmutableSortedSet() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        ImmutableSortedSet<Integer> set = mapper.readValue("[5,1,2]", new TypeReference<ImmutableSortedSet<Integer>>() { });
+        ImmutableSortedSet<Integer> set = MAPPER.readValue("[5,1,2]", new TypeReference<ImmutableSortedSet<Integer>>() { });
         assertEquals(3, set.size());
         Iterator<Integer> it = set.iterator();
         assertEquals(Integer.valueOf(1), it.next());
@@ -120,23 +165,52 @@ public class TestImmutables extends BaseTest
     
     public void testImmutableMap() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        final JavaType type = mapper.getTypeFactory().constructType(new TypeReference<ImmutableMap<Integer,Boolean>>() { });
-        ImmutableMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", type);
+        final JavaType type = MAPPER.getTypeFactory().constructType(new TypeReference<ImmutableMap<Integer,Boolean>>() { });
+        ImmutableMap<Integer,Boolean> map = MAPPER.readValue("{\"12\":true,\"4\":false}", type);
         assertEquals(2, map.size());
         assertEquals(Boolean.TRUE, map.get(Integer.valueOf(12)));
         assertEquals(Boolean.FALSE, map.get(Integer.valueOf(4)));
 
-        // [Issue#29]
-        map = mapper.readValue("{}", type);
+        map = MAPPER.readValue("{}", type);
         assertNotNull(map);
         assertEquals(0, map.size());
+    }
+
+    public void testTypedImmutableMap() throws Exception
+    {
+        ImmutableMap<String,Integer> map;
+        Holder h;
+        String json;
+        Holder result;
+
+        // First, with one entry
+        map = new ImmutableMap.Builder<String,Integer>()
+                .put("a", 1).build();
+        h = new Holder(map);
+        json = MAPPER.writeValueAsString(h);
+
+        // so far so good. and back?
+        result = MAPPER.readValue(json, Holder.class);
+        assertNotNull(result.value);
+        if (!(result.value instanceof ImmutableMap<?,?>)) {
+            fail("Expected ImmutableMap, got "+result.value.getClass());
+        }
+        assertEquals(1, ((ImmutableMap<?,?>) result.value).size());
+        // and then an empty version:
+        map = new ImmutableMap.Builder<String,Integer>().build();
+        h = new Holder(map);
+        json = MAPPER.writeValueAsString(h);
+        result = MAPPER.readValue(json, Holder.class);
+        assertNotNull(result.value);
+        if (!(result.value instanceof ImmutableMap<?,?>)) {
+            fail("Expected ImmutableMap, got "+result.value.getClass());
+        }
+        assertEquals(0, ((ImmutableMap<?,?>) result.value).size());
     }
     
     public void testImmutableSortedMap() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        ImmutableSortedMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableSortedMap<Integer,Boolean>>() { });
+        ImmutableSortedMap<Integer,Boolean> map = MAPPER.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableSortedMap<Integer,Boolean>>() { });
         assertEquals(2, map.size());
         assertEquals(Boolean.TRUE, map.get(Integer.valueOf(12)));
         assertEquals(Boolean.FALSE, map.get(Integer.valueOf(4)));
@@ -144,8 +218,7 @@ public class TestImmutables extends BaseTest
     
     public void testImmutableBiMap() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        ImmutableBiMap<Integer,Boolean> map = mapper.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableBiMap<Integer,Boolean>>() { });
+        ImmutableBiMap<Integer,Boolean> map = MAPPER.readValue("{\"12\":true,\"4\":false}", new TypeReference<ImmutableBiMap<Integer,Boolean>>() { });
         assertEquals(2, map.size());
         assertEquals(Boolean.TRUE, map.get(12));
         assertEquals(Boolean.FALSE, map.get(4));

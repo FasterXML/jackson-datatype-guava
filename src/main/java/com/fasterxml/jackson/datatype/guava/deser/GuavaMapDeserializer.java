@@ -104,7 +104,9 @@ public abstract class GuavaMapDeserializer<T>
             TypeDeserializer typeDeserializer)
         throws IOException, JsonProcessingException
     {
-        return typeDeserializer.deserializeTypedFromArray(jp, ctxt);
+        // note: call "...FromObject" because expected output structure
+        // for value is JSON Object (regardless of contortions used for type id)
+        return typeDeserializer.deserializeTypedFromObject(jp, ctxt);
     }
     
     @Override
@@ -115,10 +117,8 @@ public abstract class GuavaMapDeserializer<T>
         JsonToken t = jp.getCurrentToken();
         if (t == JsonToken.START_OBJECT) { // If START_OBJECT, move to next; may also be END_OBJECT
             t = jp.nextToken();
-            if (t != JsonToken.FIELD_NAME && t != JsonToken.END_OBJECT) {
-                throw ctxt.mappingException(_mapType.getRawClass());
-            }
-        } else if (t != JsonToken.FIELD_NAME) {
+        }
+        if (t != JsonToken.FIELD_NAME && t != JsonToken.END_OBJECT) {
             throw ctxt.mappingException(_mapType.getRawClass());
         }
         return _deserializeEntries(jp, ctxt);
@@ -132,11 +132,4 @@ public abstract class GuavaMapDeserializer<T>
 
     protected abstract T _deserializeEntries(JsonParser jp, DeserializationContext ctxt)
         throws IOException, JsonProcessingException;
-    
-    /*
-    /**********************************************************************
-    /* Helper methods
-    /**********************************************************************
-     */
-
 }
