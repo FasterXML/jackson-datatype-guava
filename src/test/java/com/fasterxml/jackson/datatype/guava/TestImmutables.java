@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -121,6 +122,16 @@ public class TestImmutables extends BaseTest
         assertEquals(0, set.size());
     }
 
+    public void testImmutableSetFromSingle() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule()
+            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        ImmutableSet<String> set = mapper.readValue("\"abc\"",
+                new TypeReference<ImmutableSet<String>>() { });
+        assertEquals(1, set.size());
+        assertTrue(set.contains("abc"));
+    }
+    
     public void testTypedImmutableset() throws Exception
     {
         ImmutableSet<Integer> set;

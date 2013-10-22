@@ -11,7 +11,8 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.collect.Multiset;
 
-abstract class GuavaMultisetDeserializer<T extends Multiset<Object>> extends GuavaCollectionDeserializer<T>
+abstract class GuavaMultisetDeserializer<T extends Multiset<Object>>
+    extends GuavaCollectionDeserializer<T>
 {
     private static final long serialVersionUID = 1L;
 
@@ -42,6 +43,28 @@ abstract class GuavaMultisetDeserializer<T extends Multiset<Object>> extends Gua
             set.add(value);
         }
         return set;
+    }
+
+    @Override
+    protected T _deserializeFromSingleValue(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException
+    {
+        JsonDeserializer<?> valueDes = _valueDeserializer;
+        final TypeDeserializer typeDeser = _typeDeserializerForValue;
+        JsonToken t = jp.getCurrentToken();
+
+        Object value;
+        
+        if (t == JsonToken.VALUE_NULL) {
+            value = null;
+        } else if (typeDeser == null) {
+            value = valueDes.deserialize(jp, ctxt);
+        } else {
+            value = valueDes.deserializeWithType(jp, ctxt, typeDeser);
+        }
+        T result = createMultiset();
+        result.add(value);
+        return result;
     }
 
 }

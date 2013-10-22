@@ -3,7 +3,6 @@ package com.fasterxml.jackson.datatype.guava.deser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -99,11 +98,15 @@ public abstract class GuavaCollectionDeserializer<T>
     public T deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException
     {
-        // Ok: must point to START_ARRAY
-        if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
-            throw ctxt.mappingException(_containerType.getRawClass());
+        // Should usually point to START_ARRAY
+        if (jp.isExpectedStartArrayToken()) {
+            return _deserializeContents(jp, ctxt);
         }
-        return _deserializeContents(jp, ctxt);
+        // But may support implicit arrays from single values?
+        if (ctxt.isEnabled(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY)) {
+            return _deserializeFromSingleValue(jp, ctxt);
+        }
+        throw ctxt.mappingException(_containerType.getRawClass());
     }
 
     /*
@@ -113,5 +116,14 @@ public abstract class GuavaCollectionDeserializer<T>
      */
 
     protected abstract T _deserializeContents(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException;
+
+    /**
+     * Method used to support implicit coercion from a single non-array value
+     * into single-element collection.
+     * 
+     * @since 2.3
+     */
+    protected abstract T _deserializeFromSingleValue(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException;
 }

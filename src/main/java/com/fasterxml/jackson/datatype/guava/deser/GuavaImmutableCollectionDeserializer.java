@@ -51,4 +51,26 @@ abstract class GuavaImmutableCollectionDeserializer<T extends ImmutableCollectio
         T collection = (T) builder.build();
         return collection;
     }
+
+    @Override
+    protected T _deserializeFromSingleValue(JsonParser jp, DeserializationContext ctxt)
+            throws IOException, JsonProcessingException
+    {
+        JsonDeserializer<?> valueDes = _valueDeserializer;
+        final TypeDeserializer typeDeser = _typeDeserializerForValue;
+        JsonToken t = jp.getCurrentToken();
+
+        Object value;
+        
+        if (t == JsonToken.VALUE_NULL) {
+            value = null;
+        } else if (typeDeser == null) {
+            value = valueDes.deserialize(jp, ctxt);
+        } else {
+            value = valueDes.deserializeWithType(jp, ctxt, typeDeser);
+        }
+        @SuppressWarnings("unchecked")
+        T result = (T) createBuilder().add(value).build();
+        return result;
+    }
 }

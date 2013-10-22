@@ -3,6 +3,8 @@ Version: 2.3.0 (xx-Oct-2013)
 
 #29: Empty ImmutableMap not deserialized correctly, when type info included
  (reported by pbergn@github)
+- Add support for `DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY` for
+  `ImmutableSet` and `MultiSet`
 
 ------------------------------------------------------------------------
 === History: ===

@@ -14,7 +14,6 @@ public class TestFluentIterable extends BaseTest
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 
-
     FluentIterable<Integer> createFluentIterable() {
         return new FluentIterable<Integer>() {
             private final Iterable<Integer> _iterable = Sets.newHashSet(1, 2, 3);
@@ -33,17 +32,13 @@ public class TestFluentIterable extends BaseTest
     public void testSerializationWithoutModule() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         Iterable<Integer> fluentIterable = createFluentIterable();
-
         String json = mapper.writeValueAsString(fluentIterable);
-
         assertEquals("{\"empty\":false}", json);
     }
 
     public void testSerialization() throws Exception {
         Iterable<Integer> fluentIterable = createFluentIterable();
-
         String json = MAPPER.writeValueAsString(fluentIterable);
-
         assertEquals("[1,2,3]", json);
     }
 

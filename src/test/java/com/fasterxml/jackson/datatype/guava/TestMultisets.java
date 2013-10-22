@@ -43,15 +43,10 @@ public class TestMultisets extends BaseTest
         try {
             /*Multiset<String> set =*/ mapper.readValue("[\"abc\",\"abc\",\"foo\"]",
                     new TypeReference<Multiset<String>>() { });
+            fail("Should have failed");
         } catch (JsonMappingException e) {
             verifyException(e, "can not find a deserializer");
         }
-        /*
-        assertEquals(3, set.size());
-        assertEquals(1, set.count("foo"));
-        assertEquals(2, set.count("abc"));
-        assertEquals(0, set.count("bar"));
-        */
     }
     
     /*
@@ -60,10 +55,11 @@ public class TestMultisets extends BaseTest
     /**********************************************************************
      */
 
+    final ObjectMapper MAPPER = mapperWithModule();
+    
     public void testDefault() throws Exception
     {
-        ObjectMapper mapper = mapperWithModule();
-        Multiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
+        Multiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
@@ -71,8 +67,7 @@ public class TestMultisets extends BaseTest
     }
     
     public void testLinkedHashMultiset() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        LinkedHashMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<LinkedHashMultiset<String>>() { });
+        LinkedHashMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<LinkedHashMultiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
@@ -80,8 +75,7 @@ public class TestMultisets extends BaseTest
     }
     
     public void testHashMultiset() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        HashMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<HashMultiset<String>>() { });
+        HashMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<HashMultiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
@@ -89,8 +83,7 @@ public class TestMultisets extends BaseTest
     }
     
     public void testTreeMultiset() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        TreeMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<TreeMultiset<String>>() { });
+        TreeMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<TreeMultiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
@@ -98,11 +91,20 @@ public class TestMultisets extends BaseTest
     }
     
     public void testImmutableMultiset() throws Exception {
-        ObjectMapper mapper = mapperWithModule();
-        ImmutableMultiset<String> set = mapper.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<ImmutableMultiset<String>>() { });
+        ImmutableMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<ImmutableMultiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
         assertEquals(0, set.count("bar"));
+    }
+
+    public void testFromSingle() throws Exception
+    {
+        ObjectMapper mapper = mapperWithModule()
+            .enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+        Multiset<String> set = mapper.readValue("\"abc\"",
+                new TypeReference<Multiset<String>>() { });
+        assertEquals(1, set.size());
+        assertTrue(set.contains("abc"));
     }
 }
