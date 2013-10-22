@@ -9,6 +9,7 @@
   <artifactId>jackson-datatype-guava</artifactId>
   <name>Jackson-datatype-Guava</name>
   <version>2.3.0-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <description>Add-on datatype-support module for Jackson (http://jackson.codehaus.org) that handles
 Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just collection ones)
   </description>
