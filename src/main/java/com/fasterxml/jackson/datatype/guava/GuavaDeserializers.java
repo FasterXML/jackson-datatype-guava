@@ -270,17 +270,4 @@ public class GuavaDeserializers
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }
-
-    // Copied from jackson-databind's "BasicDeserializerFactory":
-    protected JsonDeserializer<Object> findDeserializerFromAnnotation(DeserializationContext ctxt,
-            Annotated ann)
-        throws JsonMappingException
-    {
-        Object deserDef = ctxt.getAnnotationIntrospector().findDeserializer(ann);
-        if (deserDef == null) {
-            return null;
-        }
-        return ctxt.deserializerInstance(ann, deserDef);
-    }
-    
 }

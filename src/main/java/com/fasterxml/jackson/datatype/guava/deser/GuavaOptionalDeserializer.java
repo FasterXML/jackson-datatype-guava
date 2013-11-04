@@ -93,7 +93,7 @@ public class GuavaOptionalDeserializer
         Object reference = _valueDeserializer.deserialize(jp, ctxt);
         return Optional.of(reference);
     }
-    
+
     @Override
     public Optional<?> deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
         throws IOException, JsonProcessingException
