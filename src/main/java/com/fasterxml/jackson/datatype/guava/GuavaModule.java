@@ -21,8 +21,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     {
         context.addDeserializers(new GuavaDeserializers());
         context.addSerializers(new GuavaSerializers());
-        context.addTypeModifier(new MultimapTypeModifier());
-        context.addTypeModifier(new FluentIterableTypeModifier());
+        context.addTypeModifier(new GuavaTypeModifier());
         context.addBeanSerializerModifier(new GuavaBeanSerializerModifier());
     }
 }
