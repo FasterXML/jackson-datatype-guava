@@ -30,7 +30,7 @@ public class TestImmutables extends BaseTest
             value = v;
         }
     }
-    
+
     /*
     /**********************************************************************
     /* Unit tests for verifying handling in absence of module registration

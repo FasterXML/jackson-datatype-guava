@@ -3,11 +3,13 @@ package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.DeserializationConfig;
+import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.deser.Deserializers;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
@@ -261,10 +263,24 @@ public class GuavaDeserializers
     public JsonDeserializer<?> findBeanDeserializer(final JavaType type, DeserializationConfig config,
             BeanDescription beanDesc) throws JsonMappingException {
         Class<?> raw = type.getRawClass();
-        if(Optional.class.isAssignableFrom(raw)){
-            return new GuavaOptionalDeserializer(type);
+        if (Optional.class.isAssignableFrom(raw)){
+            JsonDeserializer<?> valueDeser = type.getValueHandler();
+            TypeDeserializer typeDeser = type.getTypeHandler();
+            return new GuavaOptionalDeserializer(type, typeDeser, valueDeser);
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }
 
+    // Copied from jackson-databind's "BasicDeserializerFactory":
+    protected JsonDeserializer<Object> findDeserializerFromAnnotation(DeserializationContext ctxt,
+            Annotated ann)
+        throws JsonMappingException
+    {
+        Object deserDef = ctxt.getAnnotationIntrospector().findDeserializer(ann);
+        if (deserDef == null) {
+            return null;
+        }
+        return ctxt.deserializerInstance(ann, deserDef);
+    }
+    
 }

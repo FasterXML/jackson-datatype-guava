@@ -116,9 +116,9 @@ public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
         return (_createContextual(type, kd, etd, ed, creatorMethod));
     }
 
-    protected abstract JsonDeserializer<?> _createContextual(MapLikeType type,
-            KeyDeserializer keyDeserializer, TypeDeserializer typeDeserializer,
-            JsonDeserializer<?> elementDeserializer, Method method);
+    protected abstract JsonDeserializer<?> _createContextual(MapLikeType t,
+            KeyDeserializer kd, TypeDeserializer typeDeserializer,
+            JsonDeserializer<?> ed, Method method);
 
     @Override
     public T deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,

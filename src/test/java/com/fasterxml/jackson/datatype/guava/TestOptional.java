@@ -1,10 +1,13 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.google.common.base.Optional;
 
 public class TestOptional extends BaseTest
@@ -20,6 +23,26 @@ public class TestOptional extends BaseTest
     public static final class OptionalGenericData<T>{
         private Optional<T> myData;
     }
+
+    @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
+    public static class Unit
+    {
+//        @JsonIdentityReference(alwaysAsId=true)
+        public Optional<Unit> baseUnit;
+        
+        public Unit() { }
+        public Unit(Optional<Unit> u) { baseUnit = u; }
+        
+        public void link(Unit u) {
+            baseUnit = Optional.of(u);
+        }
+    }
+    
+    /*
+    /**********************************************************************
+    /* Test methods
+    /**********************************************************************
+     */
 
     public void testDeserAbsent() throws Exception {
         Optional<?> value = MAPPER.readValue("null", new TypeReference<Optional<String>>() {});
@@ -99,17 +122,32 @@ public class TestOptional extends BaseTest
         assertEquals("{}", value);
     }
     
-    public void testWithTypingEnabled() throws Exception {
+    public void testWithTypingEnabled() throws Exception
+    {
 		final ObjectMapper objectMapper = mapperWithModule();
 		// ENABLE TYPING
 		objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.OBJECT_AND_NON_CONCRETE);
 
 		final OptionalData myData = new OptionalData();
-		myData.myString = Optional.fromNullable("");
+		myData.myString = Optional.fromNullable("abc");
 		
 		final String json = objectMapper.writeValueAsString(myData);
 		
 		final OptionalData deserializedMyData = objectMapper.readValue(json, OptionalData.class);
 		assertEquals(myData.myString, deserializedMyData.myString);
+    }
+
+    // for [Issue#17]
+    public void testObjectId() throws Exception
+    {
+        final Unit input = new Unit();
+        input.link(input);
+        String json = MAPPER.writeValueAsString(input);
+        Unit result = MAPPER.readValue(json,  Unit.class);
+        assertNotNull(result);
+        assertNotNull(result.baseUnit);
+        assertTrue(result.baseUnit.isPresent());
+        Unit base = result.baseUnit.get();
+        assertSame(result, base);
     }
 }
