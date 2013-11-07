@@ -90,10 +90,18 @@ public class GuavaOptionalDeserializer
     public Optional<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
             JsonProcessingException
     {
-        Object reference = _valueDeserializer.deserialize(jp, ctxt);
-        return Optional.of(reference);
+        Object refd;
+        
+        if (_valueTypeDeserializer == null) {
+            refd = _valueDeserializer.deserialize(jp, ctxt);
+        } else {
+            refd = _valueDeserializer.deserializeWithType(jp, ctxt, _valueTypeDeserializer);
+        }
+        return Optional.of(refd);
     }
 
+    /* NOTE: usually should not need this method... but for some reason, it is needed here.
+     */
     @Override
     public Optional<?> deserializeWithType(JsonParser jp, DeserializationContext ctxt, TypeDeserializer typeDeserializer)
         throws IOException, JsonProcessingException
@@ -102,16 +110,16 @@ public class GuavaOptionalDeserializer
         if (t == JsonToken.VALUE_NULL) {
             return getNullValue();
         }
-        /* 03-Nov-2013, tatu: This gets rather tricky with "natural" types
-         *   (String, Integer, Boolean), which do NOT include type information.
-         *   These might actually be handled ok except that nominal type here
-         *   is `Optional`, so special handling is not invoked; instead, need
-         *   to do a work-around here.
-         */
+        // 03-Nov-2013, tatu: This gets rather tricky with "natural" types
+        //   (String, Integer, Boolean), which do NOT include type information.
+        //   These might actually be handled ok except that nominal type here
+        //   is `Optional`, so special handling is not invoked; instead, need
+        //   to do a work-around here.
         if (t != null && t.isScalarValue()) {
             return deserialize(jp, ctxt);
         }
-        Object ref = _valueTypeDeserializer.deserializeTypedFromAny(jp, ctxt);
+        // with type deserializer to use here? Looks like we get passed same one?
+        Object ref = typeDeserializer.deserializeTypedFromAny(jp, ctxt);
         return Optional.of(ref);
     }
 }
