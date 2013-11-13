@@ -24,4 +24,16 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
         context.addTypeModifier(new GuavaTypeModifier());
         context.addBeanSerializerModifier(new GuavaBeanSerializerModifier());
     }
+
+    @Override
+    public int hashCode()
+    {
+        return GuavaModule.class.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        return this == o;
+    }
 }
