@@ -22,7 +22,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
   </scm>
 
   <properties>
-    <version.jackson>2.3.0-rc1</version.jackson>
+    <version.jackson>2.3.0</version.jackson>
 
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/datatype/guava</packageVersion.dir>

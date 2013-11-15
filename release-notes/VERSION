@@ -1,5 +1,5 @@
 Project: jackson-datatype-guava
-Version: 2.3.0 (xx-Oct-2013)
+Version: 2.3.0 (14-Nov-2013)
 
 #29: Empty ImmutableMap not deserialized correctly, when type info included
  (reported by pbergn@github)
