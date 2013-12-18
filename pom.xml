@@ -61,8 +61,7 @@ com.fasterxml.jackson.databind.type
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <!-- Guava has the weirdest versioning system... r11 is the current as of May 2012 -->
-      <version>14.0.1</version>
+      <version>15.0</version>
     </dependency>
 
      <!-- and for testing, JUnit is needed -->
