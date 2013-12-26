@@ -1,74 +1,21 @@
 package com.fasterxml.jackson.datatype.guava;
 
-
-import com.fasterxml.jackson.databind.BeanDescription;
-import com.fasterxml.jackson.databind.DeserializationConfig;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.KeyDeserializer;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.Deserializers;
-import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.datatype.guava.deser.GuavaOptionalDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.HashMultisetDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableBiMapDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableListDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableMapDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableMultisetDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableSetDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedMapDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedSetDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.LinkedHashMultisetDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.RangeDeserializer;
-import com.fasterxml.jackson.datatype.guava.deser.TreeMultisetDeserializer;
+import com.fasterxml.jackson.datatype.guava.deser.*;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.set.HashMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.set.LinkedHashMultimapDeserializer;
 import com.google.common.base.Optional;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.EnumBiMap;
-import com.google.common.collect.EnumHashBiMap;
-import com.google.common.collect.EnumMultiset;
-import com.google.common.collect.ForwardingListMultimap;
-import com.google.common.collect.ForwardingSetMultimap;
-import com.google.common.collect.ForwardingSortedSetMultimap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.ImmutableBiMap;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultiset;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.ImmutableSortedMap;
-import com.google.common.collect.ImmutableSortedSet;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.LinkedHashMultiset;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Range;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.SortedSetMultimap;
-import com.google.common.collect.Table;
-import com.google.common.collect.TreeMultimap;
-import com.google.common.collect.TreeMultiset;
+import com.google.common.collect.*;
 
 /**
  * Custom deserializers module offers.
- *
- * @author tsaloranta
  */
 public class GuavaDeserializers
     extends Deserializers.Base
@@ -271,7 +218,7 @@ public class GuavaDeserializers
             return new GuavaOptionalDeserializer(type, typeDeser, valueDeser);
         }
         if (Range.class.isAssignableFrom(raw)) {
-            return new RangeDeserializer();
+            return new RangeDeserializer(type);
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }

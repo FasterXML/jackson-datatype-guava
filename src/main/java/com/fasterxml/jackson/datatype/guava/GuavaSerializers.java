@@ -1,5 +1,8 @@
 package com.fasterxml.jackson.datatype.guava;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
@@ -8,16 +11,13 @@ import com.fasterxml.jackson.databind.type.MapLikeType;
 
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
-
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
-import com.google.common.base.Optional;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
 
 public class GuavaSerializers extends Serializers.Base
 {
     @Override
-    public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc) {
+    public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc)
+    {
         Class<?> raw = type.getRawClass();
         if(Optional.class.isAssignableFrom(raw)){
             return new GuavaOptionalSerializer(type);
@@ -27,9 +27,10 @@ public class GuavaSerializers extends Serializers.Base
         }
         return super.findSerializer(config, type, beanDesc);
     }
+
     @Override
     public JsonSerializer<?> findMapLikeSerializer(SerializationConfig config,
-                MapLikeType type, BeanDescription beanDesc, JsonSerializer<Object> keySerializer,
+            MapLikeType type, BeanDescription beanDesc, JsonSerializer<Object> keySerializer,
             TypeSerializer elementTypeSerializer, JsonSerializer<Object> elementValueSerializer)
     {
         if (Multimap.class.isAssignableFrom(type.getRawClass())) {

@@ -1,41 +1,112 @@
 package com.fasterxml.jackson.datatype.guava.ser;
 
+import java.io.IOException;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import com.google.common.collect.Range;
 
-import java.io.IOException;
+import com.google.common.collect.Range;
 
 /**
  * Jackson serializer for a Guava {@link Range}.
  */
-public class RangeSerializer extends StdSerializer<Range> {
+public class RangeSerializer extends StdSerializer<Range<?>>
+    implements ContextualSerializer
+{
+    protected final JavaType _rangeType;
+    
+    protected final JsonSerializer<Object> _endpointSerializer;
 
-    public RangeSerializer(JavaType type) {
+    /*
+    /**********************************************************
+    /* Life-cycle
+    /**********************************************************
+     */
+
+    public RangeSerializer(JavaType type) { this(type, null); }
+    
+    @SuppressWarnings("unchecked")
+    public RangeSerializer(JavaType type, JsonSerializer<?> endpointSer)
+    {
         super(type);
+        _rangeType = type;
+        _endpointSerializer = (JsonSerializer<Object>) endpointSer;
+    }
+    
+    // TODO: can this be implemented with better semantics? Base class only
+    // checks for null
+    @Override
+    public boolean isEmpty(Range<?> value) {
+        return super.isEmpty(value);
     }
 
     @Override
-    public void serialize(Range value, JsonGenerator jgen, SerializerProvider provider)
-            throws IOException, JsonGenerationException {
+    public JsonSerializer<?> createContextual(SerializerProvider prov,
+            BeanProperty property) throws JsonMappingException
+    {
+        if (_endpointSerializer == null) {
+            JavaType endpointType = _rangeType.containedType(0);
+            // let's not consider "untyped" (java.lang.Object) to be meaningful here...
+            if (endpointType != null && !endpointType.hasRawClass(Object.class)) {
+                JsonSerializer<?> ser = prov.findValueSerializer(endpointType, property);
+                return new RangeSerializer(_rangeType, ser);
+            }
+        }
+        return this;
+    }
+    
+    /*
+    /**********************************************************
+    /* Serialization methods
+    /**********************************************************
+     */
 
+    @Override
+    public void serialize(Range<?> value, JsonGenerator jgen, SerializerProvider provider)
+        throws IOException, JsonGenerationException
+    {
         jgen.writeStartObject();
-
-        if (value.hasLowerBound()) {
-            provider.defaultSerializeField("lowerEndpoint", value.lowerEndpoint(), jgen);
-            provider.defaultSerializeField("lowerBoundType", value.lowerBoundType(), jgen);
-        }
-
-        if (value.hasUpperBound()) {
-            provider.defaultSerializeField("upperEndpoint", value.upperEndpoint(), jgen);
-            provider.defaultSerializeField("upperBoundType", value.upperBoundType(), jgen);
-        }
-
+        _writeContents(value, jgen, provider);
         jgen.writeEndObject();
 
     }
 
+    @Override
+    public void serializeWithType(Range<?> value, JsonGenerator jgen, SerializerProvider provider,
+            TypeSerializer typeSer)
+        throws IOException, JsonProcessingException
+    {
+        // Will be serialized as a JSON Object, so:
+        typeSer.writeTypePrefixForObject(value, jgen);
+        _writeContents(value, jgen, provider);
+        typeSer.writeTypeSuffixForObject(value, jgen);
+    }
+
+    private void _writeContents(Range<?> value, JsonGenerator jgen, SerializerProvider provider)
+        throws IOException
+    {
+        if (value.hasLowerBound()) {
+            if (_endpointSerializer != null) {
+                jgen.writeFieldName("lowerEndpoint");
+                _endpointSerializer.serialize(value.lowerEndpoint(), jgen, provider);
+            } else {
+                provider.defaultSerializeField("lowerEndpoint", value.lowerEndpoint(), jgen);
+            }
+            provider.defaultSerializeField("lowerBoundType", value.lowerBoundType(), jgen);
+        }
+        if (value.hasUpperBound()) {
+            if (_endpointSerializer != null) {
+                jgen.writeFieldName("upperEndpoint");
+                _endpointSerializer.serialize(value.upperEndpoint(), jgen, provider);
+            } else {
+                provider.defaultSerializeField("upperEndpoint", value.upperEndpoint(), jgen);
+            }
+            provider.defaultSerializeField("upperBoundType", value.upperBoundType(), jgen);
+        }
+    }
 }

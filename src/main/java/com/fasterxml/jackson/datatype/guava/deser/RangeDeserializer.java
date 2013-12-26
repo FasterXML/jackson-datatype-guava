@@ -1,35 +1,104 @@
 package com.fasterxml.jackson.datatype.guava.deser;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.deser.std.UntypedObjectDeserializer;
+import java.io.IOException;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
-
-import java.io.IOException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 
 /**
  * Jackson deserializer for a Guava {@link Range}.
+ *<p>
+ * TODO: I think it would make sense to reimplement this deserializer to
+ * use Delegating Deserializer, using a POJO as an intermediate form (properties
+ * could be of type {@link java.lang.Object})
+ * This would also also simplify the implementation a bit.
  */
-public class RangeDeserializer extends JsonDeserializer<Range> {
+public class RangeDeserializer
+    extends StdDeserializer<Range<?>>
+    implements ContextualDeserializer
+{
+    private static final long serialVersionUID = 1L;
+
+    protected final JavaType _rangeType;
+
+    protected final JsonDeserializer<Object> _endpointDeserializer;
+
+    /*
+    /**********************************************************
+    /* Life-cyecl
+    /**********************************************************
+     */
+    
+    public RangeDeserializer(JavaType rangeType) {
+        this(rangeType, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public RangeDeserializer(JavaType rangeType, JsonDeserializer<?> endpointDeser)
+    {
+        super(rangeType);
+        _rangeType = rangeType;
+        _endpointDeserializer = (JsonDeserializer<Object>) endpointDeser;
+    }
 
     @Override
-    public Range deserialize(JsonParser parser, DeserializationContext context)
-            throws IOException, JsonProcessingException {
-        expect(parser, JsonToken.START_OBJECT);
+    public JavaType getValueType() { return _rangeType; }
 
-        Comparable lowerEndpoint = null;
-        Comparable upperEndpoint = null;
+    @Override
+    public JsonDeserializer<?> createContextual(DeserializationContext ctxt,
+            BeanProperty property) throws JsonMappingException
+    {
+        if (_endpointDeserializer == null) {
+            JavaType endpointType = _rangeType.containedType(0);
+            if (endpointType == null) { // should this ever occur?
+                endpointType = TypeFactory.unknownType();
+            }
+            JsonDeserializer<Object> deser = ctxt.findContextualValueDeserializer(endpointType, property);
+            return new RangeDeserializer(_rangeType, deser);
+        }
+        return this;
+    }
+
+    /*
+    /**********************************************************
+    /* Actual deserialization
+    /**********************************************************
+     */
+    
+    @Override
+    public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt,
+            TypeDeserializer typeDeserializer)
+        throws IOException, JsonProcessingException
+    {
+        return typeDeserializer.deserializeTypedFromObject(jp, ctxt);
+    }
+
+    @Override
+    public Range<?> deserialize(JsonParser parser, DeserializationContext context)
+            throws IOException, JsonProcessingException
+    {
+        // NOTE: either START_OBJECT _or_ FIELD_NAME fine; latter for polymorphic cases
+        JsonToken t = parser.getCurrentToken();
+        if (t == JsonToken.START_OBJECT) {
+            t = parser.nextToken();
+        }
+
+        Comparable<?> lowerEndpoint = null;
+        Comparable<?> upperEndpoint = null;
         BoundType lowerBoundType = null;
         BoundType upperBoundType = null;
 
-        while ((parser.nextToken() != null) && (parser.getCurrentToken() != JsonToken.END_OBJECT)) {
-            expect(parser, JsonToken.FIELD_NAME);
+        for (; t != JsonToken.END_OBJECT; t = parser.nextToken()) {
+            expect(parser, JsonToken.FIELD_NAME, t);
             String fieldName = parser.getCurrentName();
             try {
                 if (fieldName.equals("lowerEndpoint")) {
@@ -49,14 +118,13 @@ public class RangeDeserializer extends JsonDeserializer<Range> {
                     parser.nextToken();
                     upperBoundType = deserializeBoundType(parser);
                 } else {
-                    throw new JsonMappingException("Unexpected field: " + fieldName);
+                    throw context.mappingException("Unexpected Range field: " + fieldName);
                 }
             } catch (IllegalStateException e) {
                 throw new JsonMappingException(e.getMessage());
             }
         }
 
-        Range range;
         try {
             if ((lowerEndpoint != null) && (upperEndpoint != null)) {
                 Preconditions.checkState(lowerEndpoint.getClass() == upperEndpoint.getClass(),
@@ -65,24 +133,24 @@ public class RangeDeserializer extends JsonDeserializer<Range> {
                                          upperEndpoint.getClass().getName());
                 Preconditions.checkState(lowerBoundType != null, "'lowerEndpoint' field found, but not 'lowerBoundType'");
                 Preconditions.checkState(upperBoundType != null, "'upperEndpoint' field found, but not 'upperBoundType'");
-                range = Range.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
-            } else if (lowerEndpoint != null) {
-                Preconditions.checkState(lowerBoundType != null, "'lowerEndpoint' field found, but not 'lowerBoundType'");
-                range = Range.downTo(lowerEndpoint, lowerBoundType);
-            } else if (upperEndpoint != null) {
-                Preconditions.checkState(upperBoundType != null, "'upperEndpoint' field found, but not 'upperBoundType'");
-                range = Range.upTo(upperEndpoint, upperBoundType);
-            } else {
-                range = Range.all();
+                return Range.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
+            if (lowerEndpoint != null) {
+                Preconditions.checkState(lowerBoundType != null, "'lowerEndpoint' field found, but not 'lowerBoundType'");
+                return Range.downTo(lowerEndpoint, lowerBoundType);
+            }
+            if (upperEndpoint != null) {
+                Preconditions.checkState(upperBoundType != null, "'upperEndpoint' field found, but not 'upperBoundType'");
+                return Range.upTo(upperEndpoint, upperBoundType);
+            }
+            return Range.all();
         } catch (IllegalStateException e) {
             throw new JsonMappingException(e.getMessage());
         }
-        return range;
     }
 
     private BoundType deserializeBoundType(JsonParser parser) throws IOException {
-        expect(parser, JsonToken.VALUE_STRING);
+        expect(parser, JsonToken.VALUE_STRING, parser.getCurrentToken());
         String name = parser.getText();
         try {
             return BoundType.valueOf(name);
@@ -91,19 +159,21 @@ public class RangeDeserializer extends JsonDeserializer<Range> {
         }
     }
 
-    private Comparable deserializeEndpoint(JsonParser parser, DeserializationContext context) throws IOException {
-        Object obj = new UntypedObjectDeserializer().deserialize(parser, context);
-        Preconditions.checkState(obj instanceof Comparable,
+    private Comparable<?> deserializeEndpoint(JsonParser parser, DeserializationContext context) throws IOException
+    {
+        Object obj = _endpointDeserializer.deserialize(parser, context);
+        if (!(obj instanceof Comparable)) {
+            throw context.mappingException(String.format(
                                  "Field [%s] deserialized to [%s], which does not implement Comparable.",
-                                 parser.getCurrentName(), obj.getClass().getName());
-        //noinspection ConstantConditions
-        return (Comparable) obj;
+                                 parser.getCurrentName(), obj.getClass().getName()));
+        }
+        return (Comparable<?>) obj;
     }
 
-    private void expect(JsonParser jp, JsonToken token) throws IOException {
-        if (jp.getCurrentToken() != token) {
-            throw new JsonMappingException("Expecting " + token + ", found " + jp.getCurrentToken(), jp.getCurrentLocation());
+    private void expect(JsonParser jp, JsonToken expected, JsonToken actual) throws JsonMappingException
+    {
+        if (actual != expected) {
+            throw new JsonMappingException("Expecting " + expected + ", found " + actual, jp.getCurrentLocation());
         }
     }
-
 }
