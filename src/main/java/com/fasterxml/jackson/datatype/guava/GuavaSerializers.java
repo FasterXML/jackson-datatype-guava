@@ -9,8 +9,10 @@ import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 
+import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
 import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
 
 public class GuavaSerializers extends Serializers.Base
 {
@@ -20,11 +22,14 @@ public class GuavaSerializers extends Serializers.Base
         if(Optional.class.isAssignableFrom(raw)){
             return new GuavaOptionalSerializer(type);
         }
+        if (Range.class.isAssignableFrom(raw)) {
+            return new RangeSerializer(type);
+        }
         return super.findSerializer(config, type, beanDesc);
     }
     @Override
     public JsonSerializer<?> findMapLikeSerializer(SerializationConfig config,
-            MapLikeType type, BeanDescription beanDesc, JsonSerializer<Object> keySerializer,
+                MapLikeType type, BeanDescription beanDesc, JsonSerializer<Object> keySerializer,
             TypeSerializer elementTypeSerializer, JsonSerializer<Object> elementValueSerializer)
     {
         if (Multimap.class.isAssignableFrom(type.getRawClass())) {

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.datatype.guava.deser.ImmutableSetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedMapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.ImmutableSortedSetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.LinkedHashMultisetDeserializer;
+import com.fasterxml.jackson.datatype.guava.deser.RangeDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.TreeMultisetDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
@@ -57,6 +58,7 @@ import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
+import com.google.common.collect.Range;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.SortedSetMultimap;
 import com.google.common.collect.Table;
@@ -267,6 +269,9 @@ public class GuavaDeserializers
             JsonDeserializer<?> valueDeser = type.getValueHandler();
             TypeDeserializer typeDeser = type.getTypeHandler();
             return new GuavaOptionalDeserializer(type, typeDeser, valueDeser);
+        }
+        if (Range.class.isAssignableFrom(raw)) {
+            return new RangeDeserializer();
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }
