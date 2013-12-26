@@ -6,7 +6,9 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JavaType;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.google.common.base.Optional;
@@ -39,5 +41,15 @@ public final class GuavaOptionalSerializer extends StdSerializer<Optional<?>>
                                   SerializerProvider provider,
                                   TypeSerializer typeSer) throws IOException, JsonProcessingException {
         serialize(value, jgen, provider);
+    }
+
+    @Override
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint) throws JsonMappingException {
+        JavaType typeParameter = typeHint.containedType(0);
+        if (typeParameter != null) {
+            visitor.getProvider().findValueSerializer(typeParameter, null).acceptJsonFormatVisitor(visitor, typeParameter);
+            return;
+        }
+        super.acceptJsonFormatVisitor(visitor, typeHint);
     }
 }
