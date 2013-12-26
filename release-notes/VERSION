@@ -1,14 +1,21 @@
 Project: jackson-datatype-guava
-Version: 2.3.0 (14-Nov-2013)
+Version: 2.3.1 (xx-Dec-2013)
+
+#33: Add support for `Range` values
+ (contribute by ispringer@github)
+#34: Use Optional type parameter if present to create JSON schema
+ (contributed by cponomaryov@github)
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.3.0 (14-Nov-2013)
 
 #29: Empty ImmutableMap not deserialized correctly, when type info included
  (reported by pbergn@github)
 - Add support for `DeserializationConfig.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY` for
   `ImmutableSet` and `MultiSet`
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.2.3 (25-Aug-2013)
 2.2.2 (27-May-2013)
