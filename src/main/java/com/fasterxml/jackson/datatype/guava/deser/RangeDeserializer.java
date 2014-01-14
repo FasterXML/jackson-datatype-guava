@@ -2,6 +2,7 @@ package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
@@ -34,7 +35,7 @@ public class RangeDeserializer
 
     /*
     /**********************************************************
-    /* Life-cyecl
+    /* Life-cycle
     /**********************************************************
      */
     
@@ -133,23 +134,24 @@ public class RangeDeserializer
                                          upperEndpoint.getClass().getName());
                 Preconditions.checkState(lowerBoundType != null, "'lowerEndpoint' field found, but not 'lowerBoundType'");
                 Preconditions.checkState(upperBoundType != null, "'upperEndpoint' field found, but not 'upperBoundType'");
-                return Range.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
+                return RangeFactory.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
             if (lowerEndpoint != null) {
                 Preconditions.checkState(lowerBoundType != null, "'lowerEndpoint' field found, but not 'lowerBoundType'");
-                return Range.downTo(lowerEndpoint, lowerBoundType);
+                return RangeFactory.downTo(lowerEndpoint, lowerBoundType);
             }
             if (upperEndpoint != null) {
                 Preconditions.checkState(upperBoundType != null, "'upperEndpoint' field found, but not 'upperBoundType'");
-                return Range.upTo(upperEndpoint, upperBoundType);
+                return RangeFactory.upTo(upperEndpoint, upperBoundType);
             }
-            return Range.all();
+            return RangeFactory.all();
         } catch (IllegalStateException e) {
             throw new JsonMappingException(e.getMessage());
         }
     }
 
-    private BoundType deserializeBoundType(JsonParser parser) throws IOException {
+    private BoundType deserializeBoundType(JsonParser parser) throws IOException
+    {
         expect(parser, JsonToken.VALUE_STRING, parser.getCurrentToken());
         String name = parser.getText();
         try {
