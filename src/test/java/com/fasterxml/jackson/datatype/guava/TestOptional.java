@@ -8,7 +8,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.fasterxml.jackson.module.jsonSchema.JsonSchema;
+import com.fasterxml.jackson.module.jsonSchema.factories.SchemaFactoryWrapper;
 import com.google.common.base.Optional;
+
+import java.util.Map;
 
 public class TestOptional extends BaseTest
 {
@@ -22,6 +26,12 @@ public class TestOptional extends BaseTest
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
     public static final class OptionalGenericData<T>{
         private Optional<T> myData;
+    }
+
+    @JsonAutoDetect(fieldVisibility=Visibility.ANY)
+    public static final class OptionalRequiredData{
+        @JsonProperty(required = true)
+        private Optional<String> myRequiredString;
     }
 
     @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
@@ -149,5 +159,29 @@ public class TestOptional extends BaseTest
         assertTrue(result.baseUnit.isPresent());
         Unit base = result.baseUnit.get();
         assertSame(result, base);
+    }
+
+    public void testSchemaGeneric() throws Exception {
+        SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+        MAPPER.acceptJsonFormatVisitor(OptionalData.class, visitor);
+        JsonSchema jsonSchema = visitor.finalSchema();
+        assertTrue(jsonSchema.isObjectSchema());
+        Map<String, JsonSchema> properties = jsonSchema.asObjectSchema().getProperties();
+        assertEquals(properties.size(), 1);
+        Map.Entry<String, JsonSchema> property = properties.entrySet().iterator().next();
+        assertEquals(property.getKey(), "myString");
+        assertTrue(property.getValue().isStringSchema());
+    }
+
+    public void testSchemaRequired() throws Exception {
+        SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
+        MAPPER.acceptJsonFormatVisitor(OptionalRequiredData.class, visitor);
+        JsonSchema jsonSchema = visitor.finalSchema();
+        assertTrue(jsonSchema.isObjectSchema());
+        Map<String, JsonSchema> properties = jsonSchema.asObjectSchema().getProperties();
+        assertEquals(properties.size(), 1);
+        Map.Entry<String, JsonSchema> property = properties.entrySet().iterator().next();
+        assertEquals(property.getKey(), "myRequiredString");
+        assertTrue(property.getValue().getRequired() == null || !property.getValue().getRequired());
     }
 }
