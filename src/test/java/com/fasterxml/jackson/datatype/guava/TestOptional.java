@@ -165,6 +165,7 @@ public class TestOptional extends BaseTest
         SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
         MAPPER.acceptJsonFormatVisitor(OptionalData.class, visitor);
         JsonSchema jsonSchema = visitor.finalSchema();
+        assertNotNull(jsonSchema);
         assertTrue(jsonSchema.isObjectSchema());
         Map<String, JsonSchema> properties = jsonSchema.asObjectSchema().getProperties();
         assertEquals(properties.size(), 1);
@@ -177,6 +178,7 @@ public class TestOptional extends BaseTest
         SchemaFactoryWrapper visitor = new SchemaFactoryWrapper();
         MAPPER.acceptJsonFormatVisitor(OptionalRequiredData.class, visitor);
         JsonSchema jsonSchema = visitor.finalSchema();
+        assertNotNull(jsonSchema);
         assertTrue(jsonSchema.isObjectSchema());
         Map<String, JsonSchema> properties = jsonSchema.asObjectSchema().getProperties();
         assertEquals(properties.size(), 1);
