@@ -1,5 +1,5 @@
 Project: jackson-datatype-guava
-Version: 2.4.0 (xx-xxx-2014)
+Version: 2.3.2 (01-Mar-2014)
 
 #36: Improve Range deserializer to work with older Guava versions (10-)
  (contribtued by ispringer@github)
