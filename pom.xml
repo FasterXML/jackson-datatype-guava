@@ -79,6 +79,12 @@ com.fasterxml.jackson.databind.type
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jsonSchema</artifactId>
+      <version>${version.jackson}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

@@ -23,4 +23,9 @@ public class GuavaOptionalBeanPropertyWriter extends BeanPropertyWriter {
         super.serializeAsField(bean, jgen, prov);
     }
 
+    @Override
+    public boolean isRequired() {
+        return false;
+    }
+
 }
