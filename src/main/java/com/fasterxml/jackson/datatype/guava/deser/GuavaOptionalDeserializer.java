@@ -91,7 +91,7 @@ public class GuavaOptionalDeserializer
             JsonProcessingException
     {
         Object refd;
-        
+
         if (_valueTypeDeserializer == null) {
             refd = _valueDeserializer.deserialize(jp, ctxt);
         } else {
@@ -119,7 +119,6 @@ public class GuavaOptionalDeserializer
             return deserialize(jp, ctxt);
         }
         // with type deserializer to use here? Looks like we get passed same one?
-        Object ref = typeDeserializer.deserializeTypedFromAny(jp, ctxt);
-        return Optional.of(ref);
+        return Optional.of(typeDeserializer.deserializeTypedFromAny(jp, ctxt));
     }
 }

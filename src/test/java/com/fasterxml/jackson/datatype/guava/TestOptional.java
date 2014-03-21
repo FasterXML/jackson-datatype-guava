@@ -1,8 +1,9 @@
 package com.fasterxml.jackson.datatype.guava;
 
+import java.util.*;
+
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -37,7 +38,7 @@ public class TestOptional extends BaseTest
             baseUnit = Optional.of(u);
         }
     }
-    
+
     /*
     /**********************************************************************
     /* Test methods
@@ -137,7 +138,7 @@ public class TestOptional extends BaseTest
 		assertEquals(myData.myString, deserializedMyData.myString);
     }
 
-    // for [Issue#17]
+    // [Issue#17]
     public void testObjectId() throws Exception
     {
         final Unit input = new Unit();
@@ -149,5 +150,27 @@ public class TestOptional extends BaseTest
         assertTrue(result.baseUnit.isPresent());
         Unit base = result.baseUnit.get();
         assertSame(result, base);
+    }
+
+    // [Issue#37]
+    public void testOptionalCollection() throws Exception {
+        ObjectMapper mapper = new ObjectMapper().registerModule(new GuavaModule());
+
+        TypeReference<List<Optional<String>>> typeReference =
+            new TypeReference<List<Optional<String>>>() {};
+
+        List<Optional<String>> list = new ArrayList<Optional<String>>();
+        list.add(Optional.of("2014-1-22"));
+        list.add(Optional.<String>absent());
+        list.add(Optional.of("2014-1-23"));
+
+        String str = mapper.writeValueAsString(list);
+        assertEquals("[\"2014-1-22\",null,\"2014-1-23\"]", str);
+
+        List<Optional<String>> result = mapper.readValue(str, typeReference);
+        assertEquals(list.size(), result.size());
+        for (int i = 0; i < list.size(); ++i) {
+            assertEquals("Entry #"+i, list.get(i), result.get(i));
+        }
     }
 }
