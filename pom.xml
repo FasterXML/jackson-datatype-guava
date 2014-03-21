@@ -21,6 +21,13 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <tag>HEAD</tag>
   </scm>
 
+  <contributors>
+    <contributor>
+      <name>Steven Schlansker</name>
+      <email>steven@nesscomputing.com</email>
+    </contributor>
+  </contributors>
+
   <properties>
     <version.jackson>2.3.2</version.jackson>
 

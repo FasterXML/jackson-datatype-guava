@@ -8,6 +8,7 @@ import com.fasterxml.jackson.core.*;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.ContainerSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 
@@ -15,7 +16,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 public class MultimapSerializer
-    extends JsonSerializer<Multimap<?, ?>>
+    extends ContainerSerializer<Multimap<?, ?>>
     implements ContextualSerializer
 {
     private final MapLikeType _type;
@@ -31,6 +32,7 @@ public class MultimapSerializer
             TypeSerializer valueTypeSerializer,
             JsonSerializer<Object> valueSerializer)
     {
+        super(type.getRawClass(), false);
         _type = type;
         _property = null;
         _keySerializer = keySerializer;
@@ -43,6 +45,7 @@ public class MultimapSerializer
                 JsonSerializer<?> keySerializer,
                 TypeSerializer valueTypeSerializer, JsonSerializer<?> valueSerializer)
     {
+        super(src);
         _type = src._type;
         _property = property;
         _keySerializer = (JsonSerializer<Object>) keySerializer;
@@ -55,6 +58,12 @@ public class MultimapSerializer
             TypeSerializer vts, JsonSerializer<?> valueSer)
     {
         return new MultimapSerializer(this, property, keySer, vts, valueSer);
+    }
+
+    @Override
+    protected ContainerSerializer<?> _withValueTypeSerializer(TypeSerializer typeSer) {
+        return new MultimapSerializer(this, _property, _keySerializer,
+                typeSer, _valueSerializer);
     }
     
     /*
@@ -92,7 +101,33 @@ public class MultimapSerializer
 
     /*
     /**********************************************************
-    /* JsonSerializer implementation
+    /* Accessors for ContainerSerializer
+    /**********************************************************
+     */
+    
+    @Override
+    public JsonSerializer<?> getContentSerializer() {
+        return _valueSerializer;
+    }
+
+    @Override
+    public JavaType getContentType() {
+        return _type.getContentType();
+    }
+
+    @Override
+    public boolean hasSingleElement(Multimap<?,?> map) {
+        return map.size() == 1;
+    }
+
+    @Override
+    public boolean isEmpty(Multimap<?,?> map) {
+        return map.isEmpty();
+    }
+    
+    /*
+    /**********************************************************
+    /* Post-processing (contextualization)
     /**********************************************************
      */
     

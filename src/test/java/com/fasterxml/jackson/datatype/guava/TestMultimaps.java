@@ -1,16 +1,10 @@
 package com.fasterxml.jackson.datatype.guava;
 
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.LinkedHashMultimap;
-import com.google.common.collect.LinkedListMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.SetMultimap;
-import com.google.common.collect.TreeMultimap;
+
+import com.google.common.collect.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -24,10 +18,23 @@ import static com.google.common.collect.TreeMultimap.create;
  */
 public class TestMultimaps extends BaseTest
 {
+    // Test for issue #13 on github, provided by stevenschlansker
+    public static enum MyEnum {
+        YAY,
+        BOO
+    }
+
+    // [Issue#41]
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    static class MultiMapWrapper {
+        @JsonProperty
+        Multimap<String, String> map = ArrayListMultimap.create();
+    }
+
     private static final String StringStringMultimap =
             "{\"first\":[\"abc\",\"abc\",\"foo\"]," + "\"second\":[\"bar\"]}";
 
-    private final ObjectMapper MAPPER =  mapperWithModule();
+    private final ObjectMapper MAPPER = mapperWithModule();
 
     public void testMultimap() throws Exception
     {
@@ -98,12 +105,6 @@ public class TestMultimaps extends BaseTest
         javaMap = o.readValue(t4, Map.class);
         assertEquals(2, javaMap.size());
     }
-    
-    // Test for issue #13 on github, provided by stevenschlansker
-    public static enum MyEnum {
-        YAY,
-        BOO
-    }
 
     public void testEnumKey() throws Exception
     {
@@ -119,6 +120,13 @@ public class TestMultimaps extends BaseTest
         assertEquals(map, MAPPER.readValue(serializedForm, type));
     }
 
+    // [Issue#41]
+    public void testEmptyMapExclusion() throws Exception
+    {
+        String json = MAPPER.writeValueAsString(new MultiMapWrapper());
+        assertEquals("{}", json);
+    }
+    
     /*
     /**********************************************************************
     /* Unit tests for set-based multimaps

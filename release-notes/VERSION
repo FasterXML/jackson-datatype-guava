@@ -1,12 +1,17 @@
 Project: jackson-datatype-guava
-Version: 2.3.2 (01-Mar-2014)
+Version: 2.3.3 (xx-xxx-2014)
 
-#36: Improve Range deserializer to work with older Guava versions (10-)
- (contribtued by ispringer@github)
+#41: `Multimap` serializer does not honor @JsonInclude(JsonInclude.Include.NON_EMPTY) 
+ (reported by Olve S-H)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.2 (01-Mar-2014)
+
+#36: Improve Range deserializer to work with older Guava versions (10-)
+ (contribtued by ispringer@github)
 
 2.3.1 (28-Dec-2013)
 
