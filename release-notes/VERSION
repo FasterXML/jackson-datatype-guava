@@ -1,5 +1,5 @@
 Project: jackson-datatype-guava
-Version: 2.3.3 (xx-xxx-2014)
+Version: 2.3.3 (10-Apr-2014)
 
 #37: `Optional` not correctly deserialized from JSON null, if inside a Collection
  (reported by JYang-Addepar@github)
