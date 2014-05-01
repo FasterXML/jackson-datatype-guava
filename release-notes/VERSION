@@ -1,14 +1,16 @@
 Project: jackson-datatype-guava
-Version: 2.3.3 (xx-xxx-2014)
+Version: 2.4.0 (xx-May-2014)
+
+------------------------------------------------------------------------
+=== History: ===
+------------------------------------------------------------------------
+
+2.3.3 (14-Apr-2014)
 
 #37: `Optional` not correctly deserialized from JSON null, if inside a Collection
  (reported by JYang-Addepar@github)
 #41: `Multimap` serializer does not honor @JsonInclude(JsonInclude.Include.NON_EMPTY) 
  (reported by Olve S-H)
-
-------------------------------------------------------------------------
-=== History: ===
-------------------------------------------------------------------------
 
 2.3.2 (01-Mar-2014)
 
