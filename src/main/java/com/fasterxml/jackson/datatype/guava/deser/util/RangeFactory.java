@@ -37,7 +37,7 @@ public class RangeFactory
     private static void initLegacyRangeFactoryMethods()
     {
         try {
-            Class rangesClass = Class.forName(LEGACY_RANGES_CLASS_NAME);
+            Class<?> rangesClass = Class.forName(LEGACY_RANGES_CLASS_NAME);
             legacyRangeMethod = findMethod(rangesClass, LEGACY_RANGE_METHOD_NAME, Comparable.class, BoundType.class,
                                            Comparable.class, BoundType.class);
             legacyDownToMethod = findMethod(rangesClass, LEGACY_DOWN_TO_METHOD_NAME, Comparable.class, BoundType.class);
@@ -49,7 +49,7 @@ public class RangeFactory
     }
 
     // returns null if the method is not found
-    private static Method findMethod(Class<?> clazz, String methodName, Class ... paramTypes)
+    private static Method findMethod(Class<?> clazz, String methodName, Class<?> ... paramTypes)
     {
         try {
             return clazz.getMethod(methodName, paramTypes);
@@ -82,6 +82,7 @@ public class RangeFactory
                            final C upperEndpoint, final BoundType upperBoundType)
     {
         return createRange(new Callable<Range<C>>() {
+            @Override
             public Range<C> call() throws Exception {
                 return Range.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
@@ -101,6 +102,7 @@ public class RangeFactory
     public static <C extends Comparable<?>> Range<C> downTo(final C lowerEndpoint, final BoundType lowerBoundType)
     {
         return createRange(new Callable<Range<C>>() {
+            @Override
             public Range<C> call() throws Exception {
                 return Range.downTo(lowerEndpoint, lowerBoundType);
             }
@@ -120,6 +122,7 @@ public class RangeFactory
     public static <C extends Comparable<?>> Range<C> upTo(final C upperEndpoint, final BoundType upperBoundType)
     {
         return createRange(new Callable<Range<C>>() {
+            @Override
             public Range<C> call() throws Exception {
                 return Range.upTo(upperEndpoint, upperBoundType);
             }
@@ -129,6 +132,7 @@ public class RangeFactory
     public static <C extends Comparable<?>> Range<C> all()
     {
         return createRange(new Callable<Range<C>>() {
+            @Override
             public Range<C> call() throws Exception {
                 return Range.all();
             }
@@ -138,6 +142,7 @@ public class RangeFactory
     public static <C extends Comparable<?>> Range<C> singleton(final C value)
     {
         return createRange(new Callable<Range<C>>() {
+            @Override
             public Range<C> call() throws Exception {
                 return Range.singleton(value);
             }
@@ -159,6 +164,7 @@ public class RangeFactory
         }
     }
 
+    @SuppressWarnings("unchecked")
     private static <C extends Comparable<?>> Range<C> invokeLegacyRangeFactoryMethod(Method method, Object... params)
     {
         try {
@@ -171,7 +177,5 @@ public class RangeFactory
     }
 
     // prevent instantiation
-    private RangeFactory()
-    {
-    }
+    private RangeFactory() { }
 }
