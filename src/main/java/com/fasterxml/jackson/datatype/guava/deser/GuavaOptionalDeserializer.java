@@ -1,18 +1,24 @@
 package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
+import java.util.Collection;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.databind.BeanDescription;
 import com.fasterxml.jackson.databind.BeanProperty;
+import com.fasterxml.jackson.databind.DeserializationConfig;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+import com.fasterxml.jackson.databind.jsontype.TypeResolverBuilder;
 import com.google.common.base.Optional;
 
 public class GuavaOptionalDeserializer
@@ -77,6 +83,9 @@ public class GuavaOptionalDeserializer
         if (deser == null) {
             deser = ctxt.findContextualValueDeserializer(_referenceType, property);
         }
+        if (typeDeser == null) {
+            typeDeser = _findTypeDeserializer(ctxt.getConfig(), _referenceType);
+        }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
         }
@@ -84,6 +93,29 @@ public class GuavaOptionalDeserializer
             return this;
         }
         return withResolved(typeDeser, deser);
+    }
+
+    /**
+     * Method that is temporarily copied here, until 2.4 is released (at which point
+     * jackson-databind has it available via DeserializationConfig)
+     */
+    private TypeDeserializer _findTypeDeserializer(DeserializationConfig cfg, JavaType baseType)
+        throws JsonMappingException
+    {
+        BeanDescription bean = cfg.introspectClassAnnotations(baseType.getRawClass());
+        AnnotatedClass ac = bean.getClassInfo();
+        TypeResolverBuilder<?> b = cfg.getAnnotationIntrospector().findTypeResolver(cfg, ac, baseType);
+
+        Collection<NamedType> subtypes = null;
+        if (b == null) {
+            b = cfg.getDefaultTyper(baseType);
+            if (b == null) {
+                return null;
+            }
+        } else {
+            subtypes = cfg.getSubtypeResolver().collectAndResolveSubtypes(ac, cfg, cfg.getAnnotationIntrospector());
+        }
+        return b.buildTypeDeserializer(cfg, baseType, subtypes);
     }
     
     @Override
