@@ -21,39 +21,38 @@ public class GuavaOptionalDeserializer
 {
     private static final long serialVersionUID = 1L;
 
+    protected final JavaType _fullType;
+    
     protected final JavaType _referenceType;
 
     protected final JsonDeserializer<?> _valueDeserializer;
 
     protected final TypeDeserializer _valueTypeDeserializer;
 
-    @Deprecated // since 2.3, 
-    public GuavaOptionalDeserializer(JavaType valueType) {
-        this(valueType, null, null);
-    }
-    
-    public GuavaOptionalDeserializer(JavaType valueType,
+    public GuavaOptionalDeserializer(JavaType fullType, JavaType refType,
             TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser)
     {
-        super(valueType);
-        _referenceType = valueType.containedType(0);
+        super(fullType);
+        _fullType = fullType;
+        _referenceType = refType;
         _valueTypeDeserializer = typeDeser;
         _valueDeserializer = valueDeser;
     }
 
     @Override
-    public Optional<?> getNullValue() {
-        return Optional.absent();
-    }
+    public JavaType getValueType() { return _fullType; }
+    
+    @Override
+    public Optional<?> getNullValue() { return Optional.absent(); }
 
     /**
      * Overridable fluent factory method used for creating contextual
      * instances.
      */
-    public GuavaOptionalDeserializer withResolved(
+    protected GuavaOptionalDeserializer withResolved(
             TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser)
     {
-        return new GuavaOptionalDeserializer(_referenceType,
+        return new GuavaOptionalDeserializer(_fullType, _referenceType,
                 typeDeser, valueDeser);
     }
     
@@ -74,8 +73,11 @@ public class GuavaOptionalDeserializer
     {
         JsonDeserializer<?> deser = _valueDeserializer;
         TypeDeserializer typeDeser = _valueTypeDeserializer;
+
         if (deser == null) {
             deser = ctxt.findContextualValueDeserializer(_referenceType, property);
+        } else { // otherwise directly assigned, probably not contextual yet:
+            deser = ctxt.handleSecondaryContextualization(deser, property);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
@@ -88,7 +90,7 @@ public class GuavaOptionalDeserializer
     
     @Override
     public Optional<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-            JsonProcessingException
+        JsonProcessingException
     {
         Object refd;
 

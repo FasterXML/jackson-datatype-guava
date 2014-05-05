@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.guava.deser.*;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
@@ -210,12 +211,19 @@ public class GuavaDeserializers
 
     @Override
     public JsonDeserializer<?> findBeanDeserializer(final JavaType type, DeserializationConfig config,
-            BeanDescription beanDesc) throws JsonMappingException {
+            BeanDescription beanDesc) throws JsonMappingException
+    {
         Class<?> raw = type.getRawClass();
         if (Optional.class.isAssignableFrom(raw)){
+            JavaType[] types = config.getTypeFactory().findTypeParameters(type, Optional.class);
+            JavaType refType = (types == null) ? TypeFactory.unknownType() : types[0];
             JsonDeserializer<?> valueDeser = type.getValueHandler();
             TypeDeserializer typeDeser = type.getTypeHandler();
-            return new GuavaOptionalDeserializer(type, typeDeser, valueDeser);
+            // [Issue#42]: Polymorphic types need type deserializer
+            if (typeDeser == null) {
+                typeDeser = config.findTypeDeserializer(refType);
+            }
+            return new GuavaOptionalDeserializer(type, refType, typeDeser, valueDeser);
         }
         if (Range.class.isAssignableFrom(raw)) {
             return new RangeDeserializer(type);
