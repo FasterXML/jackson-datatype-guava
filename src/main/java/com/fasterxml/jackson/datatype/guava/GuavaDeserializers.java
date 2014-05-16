@@ -14,6 +14,7 @@ import com.fasterxml.jackson.datatype.guava.deser.multimap.set.HashMultimapDeser
 import com.fasterxml.jackson.datatype.guava.deser.multimap.set.LinkedHashMultimapDeserializer;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
+import com.google.common.net.HostAndPort;
 
 /**
  * Custom deserializers module offers.
@@ -214,7 +215,7 @@ public class GuavaDeserializers
             BeanDescription beanDesc) throws JsonMappingException
     {
         Class<?> raw = type.getRawClass();
-        if (Optional.class.isAssignableFrom(raw)){
+        if (raw == Optional.class){
             JavaType[] types = config.getTypeFactory().findTypeParameters(type, Optional.class);
             JavaType refType = (types == null) ? TypeFactory.unknownType() : types[0];
             JsonDeserializer<?> valueDeser = type.getValueHandler();
@@ -225,8 +226,11 @@ public class GuavaDeserializers
             }
             return new GuavaOptionalDeserializer(type, refType, typeDeser, valueDeser);
         }
-        if (Range.class.isAssignableFrom(raw)) {
+        if (raw == Range.class) {
             return new RangeDeserializer(type);
+        }
+        if (raw == HostAndPort.class) {
+            return HostAndPortDeserializer.std;
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }

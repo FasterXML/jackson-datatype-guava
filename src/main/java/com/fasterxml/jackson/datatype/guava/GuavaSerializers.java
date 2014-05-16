@@ -3,12 +3,12 @@ package com.fasterxml.jackson.datatype.guava;
 import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-
+import com.google.common.net.HostAndPort;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.Serializers;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.databind.type.MapLikeType;
-
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
@@ -24,6 +24,10 @@ public class GuavaSerializers extends Serializers.Base
         }
         if (Range.class.isAssignableFrom(raw)) {
             return new RangeSerializer(type);
+        }
+        // since 2.4
+        if (HostAndPort.class.isAssignableFrom(raw)) {
+            return ToStringSerializer.instance;
         }
         return super.findSerializer(config, type, beanDesc);
     }

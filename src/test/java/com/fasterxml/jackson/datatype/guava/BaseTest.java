@@ -17,6 +17,14 @@ public abstract class BaseTest extends junit.framework.TestCase
         return mapper;
     }
 
+    protected String aposToQuotes(String json) {
+        return json.replace("'", "\"");
+    }
+
+    public String quote(String str) {
+        return '"'+str+'"';
+    }
+
     protected void verifyException(Throwable e, String... matches)
     {
         String msg = e.getMessage();
