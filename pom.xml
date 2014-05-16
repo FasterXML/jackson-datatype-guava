@@ -40,6 +40,8 @@ ${project.groupId}.guava.*;version=${project.version}
       <osgi.import>
 com.google.common.collect,
 com.google.common.base,
+com.google.common.cache,
+com.google.common.net,
 com.fasterxml.jackson.core,
 com.fasterxml.jackson.core.util,
 com.fasterxml.jackson.databind,

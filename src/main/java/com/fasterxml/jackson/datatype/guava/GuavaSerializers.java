@@ -1,6 +1,8 @@
 package com.fasterxml.jackson.datatype.guava;
 
 import com.google.common.base.Optional;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.net.HostAndPort;
@@ -27,6 +29,10 @@ public class GuavaSerializers extends Serializers.Base
         }
         // since 2.4
         if (HostAndPort.class.isAssignableFrom(raw)) {
+            return ToStringSerializer.instance;
+        }
+        // not sure how useful, but why not?
+        if (CacheBuilderSpec.class.isAssignableFrom(raw) || CacheBuilder.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
         }
         return super.findSerializer(config, type, beanDesc);
