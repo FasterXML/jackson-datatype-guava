@@ -1,5 +1,5 @@
 Project: jackson-datatype-guava
-Version: 2.4.0 (xx-May-2014)
+Version: 2.4.0 (03-Jun-2014)
 
 #43: Add support for `HostAndPort`
 

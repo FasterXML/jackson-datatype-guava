@@ -6,8 +6,8 @@ to support JSON serialization and deserialization of
 
 ## Status
 
-As of version 2.0 module is usable although coverage is not extensive:
-more support is added mainly via user contributions.
+As of version 2.3, module is production ready. Not all datatypes of Guava are support due to sheer
+size of the library; new support is added based on contributions.
 
 ## Usage
 
@@ -19,7 +19,7 @@ To use module on Maven-based projects, use following dependency:
 <dependency>
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-guava</artifactId>
-  <version>2.2.0</version>
+  <version>2.4.0</version>
 </dependency>
 ```
 
