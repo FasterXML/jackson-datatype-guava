@@ -1,5 +1,5 @@
 Project: jackson-datatype-guava
-Version: 2.3.4 (xx-xxx-2014)
+Version: 2.3.4 (17-Jul-2014)
 
 #42: Polymorphic deserialization involving Guava Optional<T> is broken.
  (reported by bbeck@github)
