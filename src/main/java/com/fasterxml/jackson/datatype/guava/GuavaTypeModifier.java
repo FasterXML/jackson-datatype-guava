@@ -36,13 +36,28 @@ public class GuavaTypeModifier extends TypeModifier
          * have to do for now...
          */
         if (FluentIterable.class.isAssignableFrom(raw)) {
-            JavaType[] types = typeFactory.findTypeParameters(type, Iterable.class);
-            JavaType elemType = (types == null || types.length < 1)
-                    ? null : types[0];
+            JavaType elemType = null;
+            JavaType[] types;
+            try {
+                types = typeFactory.findTypeParameters(type, Iterable.class);
+                if (types != null && types.length > 0) {
+                    elemType = types[0];
+                }
+            } catch (IllegalArgumentException e) {
+                /* 07-Aug-2015, tatu: Nasty hack, but until we get 100% functioning
+                 *   type resolution (from ClassMate project, f.ex.), need to work around
+                 *   edge cases with aliasing and/or unresolved type variables.
+                 *   So... here we go:
+                 */
+                String msg = e.getMessage();
+                if (msg == null || !msg.contains("Type variable 'T' can not be resolved")) {
+                    throw e;
+                }
+            }
             if (elemType == null) {
                 elemType = TypeFactory.unknownType();
             }
-            return typeFactory.constructParametricType(Iterable.class,  elemType);
+            return typeFactory.constructParametricType(Iterable.class, elemType);
         }
         return type;
     }

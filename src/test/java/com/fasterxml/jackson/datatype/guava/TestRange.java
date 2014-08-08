@@ -11,7 +11,7 @@ import java.io.IOException;
 /**
  * Unit tests to verify serialization of Guava {@link Range}s.
  */
-public class TestRange extends BaseTest {
+public class TestRange extends ModuleTestBase {
 
     private final ObjectMapper MAPPER = mapperWithModule();
 

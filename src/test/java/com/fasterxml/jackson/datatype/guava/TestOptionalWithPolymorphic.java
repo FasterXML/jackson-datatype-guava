@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.*;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
-public class TestOptionalWithPolymorphic extends BaseTest
+public class TestOptionalWithPolymorphic extends ModuleTestBase
 {
     static class ContainerA {
         @JsonProperty private Optional<String> name = Optional.absent();

@@ -8,7 +8,7 @@ import com.fasterxml.jackson.core.util.VersionUtil;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.guava.PackageVersion;
 
-public class TestVersions extends BaseTest
+public class TestVersions extends ModuleTestBase
 {
     public void testMapperVersions() throws IOException
     {

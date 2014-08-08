@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.net.HostAndPort;
 
-public class HostAndPortTest extends BaseTest
+public class HostAndPortTest extends ModuleTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 

@@ -1,11 +1,16 @@
 Project: jackson-datatype-guava
-Version: 2.4.1 (17-Jun-2014)
+Version: 2.4.2 (xx-Aug-2014)
 
-No changes since 2.4.0.
+#46: Can not serialize guava Iterables
+ (reported by chisui@github)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.4.1 (17-Jun-2014)
+
+No changes since 2.4.0.
 
 2.4.0 (03-Jun-2014)
 

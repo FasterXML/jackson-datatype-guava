@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.google.common.base.Optional;
 
-public class TestOptional extends BaseTest
+public class TestOptional extends ModuleTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 

@@ -17,7 +17,7 @@ import com.google.common.collect.*;
  * 
  * @author tsaloranta
  */
-public class TestImmutables extends BaseTest
+public class TestImmutables extends ModuleTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 

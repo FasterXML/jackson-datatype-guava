@@ -6,9 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 
-public abstract class BaseTest extends junit.framework.TestCase
+public abstract class ModuleTestBase extends junit.framework.TestCase
 {
-    protected BaseTest() { }
+    protected ModuleTestBase() { }
     
     protected ObjectMapper mapperWithModule()
     {

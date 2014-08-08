@@ -11,7 +11,7 @@ import com.google.common.collect.*;
  * 
  * @author tsaloranta
  */
-public class TestMultisets extends BaseTest
+public class TestMultisets extends ModuleTestBase
 {
 
     /*

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Unit tests to verify serialization of {@link FluentIterable}s.
  */
-public class TestFluentIterable extends BaseTest
+public class FluentIterableTest extends ModuleTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 
