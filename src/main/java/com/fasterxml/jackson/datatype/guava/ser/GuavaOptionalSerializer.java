@@ -113,13 +113,16 @@ public final class GuavaOptionalSerializer
     @Override
     public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint) throws JsonMappingException
     {
-        JavaType typeParameter = typeHint.containedType(0);
-        if (typeParameter != null) {
-            JsonSerializer<?> ser = visitor.getProvider().findValueSerializer(typeParameter, null);
-            ser.acceptJsonFormatVisitor(visitor, typeParameter);
-            return;
+        JavaType valueType = _valueType();
+        if (valueType != null) {
+            JsonSerializer<?> ser = _valueSerializer;
+            if (ser == null) {
+                ser = visitor.getProvider().findValueSerializer(valueType, null);
+            }
+            ser.acceptJsonFormatVisitor(visitor, valueType);
+        } else {
+            super.acceptJsonFormatVisitor(visitor, typeHint);
         }
-        super.acceptJsonFormatVisitor(visitor, typeHint);
     }
 
     protected JavaType _valueType() {
