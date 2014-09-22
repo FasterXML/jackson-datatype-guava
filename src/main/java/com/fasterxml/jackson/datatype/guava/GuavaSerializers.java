@@ -21,7 +21,7 @@ public class GuavaSerializers extends Serializers.Base
     public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc)
     {
         Class<?> raw = type.getRawClass();
-        if(Optional.class.isAssignableFrom(raw)){
+        if (Optional.class.isAssignableFrom(raw)){
             return new GuavaOptionalSerializer(type);
         }
         if (Range.class.isAssignableFrom(raw)) {

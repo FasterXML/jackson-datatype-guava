@@ -2,14 +2,16 @@ package com.fasterxml.jackson.datatype.guava.ser;
 
 import java.io.IOException;
 
-import com.fasterxml.jackson.core.JsonGenerationException;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
 /**
@@ -56,6 +58,15 @@ public class RangeSerializer extends StdSerializer<Range<?>>
                 JsonSerializer<?> ser = prov.findValueSerializer(endpointType, property);
                 return new RangeSerializer(_rangeType, ser);
             }
+            /* 21-Sep-2014, tatu: Need to make sure all serializers get proper contextual
+             *   access, in case they rely on annotations on properties... (or, more generally,
+             *   in getting a chance to be contextualized)
+             */
+        } else if (_endpointSerializer instanceof ContextualSerializer) {
+            JsonSerializer<?> cs = ((ContextualSerializer)_endpointSerializer).createContextual(prov, property);
+            if (cs != _endpointSerializer) {
+                return new RangeSerializer(_rangeType, cs);
+            }
         }
         return this;
     }
@@ -87,6 +98,27 @@ public class RangeSerializer extends StdSerializer<Range<?>>
         typeSer.writeTypeSuffixForObject(value, jgen);
     }
 
+    @Override
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint)
+        throws JsonMappingException
+    {
+        if (visitor != null) {
+            JsonObjectFormatVisitor objectVisitor = visitor.expectObjectFormat(typeHint);
+            if (objectVisitor != null) {
+                if (_endpointSerializer != null) {
+                    JavaType endpointType = _rangeType.containedType(0);
+                    JavaType btType = visitor.getProvider().constructType(BoundType.class);
+                    JsonSerializer<?> btSer = visitor.getProvider()
+                            .findValueSerializer(btType, null);
+                    objectVisitor.property("lowerEndpoint", _endpointSerializer, endpointType);
+                    objectVisitor.property("lowerBoundType", btSer, btType);
+                    objectVisitor.property("upperEndpoint", _endpointSerializer, endpointType);
+                    objectVisitor.property("upperBoundType", btSer, btType);
+                }
+            }
+        }
+    }
+    
     private void _writeContents(Range<?> value, JsonGenerator jgen, SerializerProvider provider)
         throws IOException
     {

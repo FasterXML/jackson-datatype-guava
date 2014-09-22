@@ -133,7 +133,6 @@ public class TestOptional extends ModuleTestBase
 		myData.myString = Optional.fromNullable("abc");
 		
 		final String json = objectMapper.writeValueAsString(myData);
-		
 		final OptionalData deserializedMyData = objectMapper.readValue(json, OptionalData.class);
 		assertEquals(myData.myString, deserializedMyData.myString);
     }

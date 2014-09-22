@@ -2,15 +2,22 @@ package com.fasterxml.jackson.datatype.guava;
 
 import java.lang.reflect.Type;
 
+import org.w3c.dom.ranges.Range;
+
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.type.TypeModifier;
+import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
 
 public class GuavaTypeModifier extends TypeModifier
 {
+    private final static Class<?>[] SINGLE_PARAM_TYPES = new Class<?>[] {
+        Range.class, Optional.class
+    };
+    
     @Override
     public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory)
     {
@@ -58,6 +65,20 @@ public class GuavaTypeModifier extends TypeModifier
                 elemType = TypeFactory.unknownType();
             }
             return typeFactory.constructParametricType(Iterable.class, elemType);
+        }
+        for (Class<?> target : SINGLE_PARAM_TYPES) {
+            if (target.isAssignableFrom(raw)) {
+                JavaType[] types = typeFactory.findTypeParameters(type, target);
+                JavaType t = (types == null || types.length == 0) ? null : types[0];
+                if (t == null) {
+                    t = TypeFactory.unknownType();
+                }
+                /* Downcasting is necessary with 'Optional', due to implementation details.
+                 * Not sure if it'd be with Range; but let's assume it is, for now: sub-classes
+                 * could eliminate/change type parameterization anyway.
+                 */
+                return typeFactory.constructParametricType(target, t);
+            }
         }
         return type;
     }
