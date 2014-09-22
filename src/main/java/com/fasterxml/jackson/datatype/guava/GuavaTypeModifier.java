@@ -2,15 +2,15 @@ package com.fasterxml.jackson.datatype.guava;
 
 import java.lang.reflect.Type;
 
-import org.w3c.dom.ranges.Range;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.type.TypeModifier;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
 
 public class GuavaTypeModifier extends TypeModifier
 {

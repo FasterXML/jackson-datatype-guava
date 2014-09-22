@@ -1,9 +1,10 @@
 package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
-import com.google.common.base.Objects;
+
 import com.google.common.collect.Range;
 
 import java.io.IOException;
@@ -22,6 +23,13 @@ public class TestRange extends ModuleTestBase {
 
         public Untyped() { }
         public Untyped(Range<?> r) { range = r; }
+    }
+
+    static class Wrapped {
+        public Range<Integer> r;
+
+        public Wrapped() { }
+        public Wrapped(Range<Integer> r) { this.r = r; }
     }
     
     /**
@@ -51,6 +59,19 @@ public class TestRange extends ModuleTestBase {
         testSerialization(MAPPER, RangeFactory.singleton(1));
     }
 
+    public void testWrappedSerialization() throws Exception
+    {
+        testSerializationWrapped(MAPPER, RangeFactory.open(1, 10));
+        testSerializationWrapped(MAPPER, RangeFactory.openClosed(1, 10));
+        testSerializationWrapped(MAPPER, RangeFactory.closedOpen(1, 10));
+        testSerializationWrapped(MAPPER, RangeFactory.closed(1, 10));
+        testSerializationWrapped(MAPPER, RangeFactory.atLeast(1));
+        testSerializationWrapped(MAPPER, RangeFactory.greaterThan(1));
+        testSerializationWrapped(MAPPER, RangeFactory.atMost(10));
+        testSerializationWrapped(MAPPER, RangeFactory.lessThan(10));
+        testSerializationWrapped(MAPPER, RangeFactory.singleton(1));
+    }
+    
     public void testDeserialization() throws Exception
     {
         String json = MAPPER.writeValueAsString(RangeFactory.open(1, 10));
@@ -65,9 +86,16 @@ public class TestRange extends ModuleTestBase {
     {
         String json = objectMapper.writeValueAsString(range);
         Range<?> rangeClone = objectMapper.readValue(json, Range.class);
-        assert Objects.equal(rangeClone, range);
+        assertEquals(rangeClone, range);
     }
 
+    private void testSerializationWrapped(ObjectMapper objectMapper, Range<Integer> range) throws IOException
+    {
+        String json = objectMapper.writeValueAsString(new Wrapped(range));
+        Wrapped result = objectMapper.readValue(json, Wrapped.class);
+        assertEquals(range, result.r);
+    }
+    
     public void testUntyped() throws Exception
     {
         String json = MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(new Untyped(RangeFactory.open(1, 10)));
