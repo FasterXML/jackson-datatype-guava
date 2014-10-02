@@ -6,6 +6,7 @@ import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.net.HostAndPort;
+import com.google.common.net.InternetDomainName;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.Serializers;
@@ -29,6 +30,10 @@ public class GuavaSerializers extends Serializers.Base
         }
         // since 2.4
         if (HostAndPort.class.isAssignableFrom(raw)) {
+            return ToStringSerializer.instance;
+        }
+        // since 2.4.3
+        if (InternetDomainName.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
         }
         // not sure how useful, but why not?

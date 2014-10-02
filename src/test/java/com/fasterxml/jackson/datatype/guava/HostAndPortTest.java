@@ -30,12 +30,12 @@ public class HostAndPortTest extends ModuleTestBase
         assertEquals("localhost", result.getHostText());
         assertEquals(7070, result.getPort());
 
-        // and ... error
+        // and ... error (note: numbers, booleans may all be fine)
         try {
-            MAPPER.readValue("false", HostAndPort.class);
-            fail("Should not deserialize from boolean");
+            result = MAPPER.readValue("[ ]", HostAndPort.class);
+            fail("Should not deserialize from boolean: got "+result);
         } catch (JsonProcessingException e) {
-            verifyException(e, "Unexpected token");
+            verifyException(e, "Can not deserialize");
         }
     }
 }

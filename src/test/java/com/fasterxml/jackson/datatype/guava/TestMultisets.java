@@ -13,7 +13,6 @@ import com.google.common.collect.*;
  */
 public class TestMultisets extends ModuleTestBase
 {
-
     /*
     /**********************************************************************
     /* Unit tests for verifying handling in absence of module registration
