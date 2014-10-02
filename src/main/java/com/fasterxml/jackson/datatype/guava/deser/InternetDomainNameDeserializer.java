@@ -14,7 +14,7 @@ public class InternetDomainNameDeserializer extends FromStringDeserializer<Inter
 
     public final static InternetDomainNameDeserializer std = new InternetDomainNameDeserializer();
     
-    public InternetDomainNameDeserializer() { super(HostAndPort.class); }
+    public InternetDomainNameDeserializer() { super(InternetDomainName.class); }
 
     @Override
     protected InternetDomainName _deserialize(String value, DeserializationContext ctxt)
