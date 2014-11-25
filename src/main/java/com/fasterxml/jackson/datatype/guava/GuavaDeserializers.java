@@ -2,6 +2,7 @@ package com.fasterxml.jackson.datatype.guava;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
+import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
 
@@ -236,6 +237,9 @@ public class GuavaDeserializers
         }
         if (raw == InternetDomainName.class) {
             return InternetDomainNameDeserializer.std;
+        }
+        if (raw == HashCode.class) {
+            return HashCodeDeserializer.std;
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }
