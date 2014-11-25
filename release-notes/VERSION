@@ -1,13 +1,18 @@
 Project: jackson-datatype-guava
-Version: 2.4.3 (04-Oct-2014)
-
-#50: Add support for `InternetDomainName`
- (suggested by sdavids@github)
-- Improved serialization, type handling, schema-access for `Range` and `Optional`.
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.4.4 (24-Nov-2014)
+
+No changes since 2.4.3
+
+2.4.3 (04-Oct-2014)
+
+#50: Add support for `InternetDomainName`
+ (suggested by sdavids@github)
+- Improved serialization, type handling, schema-access for `Range` and `Optional`.
 
 2.4.2 (15-Aug-2014)
 
