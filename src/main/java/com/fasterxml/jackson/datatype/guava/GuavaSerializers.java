@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
 import com.fasterxml.jackson.databind.*;
@@ -38,6 +39,9 @@ public class GuavaSerializers extends Serializers.Base
         }
         // not sure how useful, but why not?
         if (CacheBuilderSpec.class.isAssignableFrom(raw) || CacheBuilder.class.isAssignableFrom(raw)) {
+            return ToStringSerializer.instance;
+        }
+        if (HashCode.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
         }
         return super.findSerializer(config, type, beanDesc);
