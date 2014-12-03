@@ -35,6 +35,11 @@ public class FluentIterableTest extends ModuleTestBase
     }
 
     public void testSerialization() throws Exception {
+        String json = MAPPER.writeValueAsString(createFluentIterable());
+        assertEquals("[1,2,3]", json);
+    }
+
+    public void testWrappedSerialization() throws Exception {
         FluentHolder holder = new FluentHolder();
         String json = MAPPER.writeValueAsString(holder);
         assertEquals("{\"value\":[1,2,3]}", json);
