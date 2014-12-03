@@ -14,14 +14,12 @@ public class FluentIterableTest extends ModuleTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 
-    FluentIterable<Integer> createFluentIterable() {
-        return new FluentIterable<Integer>() {
-            private final Iterable<Integer> _iterable = Sets.newHashSet(1, 2, 3);
-            @Override
-            public Iterator<Integer> iterator() {
-                return _iterable.iterator();
-            }
-        };
+    public static class FluentHolder {
+        public final Iterable<Integer> value = createFluentIterable();
+    }
+
+    static FluentIterable<Integer> createFluentIterable() {
+        return FluentIterable.from(Sets.newHashSet(1, 2, 3));
     }
 
     /**
@@ -31,15 +29,20 @@ public class FluentIterableTest extends ModuleTestBase
      */
     public void testSerializationWithoutModule() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        Iterable<Integer> fluentIterable = createFluentIterable();
-        String json = mapper.writeValueAsString(fluentIterable);
-        assertEquals("{\"empty\":false}", json);
+        FluentHolder holder = new FluentHolder();
+        String json = mapper.writeValueAsString(holder);
+        assertEquals("{\"value\":{\"empty\":false}}", json);
     }
 
     public void testSerialization() throws Exception {
-        Iterable<Integer> fluentIterable = createFluentIterable();
-        String json = MAPPER.writeValueAsString(fluentIterable);
+        String json = MAPPER.writeValueAsString(createFluentIterable());
         assertEquals("[1,2,3]", json);
+    }
+
+    public void testWrappedSerialization() throws Exception {
+        FluentHolder holder = new FluentHolder();
+        String json = MAPPER.writeValueAsString(holder);
+        assertEquals("{\"value\":[1,2,3]}", json);
     }
 
 }

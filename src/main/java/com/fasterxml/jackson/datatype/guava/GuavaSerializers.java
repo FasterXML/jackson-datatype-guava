@@ -1,8 +1,14 @@
 package com.fasterxml.jackson.datatype.guava;
 
+import com.fasterxml.jackson.databind.ser.std.IterableSerializer;
+import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.Converter;
+import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
+import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.net.HostAndPort;
@@ -16,8 +22,19 @@ import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
 
+import java.util.Iterator;
+
 public class GuavaSerializers extends Serializers.Base
 {
+    static class FluentConverter extends StdConverter<Object,Iterable<?>> {
+        static final FluentConverter instance = new FluentConverter();
+
+        @Override
+        public Iterable<?> convert(Object value) {
+            return (Iterable<?>) value;
+        }
+    }
+
     @Override
     public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc)
     {
@@ -39,6 +56,14 @@ public class GuavaSerializers extends Serializers.Base
         // not sure how useful, but why not?
         if (CacheBuilderSpec.class.isAssignableFrom(raw) || CacheBuilder.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
+        }
+        // since 2.4.5
+        if (FluentIterable.class.isAssignableFrom(raw)) {
+            JavaType[] params = config.getTypeFactory().findTypeParameters(type, Iterable.class);
+            JavaType vt = (params == null || params.length != 1) ?
+                    TypeFactory.unknownType() : params[0];
+            JavaType delegate = config.getTypeFactory().constructParametricType(Iterable.class, vt);
+            return new StdDelegatingSerializer(FluentConverter.instance, delegate, null);
         }
         return super.findSerializer(config, type, beanDesc);
     }
