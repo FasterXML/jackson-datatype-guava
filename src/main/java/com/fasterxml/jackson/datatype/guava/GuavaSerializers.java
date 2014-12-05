@@ -1,8 +1,10 @@
 package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.databind.ser.std.IterableSerializer;
+import com.fasterxml.jackson.databind.ser.std.MapSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.fasterxml.jackson.databind.util.Converter;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.common.base.Optional;
@@ -15,6 +17,7 @@ import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -23,7 +26,9 @@ import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 
 public class GuavaSerializers extends Serializers.Base
 {
@@ -64,9 +69,10 @@ public class GuavaSerializers extends Serializers.Base
         // since 2.4.5
         if (FluentIterable.class.isAssignableFrom(raw)) {
             JavaType[] params = config.getTypeFactory().findTypeParameters(type, Iterable.class);
-            JavaType vt = (params == null || params.length != 1) ?
-                    TypeFactory.unknownType() : params[0];
-            JavaType delegate = config.getTypeFactory().constructParametricType(Iterable.class, vt);
+            JavaType vt = (params == null || params.length != 1) ? TypeFactory.unknownType() : params[0];
+            // 04-Dec-2014, tatu: Not 100% sure why latter would fail... need to investigate when I have time
+            JavaType delegate = config.getTypeFactory().constructParametrizedType(Iterable.class, Iterable.class, vt);
+//            JavaType delegate = config.getTypeFactory().constructParametrizedType(FluentIterable.class, Iterable.class, vt);
             return new StdDelegatingSerializer(FluentConverter.instance, delegate, null);
         }
         return super.findSerializer(config, type, beanDesc);
@@ -78,8 +84,14 @@ public class GuavaSerializers extends Serializers.Base
             TypeSerializer elementTypeSerializer, JsonSerializer<Object> elementValueSerializer)
     {
         if (Multimap.class.isAssignableFrom(type.getRawClass())) {
-            return new MultimapSerializer(config, type, beanDesc, keySerializer,
-                    elementTypeSerializer, elementValueSerializer);
+            final AnnotationIntrospector intr = config.getAnnotationIntrospector();
+            Object filterId = intr.findFilterId((Annotated)beanDesc.getClassInfo());
+            String[] ignored = intr.findPropertiesToIgnore(beanDesc.getClassInfo());
+            HashSet<String> ignoredEntries = (ignored == null || ignored.length == 0)
+                    ? null : ArrayBuilders.arrayToSet(ignored);
+
+            return new MultimapSerializer(type, beanDesc,
+                    keySerializer, elementTypeSerializer, elementValueSerializer, ignoredEntries, filterId);
         }
         return null;
     }
