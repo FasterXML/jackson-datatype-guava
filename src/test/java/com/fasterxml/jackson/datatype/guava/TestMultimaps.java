@@ -31,9 +31,26 @@ public class TestMultimaps extends ModuleTestBase
         Multimap<String, String> map = ArrayListMultimap.create();
     }
 
+    static class MultiMapWithIgnores {
+        @JsonIgnoreProperties({ "x", "y" })
+        public Multimap<String, String> map = ArrayListMultimap.create();
+        
+        public MultiMapWithIgnores()
+        {
+            map.put("a", "foo");
+            map.put("x", "bar");
+        }
+    }
+    
     private static final String StringStringMultimap =
             "{\"first\":[\"abc\",\"abc\",\"foo\"]," + "\"second\":[\"bar\"]}";
 
+    /*
+    /**********************************************************
+    /* Test methods
+    /**********************************************************
+     */
+    
     private final ObjectMapper MAPPER = mapperWithModule();
 
     public void testMultimap() throws Exception
@@ -132,8 +149,9 @@ public class TestMultimaps extends ModuleTestBase
     /* Unit tests for set-based multimaps
     /**********************************************************************
      */
-    public void testTreeMultimap() {
 
+    /*
+    public void testTreeMultimap() {
     }
 
     public void testForwardingSortedSetMultimap() {
@@ -143,6 +161,7 @@ public class TestMultimaps extends ModuleTestBase
     public void testImmutableSetMultimap() {
         // TODO look at others
     }
+    */
 
     public void testHashMultimap() throws IOException {
         SetMultimap<String, String> map =
@@ -158,12 +177,13 @@ public class TestMultimaps extends ModuleTestBase
         assertTrue(map instanceof LinkedHashMultimap);
     }
 
+    /*
     public void testForwardingSetMultimap() {
-
     }
+    */
 
     private SetMultimap<String, String> setBasedHelper(TypeReference<?> type)
-            throws IOException
+        throws IOException
     {
         SetMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
         assertEquals(3, map.size());
@@ -193,6 +213,11 @@ public class TestMultimaps extends ModuleTestBase
         assertTrue(map instanceof LinkedListMultimap);
     }
 
+    public void testMultimapWithIgnores() throws IOException {
+        assertEquals("{\"map\":{\"a\":[\"foo\"]}}",
+                MAPPER.writeValueAsString(new MultiMapWithIgnores()));
+    }
+    
     private ListMultimap<String, String> listBasedHelper(TypeReference<?> type) throws IOException {
         ListMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
         assertEquals(4, map.size());

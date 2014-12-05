@@ -12,7 +12,9 @@ import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonMapFormatVisitor;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContainerSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
+import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
+import com.fasterxml.jackson.databind.ser.std.MapProperty;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.google.common.collect.Multimap;
 
@@ -241,7 +243,11 @@ public class MultimapSerializer
         // [databind#631]: Assign current value, to be accessible by custom serializers
         gen.setCurrentValue(value);
         if (!value.isEmpty()) {
-            serializeFields(value, gen, provider);
+            if (_filterId != null) {
+                serializeOptionalFields(value, gen, provider);
+            } else {
+                serializeFields(value, gen, provider);
+            }
         }        
         gen.writeEndObject();
     }
@@ -253,18 +259,27 @@ public class MultimapSerializer
     {
         typeSer.writeTypePrefixForObject(value, gen);
         gen.setCurrentValue(value);
-        serializeFields(value, gen, provider);
+        if (!value.isEmpty()) {
+            if (_filterId != null) {
+                serializeOptionalFields(value, gen, provider);
+            } else {
+                serializeFields(value, gen, provider);
+            }
+        }
         typeSer.writeTypeSuffixForObject(value, gen);
     }
 
     private final void serializeFields(Multimap<?, ?> mmap, JsonGenerator gen, SerializerProvider provider)
             throws IOException
     {
+        final Set<String> ignored = _ignoredEntries;
         PropertySerializerMap serializers = _dynamicValueSerializers;
         for (Entry<?, ? extends Collection<?>> entry : mmap.asMap().entrySet()) {
-            Collection<?> value = entry.getValue();
             // First, serialize key
             Object key = entry.getKey();
+            if ((ignored != null) && ignored.contains(key)) {
+                continue;
+            }
             if (key == null) {
                 provider.findNullKeySerializer(_type.getKeyType(), _property)
                     .serialize(null, gen, provider);
@@ -273,7 +288,7 @@ public class MultimapSerializer
             }
             // note: value is a List, but generic type is for contents... so:
             gen.writeStartArray();
-            for (Object vv : value) {
+            for (Object vv : entry.getValue()) {
                 JsonSerializer<Object> valueSer = _valueSerializer;
                 if (valueSer == null) {
                     Class<?> cc = vv.getClass();
@@ -289,6 +304,29 @@ public class MultimapSerializer
         }
     }
 
+    private final void serializeOptionalFields(Multimap<?, ?> mmap, JsonGenerator gen, SerializerProvider provider)
+            throws IOException
+    {
+        final Set<String> ignored = _ignoredEntries;
+        PropertyFilter filter = findPropertyFilter(provider, _filterId, mmap);  
+        final MapProperty prop = new MapProperty(_valueTypeSerializer, _property);
+        for (Entry<?, ? extends Collection<?>> entry : mmap.asMap().entrySet()) {
+            // First, serialize key
+            Object key = entry.getKey();
+            if ((ignored != null) && ignored.contains(key)) {
+                continue;
+            }
+            Collection<?> value = entry.getValue();
+            prop.reset(key, _keySerializer, _valueSerializer);
+            try {
+                filter.serializeAsField(value, gen, provider, prop);
+            } catch (Exception e) {
+                String keyDesc = ""+key;
+                wrapAndThrow(provider, e, value, keyDesc);
+            }
+        }
+    }
+    
     /*
     /**********************************************************
     /* Schema related functionality
