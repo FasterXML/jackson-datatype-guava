@@ -1,11 +1,10 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import com.fasterxml.jackson.databind.ser.std.IterableSerializer;
-import com.fasterxml.jackson.databind.ser.std.MapSerializer;
+import java.util.HashSet;
+
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ArrayBuilders;
-import com.fasterxml.jackson.databind.util.Converter;
 import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
@@ -25,10 +24,6 @@ import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 public class GuavaSerializers extends Serializers.Base
 {

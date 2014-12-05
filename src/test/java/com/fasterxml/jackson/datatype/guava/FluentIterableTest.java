@@ -1,7 +1,5 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import java.util.Iterator;
-
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Sets;
 

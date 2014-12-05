@@ -56,7 +56,7 @@ public class TestMultimaps extends ModuleTestBase
 
         // Test that typed writes work
         if (EXPECTED != null) {
-            String json =  MAPPER.writerWithType(new TypeReference<Multimap<String, Boolean>>() {}).writeValueAsString(map);
+            String json =  MAPPER.writerFor(new TypeReference<Multimap<String, Boolean>>() {}).writeValueAsString(map);
             assertEquals(EXPECTED, json);
         }
 
@@ -84,11 +84,11 @@ public class TestMultimaps extends ModuleTestBase
         m1.put("qux", "quux");
         ObjectMapper o = MAPPER;
         
-        String t1 = o.writerWithType(new TypeReference<TreeMultimap<String, String>>(){}).writeValueAsString(m1);
+        String t1 = o.writerFor(new TypeReference<TreeMultimap<String, String>>(){}).writeValueAsString(m1);
         Map<?,?> javaMap = o.readValue(t1, Map.class);
         assertEquals(2, javaMap.size());
         
-        String t2 = o.writerWithType(new TypeReference<Multimap<String, String>>(){}).writeValueAsString(m1);
+        String t2 = o.writerFor(new TypeReference<Multimap<String, String>>(){}).writeValueAsString(m1);
         javaMap = o.readValue(t2, Map.class);
         assertEquals(2, javaMap.size());
         
@@ -97,11 +97,11 @@ public class TestMultimaps extends ModuleTestBase
         m2.put("foo", "baz");
         m2.put("qux", "quux");
         
-        String t3 = o.writerWithType(new TypeReference<TreeMultimap<String, String>>(){}).writeValueAsString(m2);
+        String t3 = o.writerFor(new TypeReference<TreeMultimap<String, String>>(){}).writeValueAsString(m2);
         javaMap = o.readValue(t3, Map.class);
         assertEquals(2, javaMap.size());
    
-        String t4 = o.writerWithType(new TypeReference<Multimap<String, String>>(){}).writeValueAsString(m2);
+        String t4 = o.writerFor(new TypeReference<Multimap<String, String>>(){}).writeValueAsString(m2);
         javaMap = o.readValue(t4, Map.class);
         assertEquals(2, javaMap.size());
     }
@@ -114,7 +114,7 @@ public class TestMultimaps extends ModuleTestBase
         map.put(MyEnum.YAY, 5);
         map.put(MyEnum.BOO, 2);
 
-        final String serializedForm = MAPPER.writerWithType(type).writeValueAsString(map);
+        final String serializedForm = MAPPER.writerFor(type).writeValueAsString(map);
 
         assertEquals(serializedForm, MAPPER.writeValueAsString(map));
         assertEquals(map, MAPPER.readValue(serializedForm, type));

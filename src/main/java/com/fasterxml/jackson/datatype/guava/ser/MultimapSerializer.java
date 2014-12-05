@@ -7,12 +7,13 @@ import java.util.Map.Entry;
 import com.fasterxml.jackson.core.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonMapFormatVisitor;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContainerSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.fasterxml.jackson.databind.type.MapLikeType;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 
 /**
@@ -233,46 +234,108 @@ public class MultimapSerializer
      */
     
     @Override
-    public void serialize(Multimap<?, ?> value, JsonGenerator jgen, SerializerProvider provider)
+    public void serialize(Multimap<?, ?> value, JsonGenerator gen, SerializerProvider provider)
         throws IOException
     {
-        jgen.writeStartObject();
+        gen.writeStartObject();
+        // [databind#631]: Assign current value, to be accessible by custom serializers
+        gen.setCurrentValue(value);
         if (!value.isEmpty()) {
-            serializeFields(value, jgen, provider);
+            serializeFields(value, gen, provider);
         }        
-        jgen.writeEndObject();
+        gen.writeEndObject();
     }
 
     @Override
-    public void serializeWithType(Multimap<?,?> value, JsonGenerator jgen, SerializerProvider provider,
+    public void serializeWithType(Multimap<?,?> value, JsonGenerator gen, SerializerProvider provider,
             TypeSerializer typeSer)
         throws IOException
     {
-        typeSer.writeTypePrefixForObject(value, jgen);
-        serializeFields(value, jgen, provider);
-        typeSer.writeTypeSuffixForObject(value, jgen);
+        typeSer.writeTypePrefixForObject(value, gen);
+        gen.setCurrentValue(value);
+        serializeFields(value, gen, provider);
+        typeSer.writeTypeSuffixForObject(value, gen);
     }
 
-    private final void serializeFields(Multimap<?, ?> value, JsonGenerator jgen, SerializerProvider provider)
-            throws IOException, JsonProcessingException
+    private final void serializeFields(Multimap<?, ?> mmap, JsonGenerator gen, SerializerProvider provider)
+            throws IOException
     {
-        for (Entry<?, ? extends Collection<?>> e : value.asMap().entrySet()) {
-            if (_keySerializer != null) {
-                _keySerializer.serialize(e.getKey(), jgen, provider);
+        PropertySerializerMap serializers = _dynamicValueSerializers;
+        for (Entry<?, ? extends Collection<?>> entry : mmap.asMap().entrySet()) {
+            Collection<?> value = entry.getValue();
+            // First, serialize key
+            Object key = entry.getKey();
+            if (key == null) {
+                provider.findNullKeySerializer(_type.getKeyType(), _property)
+                    .serialize(null, gen, provider);
             } else {
-                provider.findKeySerializer(provider.constructType(String.class), _property)
-                    .serialize(e.getKey(), jgen, provider);
+                _keySerializer.serialize(key, gen, provider);
             }
-            if (_valueSerializer != null) {
-                // note: value is a List, but generic type is for contents... so:
-                jgen.writeStartArray();
-                for (Object vv : e.getValue()) {
-                    _valueSerializer.serialize(vv, jgen, provider);
+            // note: value is a List, but generic type is for contents... so:
+            gen.writeStartArray();
+            for (Object vv : value) {
+                JsonSerializer<Object> valueSer = _valueSerializer;
+                if (valueSer == null) {
+                    Class<?> cc = vv.getClass();
+                    valueSer = serializers.serializerFor(cc);
+                    if (valueSer == null) {
+                        valueSer = _findAndAddDynamic(serializers, cc, provider);
+                        serializers = _dynamicValueSerializers;
+                    }
                 }
-                jgen.writeEndArray();
-            } else {
-                provider.defaultSerializeValue(Lists.newArrayList(e.getValue()), jgen);
+                valueSer.serialize(vv, gen, provider);
             }
+            gen.writeEndArray();
         }
+    }
+
+    /*
+    /**********************************************************
+    /* Schema related functionality
+    /**********************************************************
+     */
+
+    @Override
+    public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint)
+        throws JsonMappingException
+    {
+        JsonMapFormatVisitor v2 = (visitor == null) ? null : visitor.expectMapFormat(typeHint);        
+        if (v2 != null) {
+            v2.keyFormat(_keySerializer, _type.getKeyType());
+            JsonSerializer<?> valueSer = _valueSerializer;
+            JavaType vt = _type.getContentType();
+            if (valueSer == null) {
+                valueSer = _findAndAddDynamic(_dynamicValueSerializers,
+                            vt, visitor.getProvider());
+            }
+            v2.valueFormat(valueSer, vt);
+        }
+    }
+    
+    /*
+    /**********************************************************
+    /* Internal helper methods
+    /**********************************************************
+     */
+    
+    protected final JsonSerializer<Object> _findAndAddDynamic(PropertySerializerMap map,
+            Class<?> type, SerializerProvider provider) throws JsonMappingException
+    {
+        PropertySerializerMap.SerializerAndMapResult result = map.findAndAddSecondarySerializer(type, provider, _property);
+        // did we get a new map of serializers? If so, start using it
+        if (map != result.map) {
+            _dynamicValueSerializers = result.map;
+        }
+        return result.serializer;
+    }
+
+    protected final JsonSerializer<Object> _findAndAddDynamic(PropertySerializerMap map,
+            JavaType type, SerializerProvider provider) throws JsonMappingException
+    {
+        PropertySerializerMap.SerializerAndMapResult result = map.findAndAddSecondarySerializer(type, provider, _property);
+        if (map != result.map) {
+            _dynamicValueSerializers = result.map;
+        }
+        return result.serializer;
     }
 }
