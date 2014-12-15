@@ -18,15 +18,15 @@ public class HashCodeTest extends ModuleTestBase
     public void testDeserialization() throws Exception
     {
         // success:
-        HashCode result = MAPPER.readValue(quote("12345678cafebabe"), HashCode.class);
-        assertEquals("12345678cafebabe", result.toString());
+        HashCode result = MAPPER.readValue(quote("0123456789cAfEbAbE"), HashCode.class);
+        assertEquals("0123456789cafebabe", result.toString());
 
-        // and ... error (note: numbers, booleans may all be fine)
+        // and ... error:
         try {
-            result = MAPPER.readValue("[ ]", HashCode.class);
-            fail("Should not deserialize from boolean: got "+result);
+            result = MAPPER.readValue(quote("ghijklmn0123456789"), HashCode.class);
+            fail("Should not deserialize from non-hex string: got "+result);
         } catch (JsonProcessingException e) {
-            verifyException(e, "Can not deserialize");
+            verifyException(e, "Illegal hexadecimal character");
         }
     }
 }
