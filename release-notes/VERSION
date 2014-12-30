@@ -1,12 +1,16 @@
 Project: jackson-datatype-guava
-Version: 2.3.4 (17-Jul-2014)
+Version: 2.3.5 (not yet released)
 
-#42: Polymorphic deserialization involving Guava Optional<T> is broken.
- (reported by bbeck@github)
+#46: Can not serialize Guava `Iterable`s (backported from 2.4.2)
 
 ------------------------------------------------------------------------
 === History: ===
 ------------------------------------------------------------------------
+
+2.3.4 (17-Jul-2014)
+
+#42: Polymorphic deserialization involving Guava Optional<T> is broken.
+ (reported by bbeck@github)
 
 2.3.3 (10-Apr-2014)
 

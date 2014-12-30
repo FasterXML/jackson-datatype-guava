@@ -6,11 +6,18 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.type.TypeModifier;
+
+import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Range;
 
 public class GuavaTypeModifier extends TypeModifier
 {
+    private final static Class<?>[] SINGLE_PARAM_TYPES = new Class<?>[] {
+        Range.class, Optional.class
+    };
+
     @Override
     public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory)
     {
@@ -36,13 +43,42 @@ public class GuavaTypeModifier extends TypeModifier
          * have to do for now...
          */
         if (FluentIterable.class.isAssignableFrom(raw)) {
-            JavaType[] types = typeFactory.findTypeParameters(type, Iterable.class);
-            JavaType elemType = (types == null || types.length < 1)
-                    ? null : types[0];
+            JavaType elemType = null;
+            JavaType[] types;
+            try {
+                types = typeFactory.findTypeParameters(type, Iterable.class);
+                if (types != null && types.length > 0) {
+                    elemType = types[0];
+                }
+            } catch (IllegalArgumentException e) {
+                /* 07-Aug-2015, tatu: Nasty hack, but until we get 100% functioning
+                 *   type resolution (from ClassMate project, f.ex.), need to work around
+                 *   edge cases with aliasing and/or unresolved type variables.
+                 *   So... here we go:
+                 */
+                String msg = e.getMessage();
+                if (msg == null || !msg.contains("Type variable 'T' can not be resolved")) {
+                    throw e;
+                }
+            }
             if (elemType == null) {
                 elemType = TypeFactory.unknownType();
             }
-            return typeFactory.constructParametricType(Iterable.class,  elemType);
+            return typeFactory.constructParametricType(Iterable.class, elemType);
+        }
+        for (Class<?> target : SINGLE_PARAM_TYPES) {
+            if (target.isAssignableFrom(raw)) {
+                JavaType[] types = typeFactory.findTypeParameters(type, target);
+                JavaType t = (types == null || types.length == 0) ? null : types[0];
+                if (t == null) {
+                    t = TypeFactory.unknownType();
+                }
+                /* Downcasting is necessary with 'Optional', due to implementation details.
+                 * Not sure if it'd be with Range; but let's assume it is, for now: sub-classes
+                 * could eliminate/change type parameterization anyway.
+                 */
+                return typeFactory.constructParametricType(target, t);
+            }
         }
         return type;
     }
