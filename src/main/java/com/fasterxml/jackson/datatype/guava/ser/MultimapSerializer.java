@@ -32,6 +32,8 @@ public class MultimapSerializer
     extends ContainerSerializer<Multimap<?, ?>>
     implements ContextualSerializer
 {
+    private static final long serialVersionUID = 1L;
+
     private final MapLikeType _type;
     private final BeanProperty _property;
     private final JsonSerializer<Object> _keySerializer;
@@ -84,7 +86,7 @@ public class MultimapSerializer
         _filterId = filterId;
         _sortKeys = false;
 
-        _dynamicValueSerializers = PropertySerializerMap.emptyMap();
+        _dynamicValueSerializers = PropertySerializerMap.emptyForProperties();
     }
 
     /**

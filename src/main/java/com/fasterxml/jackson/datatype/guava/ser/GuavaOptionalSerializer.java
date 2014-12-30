@@ -3,16 +3,15 @@ package com.fasterxml.jackson.datatype.guava.ser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-
 import com.google.common.base.Optional;
 
+@SuppressWarnings("serial")
 public final class GuavaOptionalSerializer
     extends StdSerializer<Optional<?>>
     implements ContextualSerializer
@@ -45,10 +44,15 @@ public final class GuavaOptionalSerializer
         }
         return new GuavaOptionalSerializer(_optionalType, ser);
     }
-    
-    // implemented since 2.3
+
     @Override
+    @Deprecated
     public boolean isEmpty(Optional<?> value) {
+        return isEmpty(null, value);
+    }
+
+    @Override
+    public boolean isEmpty(SerializerProvider prov, Optional<?> value) {
         return (value == null) || !value.isPresent();
     }
 
@@ -77,7 +81,7 @@ public final class GuavaOptionalSerializer
         }
         return this;
     }
-    
+
     @Override
     public void serialize(Optional<?> value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException
@@ -92,7 +96,7 @@ public final class GuavaOptionalSerializer
             provider.defaultSerializeNull(jgen);
         }
     }
-    
+
     @Override
     public void serializeWithType(Optional<?> value,
             JsonGenerator jgen, SerializerProvider provider,

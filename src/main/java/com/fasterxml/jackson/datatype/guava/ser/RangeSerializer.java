@@ -3,20 +3,19 @@ package com.fasterxml.jackson.datatype.guava.ser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
 /**
  * Jackson serializer for a Guava {@link Range}.
  */
+@SuppressWarnings("serial")
 public class RangeSerializer extends StdSerializer<Range<?>>
     implements ContextualSerializer
 {
@@ -42,10 +41,12 @@ public class RangeSerializer extends StdSerializer<Range<?>>
     
     // TODO: can this be implemented with better semantics? Base class only
     // checks for null
+    /*
     @Override
     public boolean isEmpty(Range<?> value) {
         return super.isEmpty(value);
     }
+    */
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov,

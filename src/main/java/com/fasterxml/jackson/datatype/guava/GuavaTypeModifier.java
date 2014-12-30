@@ -64,7 +64,9 @@ public class GuavaTypeModifier extends TypeModifier
             if (elemType == null) {
                 elemType = TypeFactory.unknownType();
             }
-            return typeFactory.constructParametricType(Iterable.class, elemType);
+            // 30-Dec-2014, tatu: This _should_ work; but if not, may need to consider making
+            //    first parameter same as second (old way)
+            return typeFactory.constructParametrizedType(FluentIterable.class, Iterable.class, elemType);
         }
         for (Class<?> target : SINGLE_PARAM_TYPES) {
             if (target.isAssignableFrom(raw)) {
@@ -77,7 +79,7 @@ public class GuavaTypeModifier extends TypeModifier
                  * Not sure if it'd be with Range; but let's assume it is, for now: sub-classes
                  * could eliminate/change type parameterization anyway.
                  */
-                return typeFactory.constructParametricType(target, t);
+                return typeFactory.constructParametrizedType(raw, target, t);
             }
         }
         return type;

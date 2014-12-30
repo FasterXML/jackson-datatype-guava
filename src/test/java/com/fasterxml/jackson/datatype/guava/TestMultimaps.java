@@ -41,7 +41,7 @@ public class TestMultimaps extends ModuleTestBase
             map.put("x", "bar");
         }
     }
-    
+
     private static final String StringStringMultimap =
             "{\"first\":[\"abc\",\"abc\",\"foo\"]," + "\"second\":[\"bar\"]}";
 
@@ -50,7 +50,7 @@ public class TestMultimaps extends ModuleTestBase
     /* Test methods
     /**********************************************************
      */
-    
+
     private final ObjectMapper MAPPER = mapperWithModule();
 
     public void testMultimap() throws Exception
@@ -61,7 +61,7 @@ public class TestMultimaps extends ModuleTestBase
                 "{\"true\":[true],\"false\":[false],\"maybe\":[true,false]}");
         _testMultimap(LinkedHashMultimap.create(), false, null);
     }
-    
+
     private void _testMultimap(Multimap<?,?> map0, boolean fullyOrdered, String EXPECTED) throws Exception
     {
         @SuppressWarnings("unchecked")
