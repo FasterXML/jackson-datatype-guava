@@ -9,6 +9,11 @@ Project: jackson-datatype-guava
 #56: Add support `HashCode`
  (contributed by Stephan202@github)
 
+2.4.5 (not yet released)
+
+#58: `FluentIterable` serialization doesn't work for Bean properties
+ (fixed by Christopher C)
+
 2.4.4 (24-Nov-2014)
 
 No changes since 2.4.3
