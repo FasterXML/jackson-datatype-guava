@@ -2,7 +2,6 @@ package com.fasterxml.jackson.datatype.guava.deser;
 
 import java.io.IOException;
 
-import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
 
 import com.fasterxml.jackson.databind.DeserializationContext;
