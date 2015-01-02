@@ -4,7 +4,7 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
-2.5.0-SNAPSHOT (not yet released)
+2.5.0 (01-Jan-2015)
 
 #56: Add support `HashCode`
  (contributed by Stephan202@github)
