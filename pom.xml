@@ -30,6 +30,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
 
   <properties>
     <version.jackson>2.5.0</version.jackson>
+
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/datatype/guava</packageVersion.dir>
     <packageVersion.package>${project.groupId}.guava</packageVersion.package>
@@ -51,7 +52,8 @@ com.fasterxml.jackson.databind.jsonFormatVisitors,
 com.fasterxml.jackson.databind.jsontype,
 com.fasterxml.jackson.databind.ser,
 com.fasterxml.jackson.databind.ser.std,
-com.fasterxml.jackson.databind.type
+com.fasterxml.jackson.databind.type,
+com.fasterxml.jackson.databind.util
       </osgi.import>
   </properties>
 

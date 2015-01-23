@@ -19,10 +19,15 @@ import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.google.common.collect.Multimap;
 
 /**
+ * Serializer for Guava's {@link Multimap} values. Output format encloses all
+ * value sets in JSON Array, regardless of number of values; this to reduce
+ * complexity (and inaccuracy) of trying to handle cases where values themselves
+ * would be serialized as arrays (in which cases determining whether given array
+ * is a wrapper or value gets complicated and unreliable).
  *<p>
  * Missing features, compared to standard Java Maps:
  *<ul>
- *  <li>Inclusion for content entries (non-null, non-empty)
+ *  <li>Inclusion checks for content entries (non-null, non-empty)
  *   </li>
  *  <li>Sorting of entries
  *   </li>
@@ -291,6 +296,10 @@ public class MultimapSerializer
             // note: value is a List, but generic type is for contents... so:
             gen.writeStartArray();
             for (Object vv : entry.getValue()) {
+                if (vv == null) {
+                    provider.defaultSerializeNull(gen);
+                    continue;
+                }
                 JsonSerializer<Object> valueSer = _valueSerializer;
                 if (valueSer == null) {
                     Class<?> cc = vv.getClass();
@@ -319,7 +328,14 @@ public class MultimapSerializer
                 continue;
             }
             Collection<?> value = entry.getValue();
-            prop.reset(key, _keySerializer, _valueSerializer);
+            JsonSerializer<Object> valueSer;
+            if (value == null) {
+                // !!! TODO: null suppression?
+                valueSer = provider.getDefaultNullValueSerializer();
+            } else {
+                valueSer = _valueSerializer;
+            }
+            prop.reset(key, _keySerializer, valueSer);
             try {
                 filter.serializeAsField(value, gen, provider, prop);
             } catch (Exception e) {
@@ -351,7 +367,7 @@ public class MultimapSerializer
             v2.valueFormat(valueSer, vt);
         }
     }
-    
+
     /*
     /**********************************************************
     /* Internal helper methods

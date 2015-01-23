@@ -143,7 +143,15 @@ public class TestMultimaps extends ModuleTestBase
         String json = MAPPER.writeValueAsString(new MultiMapWrapper());
         assertEquals("{}", json);
     }
-    
+
+    public void testNullHandling() throws Exception
+    {
+        Multimap<String,Integer> input = ArrayListMultimap.create();
+        input.put("empty", null);
+        String json = MAPPER.writeValueAsString(input);
+        assertEquals(aposToQuotes("{'empty':[null]}"), json);
+    }
+
     /*
     /**********************************************************************
     /* Unit tests for set-based multimaps

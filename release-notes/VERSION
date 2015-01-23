@@ -9,7 +9,12 @@ Project: jackson-datatype-guava
 #56: Add support `HashCode`
  (contributed by Stephan202@github)
 
-2.4.5 (not yet released)
+2.4.6 (not yet released)
+
+#61: NPE serializing `Multimap`s with null values
+ (reported by sixinli@github)
+
+2.4.5 (13-Jan-2015)
 
 #58: `FluentIterable` serialization doesn't work for Bean properties
  (fixed by Christopher C)
