@@ -124,7 +124,7 @@ public class MultimapSerializer
     public boolean isEmpty(Multimap<?,?> map) {
         return map.isEmpty();
     }
-    
+
     /*
     /**********************************************************
     /* Post-processing (contextualization)
@@ -132,45 +132,49 @@ public class MultimapSerializer
      */
     
     @Override
-    public void serialize(Multimap<?, ?> value, JsonGenerator jgen, SerializerProvider provider)
+    public void serialize(Multimap<?, ?> value, JsonGenerator gen, SerializerProvider provider)
             throws IOException, JsonProcessingException
     {
-        jgen.writeStartObject();
+        gen.writeStartObject();
         if (!value.isEmpty()) {
-            serializeFields(value, jgen, provider);
+            serializeFields(value, gen, provider);
         }        
-        jgen.writeEndObject();
+        gen.writeEndObject();
     }
 
     @Override
-    public void serializeWithType(Multimap<?,?> value, JsonGenerator jgen, SerializerProvider provider,
+    public void serializeWithType(Multimap<?,?> value, JsonGenerator gen, SerializerProvider provider,
             TypeSerializer typeSer)
         throws IOException, JsonGenerationException
     {
-        typeSer.writeTypePrefixForObject(value, jgen);
-        serializeFields(value, jgen, provider);
-        typeSer.writeTypeSuffixForObject(value, jgen);
+        typeSer.writeTypePrefixForObject(value, gen);
+        serializeFields(value, gen, provider);
+        typeSer.writeTypeSuffixForObject(value, gen);
     }
 
-    private final void serializeFields(Multimap<?, ?> value, JsonGenerator jgen, SerializerProvider provider)
+    private final void serializeFields(Multimap<?, ?> value, JsonGenerator gen, SerializerProvider provider)
             throws IOException, JsonProcessingException
     {
         for (Entry<?, ? extends Collection<?>> e : value.asMap().entrySet()) {
             if (_keySerializer != null) {
-                _keySerializer.serialize(e.getKey(), jgen, provider);
+                _keySerializer.serialize(e.getKey(), gen, provider);
             } else {
                 provider.findKeySerializer(provider.constructType(String.class), _property)
-                    .serialize(e.getKey(), jgen, provider);
+                    .serialize(e.getKey(), gen, provider);
             }
             if (_valueSerializer != null) {
                 // note: value is a List, but generic type is for contents... so:
-                jgen.writeStartArray();
+                gen.writeStartArray();
                 for (Object vv : e.getValue()) {
-                    _valueSerializer.serialize(vv, jgen, provider);
+                    if (vv == null) { 
+                        provider.defaultSerializeNull(gen);
+                    } else {
+                        _valueSerializer.serialize(vv, gen, provider);
+                    }
                 }
-                jgen.writeEndArray();
+                gen.writeEndArray();
             } else {
-                provider.defaultSerializeValue(Lists.newArrayList(e.getValue()), jgen);
+                provider.defaultSerializeValue(Lists.newArrayList(e.getValue()), gen);
             }
         }
     }
