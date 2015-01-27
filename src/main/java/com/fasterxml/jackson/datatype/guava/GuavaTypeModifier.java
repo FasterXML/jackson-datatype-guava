@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import com.google.common.collect.Table;
 
 public class GuavaTypeModifier extends TypeModifier
 {
@@ -81,6 +82,13 @@ public class GuavaTypeModifier extends TypeModifier
                  */
                 return typeFactory.constructParametrizedType(raw, target, t);
             }
+        }
+        if (Table.class.isAssignableFrom(type.getRawClass())) {
+            final JavaType rowType = (type.containedType(0)) == null ? typeFactory.constructType(Object.class) : type.containedType(0);
+            final JavaType columnType = (type.containedType(1)) == null ? typeFactory.constructType(Object.class) : type.containedType(1);
+            final JavaType contentType = (type.containedType(2)) == null ? typeFactory.constructType(Object.class) : type.containedType(2);
+
+            return typeFactory.constructParametrizedType(type.getRawClass(), type.getRawClass(), rowType, columnType, contentType);
         }
         return type;
     }

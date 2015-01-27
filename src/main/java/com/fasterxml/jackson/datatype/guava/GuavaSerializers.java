@@ -12,6 +12,7 @@ import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import com.google.common.collect.Table;
 import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
@@ -24,6 +25,7 @@ import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
+import com.fasterxml.jackson.datatype.guava.ser.TableSerializer;
 
 public class GuavaSerializers extends Serializers.Base
 {
@@ -70,6 +72,12 @@ public class GuavaSerializers extends Serializers.Base
 //            JavaType delegate = config.getTypeFactory().constructParametrizedType(FluentIterable.class, Iterable.class, vt);
             return new StdDelegatingSerializer(FluentConverter.instance, delegate, null);
         }
+
+        // since 2.5.1
+        if (Table.class.isAssignableFrom(raw)) {
+            return new TableSerializer(config, type);
+        }
+
         return super.findSerializer(config, type, beanDesc);
     }
 

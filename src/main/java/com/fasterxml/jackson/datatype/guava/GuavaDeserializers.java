@@ -5,7 +5,6 @@ import com.google.common.collect.*;
 import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
@@ -206,10 +205,6 @@ public class GuavaDeserializers
                     elementTypeDeserializer, elementDeserializer);
         }
 
-        if (Table.class.isAssignableFrom(raw)) {
-            // !!! TODO
-        }
-
         return null;
     }
 
@@ -240,6 +235,15 @@ public class GuavaDeserializers
         }
         if (raw == HashCode.class) {
             return HashCodeDeserializer.std;
+        }
+
+        // Tables don't fit in the MapLike method because they have three type parameters
+        // since 2.5.1
+        if (Table.class.isAssignableFrom(raw)) {
+            if (ImmutableTable.class.isAssignableFrom(raw)) {
+                return new ImmutableTableDeserializer(type);
+            }
+            // TODO: Other Table types
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }
