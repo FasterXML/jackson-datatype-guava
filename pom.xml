@@ -41,6 +41,7 @@ ${project.groupId}.guava.*;version=${project.version}
 com.google.common.collect,
 com.google.common.base,
 com.google.common.cache,
+com.google.common.hash,
 com.google.common.net,
 com.fasterxml.jackson.core,
 com.fasterxml.jackson.core.util,
