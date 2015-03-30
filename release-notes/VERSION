@@ -4,7 +4,7 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
-2.5.2 (not released yet)
+2.5.2 (29-Mar-2015)
 
 #62: Add `com.google.common.hash` to OSGi import list
  (reported by lukewink@github)
