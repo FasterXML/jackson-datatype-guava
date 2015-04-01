@@ -56,7 +56,7 @@ public class TestMultisets extends ModuleTestBase
 
     final ObjectMapper MAPPER = mapperWithModule();
     
-    public void testDefault() throws Exception
+    public void testDefaultMultiset() throws Exception
     {
         Multiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<Multiset<String>>() { });
         assertEquals(3, set.size());
@@ -65,6 +65,14 @@ public class TestMultisets extends ModuleTestBase
         assertEquals(0, set.count("bar"));
     }
     
+    public void testDefaultSortedMultiset() throws Exception {
+        SortedMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<SortedMultiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
+
     public void testLinkedHashMultiset() throws Exception {
         LinkedHashMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<LinkedHashMultiset<String>>() { });
         assertEquals(3, set.size());
@@ -91,6 +99,14 @@ public class TestMultisets extends ModuleTestBase
     
     public void testImmutableMultiset() throws Exception {
         ImmutableMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<ImmutableMultiset<String>>() { });
+        assertEquals(3, set.size());
+        assertEquals(1, set.count("foo"));
+        assertEquals(2, set.count("abc"));
+        assertEquals(0, set.count("bar"));
+    }
+
+    public void testImmutableSortedMultiset() throws Exception {
+        ImmutableSortedMultiset<String> set = MAPPER.readValue("[\"abc\",\"abc\",\"foo\"]", new TypeReference<ImmutableSortedMultiset<String>>() { });
         assertEquals(3, set.size());
         assertEquals(1, set.count("foo"));
         assertEquals(2, set.count("abc"));
