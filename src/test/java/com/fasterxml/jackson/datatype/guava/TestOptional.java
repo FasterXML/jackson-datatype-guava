@@ -115,11 +115,32 @@ public class TestOptional extends ModuleTestBase
         String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
         assertEquals("{}", value);
     }
+
+    public void testSerOptDefault() throws Exception {
+        OptionalData data = new OptionalData();
+        data.myString = Optional.absent();
+        String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.ALWAYS).writeValueAsString(data);
+        assertEquals("{\"myString\":null}", value);
+    }
     
     public void testSerOptNull() throws Exception {
         OptionalData data = new OptionalData();
         data.myString = null;
         String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
+        assertEquals("{}", value);
+    }
+
+    public void testSerOptNonEmpty() throws Exception {
+        OptionalData data = new OptionalData();
+        data.myString = null;
+        String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_EMPTY).writeValueAsString(data);
+        assertEquals("{}", value);
+    }
+
+    public void testSerOptNonDefault() throws Exception {
+        OptionalData data = new OptionalData();
+        data.myString = null;
+        String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_DEFAULT).writeValueAsString(data);
         assertEquals("{}", value);
     }
     

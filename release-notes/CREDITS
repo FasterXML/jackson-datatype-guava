@@ -10,3 +10,5 @@ Stephan Schroevers: (Stephan202@github)
 
 * Contributed #56: Add support `HashCode`
  (2.5.0)
+* Contributed #65: Add deserialization support for SortedMultiset and ImmutableSortedMultiset
+ (2.5.3)

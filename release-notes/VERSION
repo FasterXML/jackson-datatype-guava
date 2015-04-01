@@ -4,6 +4,11 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
+2.5.3 (not released yet)
+
+#65: Add deserialization support for SortedMultiset and ImmutableSortedMultiset
+ (contributed by Stephan S, Stephan202@github)
+
 2.5.2 (29-Mar-2015)
 
 #62: Add `com.google.common.hash` to OSGi import list
@@ -16,7 +21,7 @@ No changes since 2.5.0
 2.5.0 (01-Jan-2015)
 
 #56: Add support `HashCode`
- (contributed by Stephan202@github)
+ (contributed by Stephan S, Stephan202@github)
 
 2.4.6 (not yet released)
 
