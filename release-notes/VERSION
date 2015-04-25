@@ -4,7 +4,7 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
-2.5.3 (not released yet)
+2.5.3 (24-Apr-2015)
 
 #65: Add deserialization support for SortedMultiset and ImmutableSortedMultiset
  (contributed by Stephan S, Stephan202@github)
