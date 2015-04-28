@@ -28,7 +28,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     @Override
     public int hashCode()
     {
-        return GuavaModule.class.hashCode();
+        return NAME.hashCode();
     }
 
     @Override

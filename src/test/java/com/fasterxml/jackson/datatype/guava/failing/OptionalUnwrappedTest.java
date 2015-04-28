@@ -33,9 +33,9 @@ public class OptionalUnwrappedTest extends ModuleTestBase
 
     public void testUntyped() throws Exception
     {
-        ObjectWriter w = MAPPER.writerWithDefaultPrettyPrinter();
+        ObjectWriter w = MAPPER.writer();
 //        String jsonExp = w.writeValueAsString(new Parent());
-        String jsonExp = aposToQuotes("{\n  'name' : 'Bob'\n}");
+        String jsonExp = aposToQuotes("{'name':'Bob'}");
         String jsonAct = w.writeValueAsString(new OptionalParent());
         assertEquals(jsonExp, jsonAct);
     }

@@ -63,8 +63,11 @@ public class GuavaSerializers extends Serializers.Base
 	}
         // since 2.4.5
         if (FluentIterable.class.isAssignableFrom(raw)) {
-            JavaType[] params = config.getTypeFactory().findTypeParameters(type, Iterable.class);
-            JavaType vt = (params == null || params.length != 1) ? TypeFactory.unknownType() : params[0];
+            // We can use parameter type that GuavaTypeModifier has kindly resolved for us
+            JavaType vt = type.containedType(0);
+            if (vt == null) { // should never happen but
+                vt = TypeFactory.unknownType();
+            }
             // 04-Dec-2014, tatu: Not 100% sure why latter would fail... need to investigate when I have time
             JavaType delegate = config.getTypeFactory().constructParametrizedType(Iterable.class, Iterable.class, vt);
 //            JavaType delegate = config.getTypeFactory().constructParametrizedType(FluentIterable.class, Iterable.class, vt);
