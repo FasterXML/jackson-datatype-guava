@@ -16,7 +16,7 @@ public class TestOptional extends ModuleTestBase
     private final ObjectMapper MAPPER = mapperWithModule();
 
     @JsonAutoDetect(fieldVisibility=Visibility.ANY)
-    public static final class OptionalData{
+    public static final class OptionalData {
         private Optional<String> myString;
     }
     
@@ -122,7 +122,7 @@ public class TestOptional extends ModuleTestBase
         String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.ALWAYS).writeValueAsString(data);
         assertEquals("{\"myString\":null}", value);
     }
-    
+
     public void testSerOptNull() throws Exception {
         OptionalData data = new OptionalData();
         data.myString = null;
@@ -130,6 +130,26 @@ public class TestOptional extends ModuleTestBase
         assertEquals("{}", value);
     }
 
+    // for [dataformat-guava#66]
+    public void testSerOptDisableAsNull() throws Exception {
+        final OptionalData data = new OptionalData();
+        data.myString = Optional.absent();
+
+        GuavaModule mod = new GuavaModule().configureAbsentsAsNulls(false);
+        ObjectMapper mapper = new ObjectMapper()
+            .registerModule(mod)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL);
+
+        assertEquals("{\"myString\":null}", mapper.writeValueAsString(data));
+
+        // but do exclude with NON_EMPTY
+        mapper = new ObjectMapper()
+            .registerModule(mod)
+            .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+
+        assertEquals("{}", mapper.writeValueAsString(data));
+    }
+    
     public void testSerOptNonEmpty() throws Exception {
         OptionalData data = new OptionalData();
         data.myString = null;

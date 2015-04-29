@@ -8,8 +8,12 @@ import com.google.common.base.Optional;
 
 import java.util.List;
 
-public class GuavaBeanSerializerModifier extends BeanSerializerModifier {
-
+/**
+ * {@link BeanSerializerModifier} needed to sneak in handler to exclude "absent"
+ * optional values iff handling of "absent as nulls" is enabled.
+ */
+public class GuavaBeanSerializerModifier extends BeanSerializerModifier
+{
     @Override
     public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
             BeanDescription beanDesc,

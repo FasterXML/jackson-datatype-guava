@@ -84,7 +84,7 @@ public final class GuavaOptionalSerializer
 
     @Override
     public void serialize(Optional<?> value, JsonGenerator jgen, SerializerProvider provider)
-            throws IOException
+        throws IOException
     {
         if (value.isPresent()) {
             if (_valueSerializer != null) {
