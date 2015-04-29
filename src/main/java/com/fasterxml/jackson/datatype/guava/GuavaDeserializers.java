@@ -235,8 +235,11 @@ public class GuavaDeserializers
     {
         Class<?> raw = type.getRawClass();
         if (raw == Optional.class){
-            JavaType[] types = config.getTypeFactory().findTypeParameters(type, Optional.class);
-            JavaType refType = (types == null) ? TypeFactory.unknownType() : types[0];
+            // GuavaTypeModifier has introspector type parameters already so:
+            JavaType refType = type.containedType(0);
+            if (refType == null) {
+                refType = TypeFactory.unknownType();
+            }
             JsonDeserializer<?> valueDeser = type.getValueHandler();
             TypeDeserializer typeDeser = type.getTypeHandler();
             // [Issue#42]: Polymorphic types need type deserializer
