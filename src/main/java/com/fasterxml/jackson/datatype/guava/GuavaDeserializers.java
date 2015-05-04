@@ -197,7 +197,9 @@ public class GuavaDeserializers
             }
 
             if (ImmutableSetMultimap.class.isAssignableFrom(raw)) {
-                // TODO
+                // [Issue#67]: Preserve order of entries
+                return new LinkedHashMultimapDeserializer(type, keyDeserializer,
+                        elementTypeDeserializer, elementDeserializer);
             }
             if (HashMultimap.class.isAssignableFrom(raw)) {
                 return new HashMultimapDeserializer(type, keyDeserializer, elementTypeDeserializer,
