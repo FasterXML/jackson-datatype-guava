@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ser.PropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.fasterxml.jackson.databind.ser.std.MapProperty;
 import com.fasterxml.jackson.databind.type.MapLikeType;
+
 import com.google.common.collect.Multimap;
 
 /**
@@ -232,10 +233,16 @@ public class MultimapSerializer
     }
 
     @Override
-    public boolean isEmpty(Multimap<?,?> map) {
-        return map.isEmpty();
+    @Deprecated // since 2.5
+    public boolean isEmpty(Multimap<?,?> value) {
+        return isEmpty(null, value);
     }
-    
+
+    @Override
+    public boolean isEmpty(SerializerProvider prov, Multimap<?,?> value) {
+        return value.isEmpty();
+    }
+
     /*
     /**********************************************************
     /* Post-processing (contextualization)

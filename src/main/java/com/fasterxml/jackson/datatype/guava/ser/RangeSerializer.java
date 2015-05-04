@@ -3,12 +3,14 @@ package com.fasterxml.jackson.datatype.guava.ser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.*;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonObjectFormatVisitor;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
@@ -20,7 +22,7 @@ public class RangeSerializer extends StdSerializer<Range<?>>
     implements ContextualSerializer
 {
     protected final JavaType _rangeType;
-    
+
     protected final JsonSerializer<Object> _endpointSerializer;
 
     /*
@@ -30,7 +32,7 @@ public class RangeSerializer extends StdSerializer<Range<?>>
      */
 
     public RangeSerializer(JavaType type) { this(type, null); }
-    
+
     @SuppressWarnings("unchecked")
     public RangeSerializer(JavaType type, JsonSerializer<?> endpointSer)
     {
@@ -38,15 +40,17 @@ public class RangeSerializer extends StdSerializer<Range<?>>
         _rangeType = type;
         _endpointSerializer = (JsonSerializer<Object>) endpointSer;
     }
-    
-    // TODO: can this be implemented with better semantics? Base class only
-    // checks for null
-    /*
+
     @Override
+    @Deprecated
     public boolean isEmpty(Range<?> value) {
-        return super.isEmpty(value);
+        return isEmpty(null, value);
     }
-    */
+
+    @Override
+    public boolean isEmpty(SerializerProvider prov, Range<?> value) {
+        return value.isEmpty();
+    }
 
     @Override
     public JsonSerializer<?> createContextual(SerializerProvider prov,
@@ -71,7 +75,7 @@ public class RangeSerializer extends StdSerializer<Range<?>>
         }
         return this;
     }
-    
+
     /*
     /**********************************************************
     /* Serialization methods
@@ -119,7 +123,7 @@ public class RangeSerializer extends StdSerializer<Range<?>>
             }
         }
     }
-    
+
     private void _writeContents(Range<?> value, JsonGenerator jgen, SerializerProvider provider)
         throws IOException
     {

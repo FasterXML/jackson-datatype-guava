@@ -77,7 +77,7 @@ public class GuavaOptionalDeserializer
         if (deser == null) {
             deser = ctxt.findContextualValueDeserializer(_referenceType, property);
         } else { // otherwise directly assigned, probably not contextual yet:
-            deser = ctxt.handleSecondaryContextualization(deser, property);
+            deser = ctxt.handleSecondaryContextualization(deser, property, _fullType);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
