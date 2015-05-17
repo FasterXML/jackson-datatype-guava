@@ -77,7 +77,12 @@ public class TestOptional extends ModuleTestBase
         assertTrue(data.get().myData.isPresent());
         assertEquals("simpleString", data.get().myData.get());
     }
-    
+
+    public void testDeserNull() throws Exception {
+        Optional<?> value = MAPPER.readValue("\"\"", new TypeReference<Optional<Integer>>() {});
+        assertFalse(value.isPresent());
+    }
+
     public void testSerAbsent() throws Exception {
         String value = MAPPER.writeValueAsString(Optional.absent());
         assertEquals("null", value);

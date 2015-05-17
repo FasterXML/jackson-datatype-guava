@@ -99,7 +99,7 @@ public class GuavaOptionalDeserializer
         } else {
             refd = _valueDeserializer.deserializeWithType(jp, ctxt, _valueTypeDeserializer);
         }
-        return Optional.of(refd);
+        return Optional.fromNullable(refd);
     }
 
     /* NOTE: usually should not need this method... but for some reason, it is needed here.
@@ -121,6 +121,6 @@ public class GuavaOptionalDeserializer
             return deserialize(jp, ctxt);
         }
         // with type deserializer to use here? Looks like we get passed same one?
-        return Optional.of(typeDeserializer.deserializeTypedFromAny(jp, ctxt));
+        return Optional.fromNullable(typeDeserializer.deserializeTypedFromAny(jp, ctxt));
     }
 }
