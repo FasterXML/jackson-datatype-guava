@@ -1,13 +1,17 @@
-Project to build [Jackson](http://jackson.codehaus.org) module (jar)
+[Jackson](http://jackson.codehaus.org) module (jar)
 to support JSON serialization and deserialization of
-[Guava](http://code.google.com/p/guava-libraries/) collection types.
-
-[![Build Status](https://fasterxml.ci.cloudbees.com/job/jackson-datatype-guava-master/badge/icon)](https://fasterxml.ci.cloudbees.com/job/jackson-datatype-guava-master/)
+[Guava](http://code.google.com/p/guava-libraries/) data types.
 
 ## Status
 
-As of version 2.3, module is production ready. Not all datatypes of Guava are support due to sheer
-size of the library; new support is added based on contributions.
+[![Build Status](https://travis-ci.org/FasterXML/jackson-datatype-guava.svg)](https://travis-ci.org/FasterXML/jackson-datatype-guava)
+
+Module has been production-ready since version 2.3.
+Not all datatypes of Guava are support due to sheer size of the library; new support is added based on contributions.
+
+## License
+
+[Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 ## Usage
 
