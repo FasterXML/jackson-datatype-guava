@@ -4,11 +4,9 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-
 import com.fasterxml.jackson.core.type.TypeReference;
-
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.google.common.base.Optional;
 
 public class TestOptional extends ModuleTestBase
@@ -45,6 +43,15 @@ public class TestOptional extends ModuleTestBase
     /**********************************************************************
      */
 
+    public void testOptionalTypeResolution() throws Exception
+    {
+        // With 2.6, we need to recognize it as ReferenceType
+        JavaType t = MAPPER.constructType(Optional.class);
+        assertNotNull(t);
+        assertEquals(Optional.class, t.getRawClass());
+        assertTrue(t.isReferenceType());
+    }
+    
     public void testDeserAbsent() throws Exception {
         Optional<?> value = MAPPER.readValue("null", new TypeReference<Optional<String>>() {});
         assertFalse(value.isPresent());
@@ -146,7 +153,12 @@ public class TestOptional extends ModuleTestBase
         mapper = new ObjectMapper()
             .registerModule(mod)
             .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
+        assertEquals("{}", mapper.writeValueAsString(data));
 
+        // and with new (2.6) NON_ABSENT
+        mapper = new ObjectMapper()
+            .registerModule(mod)
+            .setSerializationInclusion(JsonInclude.Include.NON_ABSENT);
         assertEquals("{}", mapper.writeValueAsString(data));
     }
     

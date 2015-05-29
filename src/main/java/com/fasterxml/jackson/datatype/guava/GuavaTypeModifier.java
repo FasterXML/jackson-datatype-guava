@@ -99,6 +99,10 @@ public class GuavaTypeModifier extends TypeModifier
                  * Not sure if it'd be with Range; but let's assume it is, for now: sub-classes
                  * could eliminate/change type parameterization anyway.
                  */
+                // 28-May-2015, tatu: Further, Optional needs to be a ReferenceType
+                if (target == Optional.class) {
+                    return typeFactory.constructReferenceType(raw, t);
+                }
                 return typeFactory.constructParametrizedType(raw, target, t);
             }
         }

@@ -9,6 +9,7 @@ Project: jackson-datatype-guava
 #66: Add `GuavaModule.configureAbsentsAsNulls(boolean)` to change whether
  `Optional.absent()` is to be handled same as Java null during serialization
  (default: true) or not.
+#69: Add support for `JsonInclude.Include.NON_ABSENT`, to compensate for #66
 
 2.5.4 (not yet released)
 
