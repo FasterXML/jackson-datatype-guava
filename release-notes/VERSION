@@ -6,7 +6,7 @@ Project: jackson-datatype-guava
 
 2.6.0 (not yet released)
 
-2.5.4 (not yet released)
+2.5.4 (09-Jun-2015)
 
 - Add override for `MultimapSerializer.isEmpty(SerializerProvider, Multimap<?,?>)`
   for forward compatibility (needed for databind 2.6)
