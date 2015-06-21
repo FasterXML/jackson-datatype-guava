@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.*;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Map;
 
 import static com.google.common.collect.TreeMultimap.create;
@@ -234,5 +235,22 @@ public class TestMultimaps extends ModuleTestBase
         assertTrue(map.containsEntry("first", "foo"));
         assertTrue(map.containsEntry("second", "bar"));
         return map;
+    }
+
+    public void testIssue67() throws IOException
+    {
+        ImmutableSetMultimap<String, Integer> map = MAPPER.readValue(
+            "{\"d\":[1,2],\"c\":[3,4],\"b\":[5,6],\"a\":[7,8]}",
+            new TypeReference<ImmutableSetMultimap<String, Integer>>() {});
+        assertEquals(8, map.size());
+        Iterator<Map.Entry<String, Integer>> iterator = map.entries().iterator();
+        assertEquals(Maps.immutableEntry("d", 1), iterator.next());
+        assertEquals(Maps.immutableEntry("d", 2), iterator.next());
+        assertEquals(Maps.immutableEntry("c", 3), iterator.next());
+        assertEquals(Maps.immutableEntry("c", 4), iterator.next());
+        assertEquals(Maps.immutableEntry("b", 5), iterator.next());
+        assertEquals(Maps.immutableEntry("b", 6), iterator.next());
+        assertEquals(Maps.immutableEntry("a", 7), iterator.next());
+        assertEquals(Maps.immutableEntry("a", 8), iterator.next());
     }
 }
