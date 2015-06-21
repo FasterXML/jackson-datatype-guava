@@ -242,6 +242,7 @@ public class TestMultimaps extends ModuleTestBase
         ImmutableSetMultimap<String, Integer> map = MAPPER.readValue(
             "{\"d\":[1,2],\"c\":[3,4],\"b\":[5,6],\"a\":[7,8]}",
             new TypeReference<ImmutableSetMultimap<String, Integer>>() {});
+        assertTrue(map instanceof ImmutableSetMultimap);
         assertEquals(8, map.size());
         Iterator<Map.Entry<String, Integer>> iterator = map.entries().iterator();
         assertEquals(Maps.immutableEntry("d", 1), iterator.next());

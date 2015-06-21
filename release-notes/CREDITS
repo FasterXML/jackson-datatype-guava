@@ -12,3 +12,8 @@ Stephan Schroevers: (Stephan202@github)
  (2.5.0)
 * Contributed #65: Add deserialization support for SortedMultiset and ImmutableSortedMultiset
  (2.5.3)
+
+Michael Hixson:
+
+* Contributed fix for #67: Support deserializing ImmutableSetMultimaps
+ (2.6.0)
