@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion> 
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>com.fasterxml.jackson</groupId>
     <artifactId>jackson-parent</artifactId>
@@ -17,7 +17,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
   <scm>
     <connection>scm:git:git@github.com:FasterXML/jackson-datatype-guava.git</connection>
     <developerConnection>scm:git:git@github.com:FasterXML/jackson-datatype-guava.git</developerConnection>
-    <url>http://github.com/FasterXML/jackson-datatype-guava</url>    
+    <url>http://github.com/FasterXML/jackson-datatype-guava</url>
     <tag>HEAD</tag>
   </scm>
 
@@ -31,6 +31,9 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
   <properties>
     <version.jackson>2.6.0-rc2</version.jackson>
 
+    <version.guava>15.0</version.guava>
+    <version.guava.osgi>${version.guava}.0</version.guava.osgi>
+
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/datatype/guava</packageVersion.dir>
     <packageVersion.package>${project.groupId}.guava</packageVersion.package>
@@ -38,11 +41,11 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
 ${project.groupId}.guava.*;version=${project.version}
       </osgi.export>
       <osgi.import>
-com.google.common.collect,
-com.google.common.base,
-com.google.common.cache,
-com.google.common.hash,
-com.google.common.net,
+com.google.common.collect;version="${version.guava.osgi}",
+com.google.common.base;version="${version.guava.osgi}",
+com.google.common.cache;version="${version.guava.osgi}",
+com.google.common.hash;version="${version.guava.osgi}",
+com.google.common.net;version="${version.guava.osgi}",
 com.fasterxml.jackson.core,
 com.fasterxml.jackson.core.util,
 com.fasterxml.jackson.databind,
@@ -73,7 +76,7 @@ com.fasterxml.jackson.databind.util
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>15.0</version>
+      <version>${version.guava}</version>
     </dependency>
   </dependencies>
 
