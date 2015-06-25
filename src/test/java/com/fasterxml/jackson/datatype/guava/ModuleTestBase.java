@@ -9,11 +9,17 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 public abstract class ModuleTestBase extends junit.framework.TestCase
 {
     protected ModuleTestBase() { }
-    
-    protected ObjectMapper mapperWithModule()
+
+    protected ObjectMapper mapperWithModule() {
+        return mapperWithModule(false);
+    }
+
+    protected ObjectMapper mapperWithModule(boolean absentsAsNulls)
     {
         ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new GuavaModule());
+        GuavaModule module = new GuavaModule();
+        module.configureAbsentsAsNulls(absentsAsNulls);
+        mapper.registerModule(module);
         return mapper;
     }
 

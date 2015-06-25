@@ -34,11 +34,22 @@ To use module on Maven-based projects, use following dependency:
 Like all standard Jackson modules (libraries that implement Module interface), registration is done as follows:
 
 ```java
-ObjectMapper mapper = new ObjectMapper();
-mapper.registerModule(new GuavaModule());
+ObjectMapper mapper = new ObjectMapper()
+    .registerModule(new GuavaModule());
 ```
 
 after which functionality is available for all normal Jackson operations.
+
+### Configuration
+
+Configurable settings of the module are:
+
+* `configureAbsentsAsNulls` (default: true) (added in 2.6)
+    * If enabled, will consider `Optional.absent()` to be "null-equivalent", and NOT serialized if inclusion is defined as `Include.NON_NULL`
+    * If disabled, `Optional.absent()` behaves as standard referential type, and is included with `Include.NON_NULL`
+    * In either case, `Optional.absent()` values are always excluded with Inclusion values of:
+        * NON_EMPTY
+        * NON_ABSENT (new in Jackson 2.6)
 
 ## More
 

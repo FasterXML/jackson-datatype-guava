@@ -5,6 +5,20 @@ import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaBeanSerializerModifier;
 
+/**
+ * Basic Jackson {@link Module} that adds support for Guava types.
+ *<p>
+ * Current configurability includes:
+ *<ul>
+ * <li><code>configureAbsentsAsNulls</code> (default: <code>true</code>):
+ *    Determines whether inclusion strategy of <code>NON_NULL</code> should additionally consider
+ *    <code>Optional.absent()</code> values (as POJO properties) to be excluded; if true, they will
+ *     be excluded, if false, they will be included.
+ *     Note that the defaults for other "Optional" types are different; Guava setting is chosen solely
+ *     for backwards compatibility.
+ *  </li>
+ *</ul>
+ */
 public class GuavaModule extends Module // can't use just SimpleModule, due to generic types
 {
     private final String NAME = "GuavaModule";

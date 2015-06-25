@@ -119,7 +119,9 @@ public class TestOptional extends ModuleTestBase
     public void testSerNonNull() throws Exception {
         OptionalData data = new OptionalData();
         data.myString = Optional.absent();
-        String value = mapperWithModule().setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
+        // NOTE: pass 'true' to ensure "legacy" setting
+        String value = mapperWithModule(true)
+                .setSerializationInclusion(JsonInclude.Include.NON_NULL).writeValueAsString(data);
         assertEquals("{}", value);
     }
 

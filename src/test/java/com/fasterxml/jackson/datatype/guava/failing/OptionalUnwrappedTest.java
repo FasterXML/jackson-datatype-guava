@@ -29,7 +29,8 @@ public class OptionalUnwrappedTest extends ModuleTestBase
         public Optional<Child> child = Optional.of(new Child());
     }
 
-    private final ObjectMapper MAPPER = mapperWithModule();
+    // 'false' -> do NOT consider Absents as null-equivalents; avoid registration of BeanPropertyWriter
+    private final ObjectMapper MAPPER = mapperWithModule(false);
 
     public void testUntyped() throws Exception
     {
