@@ -6,6 +6,8 @@ Project: jackson-datatype-guava
 
 2.6.0 (not yet released)
 
+#64: `@JsonUnwrapped` annotation is ignored when a field is an Optional
+ (reported by Alexey K, akobiakov@github)
 #66: Add `GuavaModule.configureAbsentsAsNulls(boolean)` to change whether
  `Optional.absent()` is to be handled same as Java null during serialization
  (default: true) or not.

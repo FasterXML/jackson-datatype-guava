@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 
-public class TestOptional extends ModuleTestBase
+public class OptionalBasicTest extends ModuleTestBase
 {
     private final ObjectMapper MAPPER = mapperWithModule();
 
@@ -76,7 +76,7 @@ public class TestOptional extends ModuleTestBase
         assertTrue(data.get().myString.isPresent());
         assertEquals("simpleString", data.get().myString.get());
     }
-    
+
     public void testDeserGeneric() throws Exception {
         TypeReference<Optional<OptionalGenericData<String>>> type = new TypeReference<Optional<OptionalGenericData<String>>>() {};
         Optional<OptionalGenericData<String>> data = MAPPER.readValue("{\"myData\":\"simpleString\"}", type);
@@ -84,31 +84,31 @@ public class TestOptional extends ModuleTestBase
         assertTrue(data.get().myData.isPresent());
         assertEquals("simpleString", data.get().myData.get());
     }
-    
+
     public void testSerAbsent() throws Exception {
         String value = MAPPER.writeValueAsString(Optional.absent());
         assertEquals("null", value);
     }
-    
+
     public void testSerSimpleString() throws Exception {
         String value = MAPPER.writeValueAsString(Optional.of("simpleString"));
         assertEquals("\"simpleString\"", value);
     }
-    
+
     public void testSerInsideObject() throws Exception {
         OptionalData data = new OptionalData();
         data.myString = Optional.of("simpleString");
         String value = MAPPER.writeValueAsString(data);
         assertEquals("{\"myString\":\"simpleString\"}", value);
     }
-    
+
     public void testSerComplexObject() throws Exception {
         OptionalData data = new OptionalData();
         data.myString = Optional.of("simpleString");
         String value = MAPPER.writeValueAsString(Optional.of(data));
         assertEquals("{\"myString\":\"simpleString\"}", value);
     }
-    
+
     public void testSerGeneric() throws Exception {
         OptionalGenericData<String> data = new OptionalGenericData<String>();
         data.myData = Optional.of("simpleString");
@@ -198,7 +198,7 @@ public class TestOptional extends ModuleTestBase
         final Unit input = new Unit();
         input.link(input);
         String json = MAPPER.writeValueAsString(input);
-        Unit result = MAPPER.readValue(json,  Unit.class);
+        Unit result = MAPPER.readValue(json, Unit.class);
         assertNotNull(result);
         assertNotNull(result.baseUnit);
         assertTrue(result.baseUnit.isPresent());

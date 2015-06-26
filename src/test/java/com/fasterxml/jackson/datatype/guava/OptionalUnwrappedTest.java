@@ -1,11 +1,7 @@
-package com.fasterxml.jackson.datatype.guava.failing;
+package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.annotation.*;
-
 import com.fasterxml.jackson.databind.*;
-
-import com.fasterxml.jackson.datatype.guava.ModuleTestBase;
-
 import com.google.common.base.Optional;
 
 /**
@@ -25,7 +21,7 @@ public class OptionalUnwrappedTest extends ModuleTestBase
     }
 
     static class OptionalParent {
-        @JsonUnwrapped
+        @JsonUnwrapped(prefix="XX.")
         public Optional<Child> child = Optional.of(new Child());
     }
 
@@ -36,7 +32,7 @@ public class OptionalUnwrappedTest extends ModuleTestBase
     {
         ObjectWriter w = MAPPER.writer();
 //        String jsonExp = w.writeValueAsString(new Parent());
-        String jsonExp = aposToQuotes("{'name':'Bob'}");
+        String jsonExp = aposToQuotes("{'XX.name':'Bob'}");
         String jsonAct = w.writeValueAsString(new OptionalParent());
         assertEquals(jsonExp, jsonAct);
     }

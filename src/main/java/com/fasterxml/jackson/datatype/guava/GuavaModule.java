@@ -10,7 +10,7 @@ import com.fasterxml.jackson.datatype.guava.ser.GuavaBeanSerializerModifier;
  *<p>
  * Current configurability includes:
  *<ul>
- * <li><code>configureAbsentsAsNulls</code> (default: <code>true</code>):
+ * <li><code>configureAbsentsAsNulls</code> (default: <code>false</code>):
  *    Determines whether inclusion strategy of <code>NON_NULL</code> should additionally consider
  *    <code>Optional.absent()</code> values (as POJO properties) to be excluded; if true, they will
  *     be excluded, if false, they will be included.
