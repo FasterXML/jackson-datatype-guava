@@ -84,7 +84,7 @@ public class GuavaSerializers extends Serializers.Base
         if (Multimap.class.isAssignableFrom(type.getRawClass())) {
             final AnnotationIntrospector intr = config.getAnnotationIntrospector();
             Object filterId = intr.findFilterId((Annotated)beanDesc.getClassInfo());
-            String[] ignored = intr.findPropertiesToIgnore(beanDesc.getClassInfo());
+            String[] ignored = intr.findPropertiesToIgnore(beanDesc.getClassInfo(), true);
             HashSet<String> ignoredEntries = (ignored == null || ignored.length == 0)
                     ? null : ArrayBuilders.arrayToSet(ignored);
 

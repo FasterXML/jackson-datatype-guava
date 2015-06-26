@@ -211,16 +211,13 @@ public final class GuavaOptionalSerializer
     protected final JsonSerializer<Object> _findSerializer(SerializerProvider provider, Class<?> type)
         throws JsonMappingException
     {
-        PropertySerializerMap.SerializerAndMapResult result = _dynamicSerializers
-                .findAndAddPrimarySerializer(type, provider, _property);
-        if (_dynamicSerializers != result.map) {
-            _dynamicSerializers = result.map;
-        }
-        JsonSerializer<Object> ser = result.serializer;
-        // 26-Jun-2015, tatu: Sub-optimal if we do not cache unwrapped instance; but on plus side
-        //   construction is a cheap operation, so won't add huge overhead
-        if (_unwrapper != null) {
-            ser = ser.unwrappingSerializer(_unwrapper);
+        JsonSerializer<Object> ser = _dynamicSerializers.serializerFor(type);
+        if (ser == null) {
+            ser = provider.findPrimaryPropertySerializer(type, _property);
+            if (_unwrapper != null) {
+                ser = ser.unwrappingSerializer(_unwrapper);
+            }
+            _dynamicSerializers = _dynamicSerializers.newWith(type, ser);
         }
         return ser;
     }

@@ -1,11 +1,14 @@
-package com.fasterxml.jackson.datatype.guava;
+package com.fasterxml.jackson.datatype.guava.failing;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
+
 import com.google.common.base.Optional;
 
+import com.fasterxml.jackson.datatype.guava.*;
+
 /**
- * Unit test for #64, in new mode.
+ * Unit test for remaining part of #64.
  */
 public class OptionalUnwrappedTest extends ModuleTestBase
 {
@@ -25,10 +28,10 @@ public class OptionalUnwrappedTest extends ModuleTestBase
         public Optional<Child> child = Optional.of(new Child());
     }
 
-    // Test for "new" settings of absent != nulls, available on 2.6 and later
-    public void testUntypedWithOptionalsNotNulls() throws Exception
+    // Test for "old" settings (2.5 and earlier only option; available on later too)
+    public void testUntypedWithNullEqOptionals() throws Exception
     {
-        final ObjectMapper mapper = mapperWithModule(false);
+        final ObjectMapper mapper = mapperWithModule(true);
         String jsonExp = aposToQuotes("{'XX.name':'Bob'}");
         String jsonAct = mapper.writeValueAsString(new OptionalParent());
         assertEquals(jsonExp, jsonAct);

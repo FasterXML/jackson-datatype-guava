@@ -197,7 +197,7 @@ public class MultimapSerializer
         Set<String> ignored = _ignoredEntries;
         boolean sortKeys = false;
         if (intr != null && propertyAcc != null) {
-            String[] moreToIgnore = intr.findPropertiesToIgnore(propertyAcc);
+            String[] moreToIgnore = intr.findPropertiesToIgnore(propertyAcc, true);
             if (moreToIgnore != null) {
                 ignored = (ignored == null) ? new HashSet<String>() : new HashSet<String>(ignored);
                 for (String str : moreToIgnore) {
