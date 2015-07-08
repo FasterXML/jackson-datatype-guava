@@ -30,7 +30,11 @@ No changes since 2.5.0
 #56: Add support `HashCode`
  (contributed by Stephan S, Stephan202@github)
 
-2.4.6 (not yet released)
+2.4.7 (not released)
+
+#48: Avoid problems deserializing `null` for `Optional`
+
+2.4.6 (23-Apr-2015)
 
 #61: NPE serializing `Multimap`s with null values
  (reported by sixinli@github)
