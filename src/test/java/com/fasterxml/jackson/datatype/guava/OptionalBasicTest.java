@@ -227,4 +227,10 @@ public class OptionalBasicTest extends ModuleTestBase
             assertEquals("Entry #"+i, list.get(i), result.get(i));
         }
     }
+
+    // [Issue#48]
+    public void testDeserNull() throws Exception {
+        Optional<?> value = MAPPER.readValue("\"\"", new TypeReference<Optional<Integer>>() {});
+        assertFalse(value.isPresent());
+    }
 }
