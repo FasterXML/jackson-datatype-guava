@@ -4,6 +4,10 @@ Project: jackson-datatype-guava
 === History: ===
 ------------------------------------------------------------------------
 
+2.4.7 (not released)
+
+#48: Avoid problems deserializing `null` for `Optional`
+
 2.4.6 (23-Apr-2015)
 
 #61: NPE serializing `Multimap`s with null values
