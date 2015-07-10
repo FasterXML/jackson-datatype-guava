@@ -31,10 +31,6 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
   <properties>
     <version.jackson>2.6.0-rc3</version.jackson>
 
-    <!-- More modern guava versions require 1.7? -->
-    <javac.src.version>1.7</javac.src.version>
-    <javac.target.version>1.7</javac.target.version>
-
     <version.guava>15.0</version.guava>
     <version.guava.osgi>${version.guava}.0</version.guava.osgi>
 

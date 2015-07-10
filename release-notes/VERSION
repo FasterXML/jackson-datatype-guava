@@ -16,7 +16,6 @@ Project: jackson-datatype-guava
 #69: Add support for `JsonInclude.Include.NON_ABSENT`, to compensate for #66
 #70: Change OSGi manifest entries to import guava 15.0 or greater
  (reported by sprynter@github)
-- Upgrade JDK baseline to 1.7
 
 2.5.4 (09-Jun-2015)
 
