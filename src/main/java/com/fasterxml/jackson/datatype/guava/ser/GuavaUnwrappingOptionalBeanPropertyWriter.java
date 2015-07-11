@@ -13,7 +13,6 @@ public class GuavaUnwrappingOptionalBeanPropertyWriter extends UnwrappingBeanPro
     public GuavaUnwrappingOptionalBeanPropertyWriter(BeanPropertyWriter base,
             NameTransformer transformer) {
         super(base, transformer);
-System.err.println("Unwrap/opt: ctor 1");
     }
 
     protected GuavaUnwrappingOptionalBeanPropertyWriter(UnwrappingBeanPropertyWriter base,

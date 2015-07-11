@@ -60,7 +60,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
 
     /**
      * Configuration method that may be used to change configuration setting
-     * {@link #_cfgHandleAbsentAsNull}: enabling means that `Optional.absent()` values
+     * <code>_cfgHandleAbsentAsNull</code>: enabling means that `Optional.absent()` values
      * are handled like Java nulls (wrt filtering on serialization); disabling that
      * they are only treated as "empty" values, but not like native Java nulls.
      * Recommended setting for this value is `false`, for compatibility with other

@@ -84,9 +84,8 @@ public final class GuavaOptionalSerializer
         if (ser == null) {
             // we'll have type parameter available due to GuavaTypeModifier making sure it is, so:
             boolean realType = !_referredType.hasRawClass(Object.class);
-            /* Can only assign serializer statically if the declared type is final,
-             * or if we are to use static typing (and type is not "untyped")
-             */
+            // Can only assign serializer statically if the declared type is final,
+            // or if we are to use static typing (and type is not "untyped")
             if (realType &&
                     (provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
                     || _referredType.isFinal())) {
@@ -179,7 +178,7 @@ public final class GuavaOptionalSerializer
     /* Introspection support
     /**********************************************************
      */
-    
+
     @Override
     public void acceptJsonFormatVisitor(JsonFormatVisitorWrapper visitor, JavaType typeHint) throws JsonMappingException
     {

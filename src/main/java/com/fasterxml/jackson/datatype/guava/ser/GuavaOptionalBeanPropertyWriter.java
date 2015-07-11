@@ -16,7 +16,7 @@ public class GuavaOptionalBeanPropertyWriter extends BeanPropertyWriter
     protected GuavaOptionalBeanPropertyWriter(BeanPropertyWriter base, PropertyName newName) {
         super(base, newName);
     }
-    
+
     // !!! TODO: in 2.7, no need to override
     @Override
     public BeanPropertyWriter rename(NameTransformer transformer) {
