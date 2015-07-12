@@ -6,12 +6,14 @@ import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.fasterxml.jackson.databind.util.StdConverter;
+import com.fasterxml.jackson.datatype.guava.ser.TableToMapConverter;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import com.google.common.collect.Table;
 import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
@@ -72,6 +74,9 @@ public class GuavaSerializers extends Serializers.Base
             JavaType delegate = config.getTypeFactory().constructParametrizedType(Iterable.class, Iterable.class, vt);
 //            JavaType delegate = config.getTypeFactory().constructParametrizedType(FluentIterable.class, Iterable.class, vt);
             return new StdDelegatingSerializer(FluentConverter.instance, delegate, null);
+        }
+        if (Table.class.isAssignableFrom(raw)) {
+            return new StdDelegatingSerializer(new TableToMapConverter<Object, Object, Object>(type));
         }
         return super.findSerializer(config, type, beanDesc);
     }
