@@ -316,7 +316,11 @@ public class MultimapSerializer
                         serializers = _dynamicValueSerializers;
                     }
                 }
-                valueSer.serialize(vv, gen, provider);
+                if (_valueTypeSerializer == null) {
+                    valueSer.serialize(vv, gen, provider);
+                } else {
+                    valueSer.serializeWithType(vv, gen, provider, _valueTypeSerializer);
+                }
             }
             gen.writeEndArray();
         }
