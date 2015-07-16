@@ -3,6 +3,9 @@ package com.fasterxml.jackson.datatype.guava;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.guava.pojo.AddOp;
+import com.fasterxml.jackson.datatype.guava.pojo.MathOp;
+import com.fasterxml.jackson.datatype.guava.pojo.MulOp;
 
 import com.google.common.collect.*;
 
@@ -11,6 +14,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.google.common.collect.TreeMultimap.create;
+import static junit.framework.TestCase.assertEquals;
 
 /**
  * Unit tests to verify handling of various {@link Multimap}s.
@@ -253,5 +257,54 @@ public class TestMultimaps extends ModuleTestBase
         assertEquals(Maps.immutableEntry("b", 6), iterator.next());
         assertEquals(Maps.immutableEntry("a", 7), iterator.next());
         assertEquals(Maps.immutableEntry("a", 8), iterator.next());
+    }
+    
+    public void testPolymorphicValue() throws IOException {
+        ImmutableMultimapWrapper input = new ImmutableMultimapWrapper(ImmutableMultimap.of("add", new AddOp(3, 2), "mul", new MulOp(4, 6)));
+
+        String json = MAPPER.writeValueAsString(input);
+
+        ImmutableMultimapWrapper output = MAPPER.readValue(json, ImmutableMultimapWrapper.class);
+        assertEquals(input, output);        
+    }
+    
+    public static class ImmutableMultimapWrapper {
+
+        private ImmutableMultimap<String, MathOp> multimap;
+
+        public ImmutableMultimapWrapper() {
+        }
+
+        public ImmutableMultimapWrapper(ImmutableMultimap<String, MathOp> f) {
+            this.multimap = f;
+        }
+
+        public ImmutableMultimap<String, MathOp> getMultimap() {
+            return multimap;
+        }
+
+        public void setMultimap(ImmutableMultimap<String, MathOp> multimap) {
+            this.multimap = multimap;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + (this.multimap != null ? this.multimap.hashCode() : 0);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ImmutableMultimapWrapper other = (ImmutableMultimapWrapper) obj;
+            return !(this.multimap != other.multimap && (this.multimap == null || !this.multimap.equals(other.multimap)));
+        }
+
     }
 }
