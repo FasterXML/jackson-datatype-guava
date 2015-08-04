@@ -3,7 +3,11 @@ package com.fasterxml.jackson.datatype.guava;
 import com.fasterxml.jackson.core.Version;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.cfg.PackageVersion;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaBeanSerializerModifier;
+import com.google.common.collect.BoundType;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Basic Jackson {@link Module} that adds support for Guava types.
@@ -37,7 +41,9 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
      * changes after registration will have no effect.
      */
     protected boolean _cfgHandleAbsentAsNull = true;
-    
+
+    protected BoundType _defaultBoundType;
+
     public GuavaModule() {
         super();
     }
@@ -73,6 +79,12 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
      */
     public GuavaModule configureAbsentsAsNulls(boolean state) {
         _cfgHandleAbsentAsNull = state;
+        return this;
+    }
+
+    public GuavaModule defaultBoundType(BoundType boundType) {
+        checkNotNull(boundType);
+        _defaultBoundType = boundType;
         return this;
     }
     
