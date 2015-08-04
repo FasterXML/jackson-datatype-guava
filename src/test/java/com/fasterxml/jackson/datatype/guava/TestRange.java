@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
 
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
 import java.io.IOException;
@@ -102,5 +103,34 @@ public class TestRange extends ModuleTestBase {
         Untyped out = MAPPER.readValue(json, Untyped.class);
         assertNotNull(out);
         assertEquals(Range.class, out.range.getClass());
+    }
+
+    public void testDefaultBoundType() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"upperEndpoint\": 3}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeOpen() throws Exception
+    {
+        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.OPEN);
+        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
+
+        String json = "{\"lowerEndpoint\": 1, \"upperEndpoint\": 5}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(1), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(5), r.upperEndpoint());
+
+        assertEquals(BoundType.OPEN, r.lowerBoundType());
+        assertEquals(BoundType.OPEN, r.upperBoundType());
     }
 }
