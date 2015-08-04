@@ -135,8 +135,8 @@ public class RangeDeserializer
                 if (lowerBoundType == null)
                     lowerBoundType = CLOSED;
 
-                if (upperEndpoint == null)
-                    upperEndpoint = CLOSED;
+                if (upperBoundType == null)
+                    upperBoundType = CLOSED;
 
                 return RangeFactory.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
