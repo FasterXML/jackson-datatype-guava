@@ -13,7 +13,6 @@ import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
 import java.io.IOException;
-import java.util.Optional;
 
 import static com.google.common.collect.BoundType.CLOSED;
 
@@ -133,8 +132,12 @@ public class RangeDeserializer
                                          lowerEndpoint.getClass().getName(),
                                          upperEndpoint.getClass().getName());
 
-                lowerBoundType = Optional.ofNullable(lowerBoundType).orElse(CLOSED);
-                upperBoundType = Optional.ofNullable(upperBoundType).orElse(CLOSED);
+                if (lowerBoundType == null)
+                    lowerBoundType = CLOSED;
+
+                if (upperEndpoint == null)
+                    upperEndpoint = CLOSED;
+
                 return RangeFactory.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
             if (lowerEndpoint != null) {
