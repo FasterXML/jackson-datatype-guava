@@ -1,10 +1,8 @@
 package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
-
 import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
@@ -118,19 +116,4 @@ public class TestRange extends ModuleTestBase {
         assertEquals(BoundType.CLOSED, r.upperBoundType());
     }
 
-    public void testDefaultBoundTypeOpen() throws Exception
-    {
-        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.OPEN);
-        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
-
-        String json = "{\"lowerEndpoint\": 1, \"upperEndpoint\": 5}";
-        @SuppressWarnings("unchecked")
-        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
-
-        assertEquals(Integer.valueOf(1), r.lowerEndpoint());
-        assertEquals(Integer.valueOf(5), r.upperEndpoint());
-
-        assertEquals(BoundType.OPEN, r.lowerBoundType());
-        assertEquals(BoundType.OPEN, r.upperBoundType());
-    }
 }

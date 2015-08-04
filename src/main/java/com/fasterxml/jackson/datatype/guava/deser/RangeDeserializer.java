@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 import static com.google.common.collect.BoundType.CLOSED;
-import static com.google.common.collect.BoundType.OPEN;
 
 /**
  * Jackson deserializer for a Guava {@link Range}.
@@ -36,8 +35,6 @@ public class RangeDeserializer
 
     protected final JsonDeserializer<Object> _endpointDeserializer;
 
-    private BoundType _defaultBoundType = CLOSED;  //TODO how to switch to the configured type?
-
     /*
     /**********************************************************
     /* Life-cycle
@@ -54,7 +51,6 @@ public class RangeDeserializer
         super(rangeType);
         _rangeType = rangeType;
         _endpointDeserializer = (JsonDeserializer<Object>) endpointDeser;
-//        _defaultBoundType = defaultBoundType; TODO should I pass it here?
     }
 
     @Override
@@ -137,8 +133,8 @@ public class RangeDeserializer
                                          lowerEndpoint.getClass().getName(),
                                          upperEndpoint.getClass().getName());
 
-                lowerBoundType = Optional.ofNullable(lowerBoundType).orElse(_defaultBoundType);
-                upperBoundType = Optional.ofNullable(upperBoundType).orElse(_defaultBoundType);
+                lowerBoundType = Optional.ofNullable(lowerBoundType).orElse(CLOSED);
+                upperBoundType = Optional.ofNullable(upperBoundType).orElse(CLOSED);
                 return RangeFactory.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
             if (lowerEndpoint != null) {

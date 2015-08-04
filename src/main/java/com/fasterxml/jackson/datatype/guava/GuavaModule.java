@@ -1,15 +1,9 @@
 package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.core.Version;
-
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.cfg.PackageVersion;
-import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier;
-import com.fasterxml.jackson.datatype.guava.deser.GuavaRangeDeserializerModifier;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaBeanSerializerModifier;
-import com.google.common.collect.BoundType;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Basic Jackson {@link Module} that adds support for Guava types.
@@ -44,8 +38,6 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
      */
     protected boolean _cfgHandleAbsentAsNull = true;
 
-    protected BoundType _defaultBoundType = BoundType.CLOSED;
-
     public GuavaModule() {
         super();
     }
@@ -59,9 +51,6 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
         context.addDeserializers(new GuavaDeserializers());
         context.addSerializers(new GuavaSerializers());
         context.addTypeModifier(new GuavaTypeModifier());
-
-        //TODO should I create a BeanDeserializerModifier or find a way of passing _defaultBoundType to RangeDeserializer constructor?
-        context.addBeanDeserializerModifier(new GuavaRangeDeserializerModifier(_defaultBoundType));
 
         // 28-Apr-2015, tatu: Allow disabling "treat Optional.absent() like Java nulls"
         if (_cfgHandleAbsentAsNull) {
@@ -87,24 +76,6 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
         return this;
     }
 
-    /**
-     * Configuration method that may be used to change the {@link BoundType} to be used
-     * when deserializing {@link com.google.common.collect.Range} objects. This configuration
-     * will is used when the object to be deserialied has no bound type attribute.
-     * The default {@link BoundType} is CLOSED.
-     *
-     * @param boundType {@link BoundType}
-     *
-     * @return This module instance, useful for chaining calls
-     *
-     * @since 2.6.1 ? FIXME
-     */
-    public GuavaModule defaultBoundType(BoundType boundType) {
-        checkNotNull(boundType);
-        _defaultBoundType = boundType;
-        return this;
-    }
-    
     @Override
     public int hashCode()
     {
