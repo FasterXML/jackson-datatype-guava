@@ -103,7 +103,7 @@ public class TestRange extends ModuleTestBase {
         assertEquals(Range.class, out.range.getClass());
     }
 
-    public void testDefaultBoundType() throws Exception
+    public void testDefaultBoundTypeNoBoundTypeInformed() throws Exception
     {
         String json = "{\"lowerEndpoint\": 2, \"upperEndpoint\": 3}";
         @SuppressWarnings("unchecked")
@@ -116,4 +116,55 @@ public class TestRange extends ModuleTestBase {
         assertEquals(BoundType.CLOSED, r.upperBoundType());
     }
 
+    public void testDefaultBoundTypeOnlyLowerBoundTypeInformed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"lowerBoundType\": \"OPEN\", \"upperEndpoint\": 3}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.OPEN, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeOnlyUpperBoundTypeInformed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"upperEndpoint\": 3, \"upperBoundType\": \"OPEN\"}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.OPEN, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeBothBoundTypesOpen() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"lowerBoundType\": \"OPEN\", \"upperEndpoint\": 3, \"upperBoundType\": \"OPEN\"}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.OPEN, r.lowerBoundType());
+        assertEquals(BoundType.OPEN, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeBothBoundTypesClosed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"lowerBoundType\": \"CLOSED\", \"upperEndpoint\": 3, \"upperBoundType\": \"CLOSED\"}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
+    }
 }
