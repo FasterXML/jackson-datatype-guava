@@ -2,9 +2,11 @@ package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
 
+import com.google.common.collect.BoundType;
 import com.google.common.collect.Range;
 
 import java.io.IOException;
@@ -102,5 +104,149 @@ public class TestRange extends ModuleTestBase {
         Untyped out = MAPPER.readValue(json, Untyped.class);
         assertNotNull(out);
         assertEquals(Range.class, out.range.getClass());
+    }
+
+    public void testDefaultBoundTypeNoBoundTypeInformed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"upperEndpoint\": 3}";
+
+        try {
+            MAPPER.readValue(json, Range.class);
+            fail("Should have failed");
+        } catch (JsonMappingException e) {
+            verifyException(e, "'lowerEndpoint' field found, but not 'lowerBoundType'");
+        }
+    }
+
+    public void testDefaultBoundTypeNoBoundTypeInformedWithClosedConfigured() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"upperEndpoint\": 3}";
+
+        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.CLOSED);
+        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
+
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeOnlyLowerBoundTypeInformed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"lowerBoundType\": \"OPEN\", \"upperEndpoint\": 3}";
+
+        try {
+            MAPPER.readValue(json, Range.class);
+            fail("Should have failed");
+        } catch (JsonMappingException e) {
+            verifyException(e, "'upperEndpoint' field found, but not 'upperBoundType'");
+        }
+    }
+
+    public void testDefaultBoundTypeOnlyLowerBoundTypeInformedWithClosedConfigured() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"lowerBoundType\": \"OPEN\", \"upperEndpoint\": 3}";
+
+        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.CLOSED);
+        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
+
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+        assertEquals(BoundType.OPEN, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeOnlyUpperBoundTypeInformed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"upperEndpoint\": 3, \"upperBoundType\": \"OPEN\"}";
+
+        try {
+            MAPPER.readValue(json, Range.class);
+            fail("Should have failed");
+        } catch (JsonMappingException e) {
+            verifyException(e, "'lowerEndpoint' field found, but not 'lowerBoundType'");
+        }
+    }
+
+    public void testDefaultBoundTypeOnlyUpperBoundTypeInformedWithClosedConfigured() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 1, \"upperEndpoint\": 3, \"upperBoundType\": \"OPEN\"}";
+
+        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.CLOSED);
+        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
+
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(1), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.OPEN, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeBothBoundTypesOpen() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 2, \"lowerBoundType\": \"OPEN\", \"upperEndpoint\": 3, \"upperBoundType\": \"OPEN\"}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(2), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.OPEN, r.lowerBoundType());
+        assertEquals(BoundType.OPEN, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeBothBoundTypesOpenWithClosedConfigured() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 1, \"lowerBoundType\": \"OPEN\", \"upperEndpoint\": 3, \"upperBoundType\": \"OPEN\"}";
+
+        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.CLOSED);
+        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
+
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(1), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.OPEN, r.lowerBoundType());
+        assertEquals(BoundType.OPEN, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeBothBoundTypesClosed() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 1, \"lowerBoundType\": \"CLOSED\", \"upperEndpoint\": 3, \"upperBoundType\": \"CLOSED\"}";
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) MAPPER.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(1), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(3), r.upperEndpoint());
+
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
+    }
+
+    public void testDefaultBoundTypeBothBoundTypesClosedWithOpenConfigured() throws Exception
+    {
+        String json = "{\"lowerEndpoint\": 12, \"lowerBoundType\": \"CLOSED\", \"upperEndpoint\": 33, \"upperBoundType\": \"CLOSED\"}";
+
+        GuavaModule mod = new GuavaModule().defaultBoundType(BoundType.CLOSED);
+        ObjectMapper mapper = new ObjectMapper().registerModule(mod);
+
+        @SuppressWarnings("unchecked")
+        Range<Integer> r = (Range<Integer>) mapper.readValue(json, Range.class);
+
+        assertEquals(Integer.valueOf(12), r.lowerEndpoint());
+        assertEquals(Integer.valueOf(33), r.upperEndpoint());
+
+        assertEquals(BoundType.CLOSED, r.lowerBoundType());
+        assertEquals(BoundType.CLOSED, r.upperBoundType());
     }
 }

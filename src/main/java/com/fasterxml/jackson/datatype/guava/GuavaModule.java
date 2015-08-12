@@ -3,7 +3,11 @@ package com.fasterxml.jackson.datatype.guava;
 import com.fasterxml.jackson.core.Version;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.cfg.PackageVersion;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaBeanSerializerModifier;
+import com.google.common.collect.BoundType;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Basic Jackson {@link Module} that adds support for Guava types.
@@ -37,6 +41,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
      * changes after registration will have no effect.
      */
     protected boolean _cfgHandleAbsentAsNull = true;
+    protected BoundType _defaultBoundType;
     
     public GuavaModule() {
         super();
@@ -48,7 +53,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     @Override
     public void setupModule(SetupContext context)
     {
-        context.addDeserializers(new GuavaDeserializers());
+        context.addDeserializers(new GuavaDeserializers(_defaultBoundType));
         context.addSerializers(new GuavaSerializers());
         context.addTypeModifier(new GuavaTypeModifier());
 
@@ -73,6 +78,24 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
      */
     public GuavaModule configureAbsentsAsNulls(boolean state) {
         _cfgHandleAbsentAsNull = state;
+        return this;
+    }
+
+    /**
+     * Configuration method that may be used to change the {@link BoundType} to be used
+     * when deserializing {@link com.google.common.collect.Range} objects. This configuration
+     * will is used when the object to be deserialied has no bound type attribute.
+     * The default {@link BoundType} is CLOSED.
+     *
+     * @param boundType {@link BoundType}
+     *
+     * @return This module instance, useful for chaining calls
+     *
+     * @since 2.6.1 ? FIXME
+     */
+    public GuavaModule defaultBoundType(BoundType boundType) {
+        checkNotNull(boundType);
+        _defaultBoundType = boundType;
         return this;
     }
     
