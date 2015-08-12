@@ -1,8 +1,8 @@
 package com.fasterxml.jackson.datatype.guava;
 
 import com.fasterxml.jackson.core.Version;
-
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.Module;
+import com.fasterxml.jackson.databind.cfg.PackageVersion;
 import com.fasterxml.jackson.datatype.guava.ser.GuavaBeanSerializerModifier;
 
 /**
@@ -37,7 +37,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
      * changes after registration will have no effect.
      */
     protected boolean _cfgHandleAbsentAsNull = true;
-    
+
     public GuavaModule() {
         super();
     }
@@ -75,7 +75,7 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
         _cfgHandleAbsentAsNull = state;
         return this;
     }
-    
+
     @Override
     public int hashCode()
     {

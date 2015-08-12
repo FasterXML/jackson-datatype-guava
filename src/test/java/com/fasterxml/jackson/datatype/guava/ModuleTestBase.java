@@ -1,10 +1,8 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import java.util.Arrays;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import java.util.Arrays;
 
 public abstract class ModuleTestBase extends junit.framework.TestCase
 {

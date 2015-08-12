@@ -1,11 +1,5 @@
 package com.fasterxml.jackson.datatype.guava;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.*;
-import com.google.common.hash.HashCode;
-import com.google.common.net.HostAndPort;
-import com.google.common.net.InternetDomainName;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
@@ -18,6 +12,11 @@ import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultima
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.set.HashMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.set.LinkedHashMultimapDeserializer;
+import com.google.common.base.Optional;
+import com.google.common.collect.*;
+import com.google.common.hash.HashCode;
+import com.google.common.net.HostAndPort;
+import com.google.common.net.InternetDomainName;
 
 /**
  * Custom deserializers module offers.

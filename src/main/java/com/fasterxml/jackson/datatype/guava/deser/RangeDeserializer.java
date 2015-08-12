@@ -1,19 +1,20 @@
 package com.fasterxml.jackson.datatype.guava.deser;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.BoundType;
-import com.google.common.collect.Range;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.datatype.guava.deser.util.RangeFactory;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.BoundType;
+import com.google.common.collect.Range;
+
+import java.io.IOException;
+
+import static com.google.common.collect.BoundType.CLOSED;
 
 /**
  * Jackson deserializer for a Guava {@link Range}.
@@ -78,15 +79,13 @@ public class RangeDeserializer
     @Override
     public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt,
             TypeDeserializer typeDeserializer)
-        throws IOException, JsonProcessingException
-    {
+        throws IOException {
         return typeDeserializer.deserializeTypedFromObject(jp, ctxt);
     }
 
     @Override
     public Range<?> deserialize(JsonParser parser, DeserializationContext context)
-            throws IOException, JsonProcessingException
-    {
+            throws IOException {
         // NOTE: either START_OBJECT _or_ FIELD_NAME fine; latter for polymorphic cases
         JsonToken t = parser.getCurrentToken();
         if (t == JsonToken.START_OBJECT) {
@@ -132,8 +131,13 @@ public class RangeDeserializer
                                          "Endpoint types are not the same - 'lowerEndpoint' deserialized to [%s], and 'upperEndpoint' deserialized to [%s].",
                                          lowerEndpoint.getClass().getName(),
                                          upperEndpoint.getClass().getName());
-                Preconditions.checkState(lowerBoundType != null, "'lowerEndpoint' field found, but not 'lowerBoundType'");
-                Preconditions.checkState(upperBoundType != null, "'upperEndpoint' field found, but not 'upperBoundType'");
+
+                if (lowerBoundType == null)
+                    lowerBoundType = CLOSED;
+
+                if (upperBoundType == null)
+                    upperBoundType = CLOSED;
+
                 return RangeFactory.range(lowerEndpoint, lowerBoundType, upperEndpoint, upperBoundType);
             }
             if (lowerEndpoint != null) {
