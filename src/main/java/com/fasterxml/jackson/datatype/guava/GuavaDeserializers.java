@@ -25,6 +25,12 @@ import com.fasterxml.jackson.datatype.guava.deser.multimap.set.LinkedHashMultima
 public class GuavaDeserializers
     extends Deserializers.Base
 {
+    private BoundType _defaultBoundType;
+
+    public GuavaDeserializers(BoundType defaultBoundType) {
+        _defaultBoundType = defaultBoundType;
+    }
+
     /**
      * We have plenty of collection types to support...
      */
@@ -251,7 +257,7 @@ public class GuavaDeserializers
             return new GuavaOptionalDeserializer(type, refType, typeDeser, valueDeser);
         }
         if (raw == Range.class) {
-            return new RangeDeserializer(type);
+            return new RangeDeserializer(_defaultBoundType, type);
         }
         if (raw == HostAndPort.class) {
             return HostAndPortDeserializer.std;

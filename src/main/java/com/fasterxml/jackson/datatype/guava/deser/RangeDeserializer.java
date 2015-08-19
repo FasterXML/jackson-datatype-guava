@@ -33,14 +33,17 @@ public class RangeDeserializer
 
     protected final JsonDeserializer<Object> _endpointDeserializer;
 
+    private BoundType _defaultBoundType;
+
     /*
     /**********************************************************
     /* Life-cycle
     /**********************************************************
      */
     
-    public RangeDeserializer(JavaType rangeType) {
+    public RangeDeserializer(BoundType defaultBoundType, JavaType rangeType) {
         this(rangeType, null);
+        this._defaultBoundType = defaultBoundType;
     }
 
     @SuppressWarnings("unchecked")
@@ -49,6 +52,15 @@ public class RangeDeserializer
         super(rangeType);
         _rangeType = rangeType;
         _endpointDeserializer = (JsonDeserializer<Object>) endpointDeser;
+    }
+
+    @SuppressWarnings("unchecked")
+    public RangeDeserializer(JavaType rangeType, JsonDeserializer<?> endpointDeser, BoundType defaultBoundType)
+    {
+        super(rangeType);
+        _rangeType = rangeType;
+        _endpointDeserializer = (JsonDeserializer<Object>) endpointDeser;
+        _defaultBoundType = defaultBoundType;
     }
 
     @Override
@@ -64,7 +76,7 @@ public class RangeDeserializer
                 endpointType = TypeFactory.unknownType();
             }
             JsonDeserializer<Object> deser = ctxt.findContextualValueDeserializer(endpointType, property);
-            return new RangeDeserializer(_rangeType, deser);
+            return new RangeDeserializer(_rangeType, deser, _defaultBoundType);
         }
         return this;
     }
@@ -125,6 +137,12 @@ public class RangeDeserializer
                 throw new JsonMappingException(e.getMessage());
             }
         }
+
+        if (lowerBoundType == null)
+            lowerBoundType = _defaultBoundType;
+
+        if (upperBoundType == null)
+            upperBoundType = _defaultBoundType;
 
         try {
             if ((lowerEndpoint != null) && (upperEndpoint != null)) {
