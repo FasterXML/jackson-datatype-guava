@@ -25,7 +25,11 @@ import com.fasterxml.jackson.datatype.guava.deser.multimap.set.LinkedHashMultima
 public class GuavaDeserializers
     extends Deserializers.Base
 {
-    private BoundType _defaultBoundType;
+    protected BoundType _defaultBoundType;
+
+    public GuavaDeserializers() {
+        this(null);
+    }
 
     public GuavaDeserializers(BoundType defaultBoundType) {
         _defaultBoundType = defaultBoundType;

@@ -8,7 +8,7 @@
   <groupId>com.fasterxml.jackson.datatype</groupId>
   <artifactId>jackson-datatype-guava</artifactId>
   <name>Jackson-datatype-Guava</name>
-  <version>2.6.2-SNAPSHOT</version>
+  <version>2.7.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <description>Add-on datatype-support module for Jackson (https://github.com/FasterXML/jackson) that handles
 Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just collection ones)
@@ -29,7 +29,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
   </contributors>
 
   <properties>
-    <version.jackson>2.6.1</version.jackson>
+    <version.jackson.core>2.7.0-SNAPSHOT</version.jackson.core>
 
     <version.guava>15.0</version.guava>
     <version.guava.osgi>${version.guava}.0</version.guava.osgi>
@@ -66,12 +66,12 @@ com.fasterxml.jackson.databind.util
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${version.jackson}</version>
+      <version>${version.jackson.core}</version>
     </dependency>
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-core</artifactId>
-      <version>${version.jackson}</version>
+      <version>${version.jackson.core}</version>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>

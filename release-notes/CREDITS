@@ -20,3 +20,7 @@ Alexey Kobyakov (akobiakov@github)
   * Reported #64: `@JsonUnwrapped` annotation is ignored when a field is an Optional
    (2.6.0)
 
+Jonathan Rodrigues de Oliveira (jorool@github)
+
+  * Contributed #79: New configuration for Guava Range default bound type.
+   (2.7.0)

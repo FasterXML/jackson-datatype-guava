@@ -40,10 +40,18 @@ public class RangeDeserializer
     /* Life-cycle
     /**********************************************************
      */
+
+    /**
+     * @deprecated Since 2.7
+     */
+    @Deprecated // since 2.7
+    public RangeDeserializer(JavaType rangeType) {
+        this(null, rangeType);
+    }
     
     public RangeDeserializer(BoundType defaultBoundType, JavaType rangeType) {
         this(rangeType, null);
-        this._defaultBoundType = defaultBoundType;
+        _defaultBoundType = defaultBoundType;
     }
 
     @SuppressWarnings("unchecked")
@@ -90,14 +98,14 @@ public class RangeDeserializer
     @Override
     public Object deserializeWithType(JsonParser jp, DeserializationContext ctxt,
             TypeDeserializer typeDeserializer)
-        throws IOException, JsonProcessingException
+        throws IOException
     {
         return typeDeserializer.deserializeTypedFromObject(jp, ctxt);
     }
 
     @Override
     public Range<?> deserialize(JsonParser parser, DeserializationContext context)
-            throws IOException, JsonProcessingException
+            throws IOException
     {
         // NOTE: either START_OBJECT _or_ FIELD_NAME fine; latter for polymorphic cases
         JsonToken t = parser.getCurrentToken();
@@ -107,43 +115,32 @@ public class RangeDeserializer
 
         Comparable<?> lowerEndpoint = null;
         Comparable<?> upperEndpoint = null;
-        BoundType lowerBoundType = null;
-        BoundType upperBoundType = null;
+        BoundType lowerBoundType = _defaultBoundType;
+        BoundType upperBoundType = _defaultBoundType;
 
         for (; t != JsonToken.END_OBJECT; t = parser.nextToken()) {
             expect(parser, JsonToken.FIELD_NAME, t);
             String fieldName = parser.getCurrentName();
             try {
                 if (fieldName.equals("lowerEndpoint")) {
-                    Preconditions.checkState(lowerEndpoint == null, "'lowerEndpoint' field included multiple times.");
                     parser.nextToken();
                     lowerEndpoint = deserializeEndpoint(parser, context);
                 } else if (fieldName.equals("upperEndpoint")) {
-                    Preconditions.checkState(upperEndpoint == null, "'upperEndpoint' field included multiple times.");
                     parser.nextToken();
                     upperEndpoint = deserializeEndpoint(parser, context);
                 } else if (fieldName.equals("lowerBoundType")) {
-                    Preconditions.checkState(lowerBoundType == null, "'lowerBoundType' field included multiple times.");
                     parser.nextToken();
                     lowerBoundType = deserializeBoundType(parser);
                 } else if (fieldName.equals("upperBoundType")) {
-                    Preconditions.checkState(upperBoundType == null, "'upperBoundType' field included multiple times.");
                     parser.nextToken();
                     upperBoundType = deserializeBoundType(parser);
                 } else {
                     throw context.mappingException("Unexpected Range field: " + fieldName);
                 }
             } catch (IllegalStateException e) {
-                throw new JsonMappingException(e.getMessage());
+                throw JsonMappingException.from(parser, e.getMessage());
             }
         }
-
-        if (lowerBoundType == null)
-            lowerBoundType = _defaultBoundType;
-
-        if (upperBoundType == null)
-            upperBoundType = _defaultBoundType;
-
         try {
             if ((lowerEndpoint != null) && (upperEndpoint != null)) {
                 Preconditions.checkState(lowerEndpoint.getClass() == upperEndpoint.getClass(),
@@ -164,7 +161,7 @@ public class RangeDeserializer
             }
             return RangeFactory.all();
         } catch (IllegalStateException e) {
-            throw new JsonMappingException(e.getMessage());
+            throw JsonMappingException.from(parser, e.getMessage());
         }
     }
 
@@ -190,10 +187,10 @@ public class RangeDeserializer
         return (Comparable<?>) obj;
     }
 
-    private void expect(JsonParser jp, JsonToken expected, JsonToken actual) throws JsonMappingException
+    private void expect(JsonParser p, JsonToken expected, JsonToken actual) throws JsonMappingException
     {
         if (actual != expected) {
-            throw new JsonMappingException("Expecting " + expected + ", found " + actual, jp.getCurrentLocation());
+            throw JsonMappingException.from(p, "Expecting " + expected + ", found " + actual);
         }
     }
 }
