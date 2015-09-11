@@ -38,10 +38,10 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
 ${project.groupId}.guava.*;version=${project.version}
       </osgi.export>
       <osgi.import>
-com.google.common.collect,
-com.google.common.base,
-com.google.common.cache,
-com.google.common.net,
+com.google.common.collect;version="[15.0.0,20)",
+com.google.common.base;version="[15.0.0,20)",
+com.google.common.cache;version="[15.0.0,20)",
+com.google.common.net;version="[15.0.0,20)",
 com.fasterxml.jackson.core,
 com.fasterxml.jackson.core.util,
 com.fasterxml.jackson.databind,
