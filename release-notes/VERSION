@@ -7,6 +7,8 @@ Project: jackson-datatype-guava
 2.4.7 (not released)
 
 #48: Avoid problems deserializing `null` for `Optional`
+#80: Relax OSGi version constraints for Guava dependency.
+ (requested by Benson M)
 
 2.4.6 (23-Apr-2015)
 
