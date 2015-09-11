@@ -4,6 +4,11 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
+2.6.2 (not yet released)
+
+#80: Relax OSGi version constraints for Guava dependency.
+ (requested by Benson M)
+
 2.6.1 (09-Aug-2015)
 
 No changes since 2.6.0
@@ -22,11 +27,6 @@ No changes since 2.6.0
  (reported by sprynter@github)
 #74: Multimap serializer ignores _valueTypeSerializer
  (reported by soldierkam@github)
-
-2.5.5 (not yet released)
-
-#80: Relax OSGi version constraints for Guava dependency.
- (requested by Benson M)
 
 2.5.4 (09-Jun-2015)
 
