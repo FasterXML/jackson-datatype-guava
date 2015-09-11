@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static com.google.common.collect.TreeMultimap.create;
-import static junit.framework.TestCase.assertEquals;
 
 /**
  * Unit tests to verify handling of various {@link Multimap}s.
@@ -47,7 +46,47 @@ public class TestMultimaps extends ModuleTestBase
         }
     }
 
-    private static final String StringStringMultimap =
+    public static class ImmutableMultimapWrapper {
+
+        private ImmutableMultimap<String, MathOp> multimap;
+
+        public ImmutableMultimapWrapper() {
+        }
+
+        public ImmutableMultimapWrapper(ImmutableMultimap<String, MathOp> f) {
+            this.multimap = f;
+        }
+
+        public ImmutableMultimap<String, MathOp> getMultimap() {
+            return multimap;
+        }
+
+        public void setMultimap(ImmutableMultimap<String, MathOp> multimap) {
+            this.multimap = multimap;
+        }
+
+        @Override
+        public int hashCode() {
+            int hash = 7;
+            hash = 97 * hash + (this.multimap != null ? this.multimap.hashCode() : 0);
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (getClass() != obj.getClass()) {
+                return false;
+            }
+            final ImmutableMultimapWrapper other = (ImmutableMultimapWrapper) obj;
+            return !(this.multimap != other.multimap && (this.multimap == null || !this.multimap.equals(other.multimap)));
+        }
+
+    }
+    
+    private static final String STRING_STRING_MULTIMAP =
             "{\"first\":[\"abc\",\"abc\",\"foo\"]," + "\"second\":[\"bar\"]}";
 
     /*
@@ -164,28 +203,31 @@ public class TestMultimaps extends ModuleTestBase
      */
 
     /*
-    public void testTreeMultimap() {
+    public void testTreeMultimap() throws IOException {
     }
 
-    public void testForwardingSortedSetMultimap() {
+    public void testForwardingSortedSetMultimap() throws IOException {
 
-    }
-
-    public void testImmutableSetMultimap() {
-        // TODO look at others
     }
     */
 
+    public void testImmutableSetMultimap() throws IOException {
+        SetMultimap<String, String> map =
+                _verifyMultiMapRead(new TypeReference<ImmutableSetMultimap<String, String>>() {
+                });
+        assertTrue(map instanceof ImmutableSetMultimap);
+    }
+
     public void testHashMultimap() throws IOException {
         SetMultimap<String, String> map =
-                setBasedHelper(new TypeReference<HashMultimap<String, String>>() {
+                _verifyMultiMapRead(new TypeReference<HashMultimap<String, String>>() {
                 });
         assertTrue(map instanceof HashMultimap);
     }
 
     public void testLinkedHashMultimap() throws IOException {
         SetMultimap<String, String> map =
-                setBasedHelper(new TypeReference<LinkedHashMultimap<String, String>>() {
+                _verifyMultiMapRead(new TypeReference<LinkedHashMultimap<String, String>>() {
                 });
         assertTrue(map instanceof LinkedHashMultimap);
     }
@@ -195,10 +237,10 @@ public class TestMultimaps extends ModuleTestBase
     }
     */
 
-    private SetMultimap<String, String> setBasedHelper(TypeReference<?> type)
+    private SetMultimap<String, String> _verifyMultiMapRead(TypeReference<?> type)
         throws IOException
     {
-        SetMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
+        SetMultimap<String, String> map = MAPPER.readValue(STRING_STRING_MULTIMAP, type);
         assertEquals(3, map.size());
         assertTrue(map.containsEntry("first", "abc"));
         assertTrue(map.containsEntry("first", "foo"));
@@ -232,7 +274,7 @@ public class TestMultimaps extends ModuleTestBase
     }
     
     private ListMultimap<String, String> listBasedHelper(TypeReference<?> type) throws IOException {
-        ListMultimap<String, String> map = MAPPER.readValue(StringStringMultimap, type);
+        ListMultimap<String, String> map = MAPPER.readValue(STRING_STRING_MULTIMAP, type);
         assertEquals(4, map.size());
         assertTrue(map.remove("first", "abc"));
         assertTrue(map.containsEntry("first", "abc"));
@@ -266,45 +308,5 @@ public class TestMultimaps extends ModuleTestBase
 
         ImmutableMultimapWrapper output = MAPPER.readValue(json, ImmutableMultimapWrapper.class);
         assertEquals(input, output);        
-    }
-    
-    public static class ImmutableMultimapWrapper {
-
-        private ImmutableMultimap<String, MathOp> multimap;
-
-        public ImmutableMultimapWrapper() {
-        }
-
-        public ImmutableMultimapWrapper(ImmutableMultimap<String, MathOp> f) {
-            this.multimap = f;
-        }
-
-        public ImmutableMultimap<String, MathOp> getMultimap() {
-            return multimap;
-        }
-
-        public void setMultimap(ImmutableMultimap<String, MathOp> multimap) {
-            this.multimap = multimap;
-        }
-
-        @Override
-        public int hashCode() {
-            int hash = 7;
-            hash = 97 * hash + (this.multimap != null ? this.multimap.hashCode() : 0);
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            final ImmutableMultimapWrapper other = (ImmutableMultimapWrapper) obj;
-            return !(this.multimap != other.multimap && (this.multimap == null || !this.multimap.equals(other.multimap)));
-        }
-
     }
 }
