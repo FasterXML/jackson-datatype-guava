@@ -40,7 +40,7 @@ abstract class GuavaImmutableMapDeserializer<T extends ImmutableMap<Object, Obje
             // 28-Nov-2010, tatu: Should probably support "ignorable properties" in future...
             Object value;            
             if (t == JsonToken.VALUE_NULL) {
-                _handleNull(ctxt, fieldName, _valueDeserializer, builder);
+                _handleNull(ctxt, key, _valueDeserializer, builder);
                 continue;
             }
             if (typeDeser == null) {
@@ -63,7 +63,7 @@ abstract class GuavaImmutableMapDeserializer<T extends ImmutableMap<Object, Obje
      * is needed; default is to simply ignore and skip such values, but alternative
      * could be to throw an exception.
      */
-    protected void _handleNull(DeserializationContext ctxt, String fieldName,
+    protected void _handleNull(DeserializationContext ctxt, Object key,
             JsonDeserializer<?> valueDeser,
             ImmutableMap.Builder<Object, Object> builder) throws IOException
     {
@@ -73,7 +73,7 @@ abstract class GuavaImmutableMapDeserializer<T extends ImmutableMap<Object, Obje
         // Actually, first, see if there's an alternative to Java null
         Object nvl = valueDeser.getNullValue(ctxt);
         if (nvl != null) {
-            builder.put(fieldName, nvl);
+            builder.put(key, nvl);
         }
     }
 }
