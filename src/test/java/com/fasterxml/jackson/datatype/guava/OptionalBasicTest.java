@@ -4,9 +4,10 @@ import java.util.*;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
+
 import com.google.common.base.Optional;
 
 public class OptionalBasicTest extends ModuleTestBase
@@ -37,6 +38,20 @@ public class OptionalBasicTest extends ModuleTestBase
         }
     }
 
+    // To test handling of polymorphic value types
+    
+    public static class Container {
+        public Optional<Contained> contained;
+    }
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = As.PROPERTY)
+    @JsonSubTypes({
+        @JsonSubTypes.Type(name = "ContainedImpl", value = ContainedImpl.class),
+    })
+    public static interface Contained { }
+
+    public static class ContainedImpl implements Contained { }
+    
     /*
     /**********************************************************************
     /* Test methods
@@ -228,9 +243,23 @@ public class OptionalBasicTest extends ModuleTestBase
         }
     }
 
-    // [Issue#48]
+    // [datatype-guava#48]
     public void testDeserNull() throws Exception {
         Optional<?> value = MAPPER.readValue("\"\"", new TypeReference<Optional<Integer>>() {});
         assertFalse(value.isPresent());
+    }
+
+    // [datatype-guava#81]
+    public void testPolymorphic() throws Exception
+    {
+        final Container dto = new Container();
+        dto.contained = Optional.of((Contained) new ContainedImpl());
+        
+        final String json = MAPPER.writeValueAsString(dto);
+
+        final Container fromJson = MAPPER.readValue(json, Container.class);
+        assertNotNull(fromJson.contained);
+        assertTrue(fromJson.contained.isPresent());
+        assertSame(ContainedImpl.class, fromJson.contained.get().getClass());
     }
 }
