@@ -33,8 +33,13 @@ public class TableSerializer
     private final JsonSerializer<Object> _valueSerializer;
 
     private final MapSerializer _rowMapSerializer;
-    private final JsonSerializer<?> _columnAndValueSerializer;
 
+    /*
+    /**********************************************************
+    /* Serializer lifecycle
+    /**********************************************************
+     */
+    
     public TableSerializer(final JavaType type)
     {
         super(type);
@@ -46,7 +51,6 @@ public class TableSerializer
         _valueSerializer = null;
 
         _rowMapSerializer = null;
-        _columnAndValueSerializer = null;
     }
 
     @SuppressWarnings( "unchecked" )
@@ -67,7 +71,7 @@ public class TableSerializer
         _valueSerializer = (JsonSerializer<Object>) valueSerializer;
 
         final MapType columnAndValueType = typeFactory.constructMapType(Map.class, _type.containedType(1), _type.containedType(2));
-        _columnAndValueSerializer =
+        JsonSerializer<?> columnAndValueSerializer = 
                 MapSerializer.construct(null,
                                         columnAndValueType,
                                         false,
@@ -81,11 +85,10 @@ public class TableSerializer
                 MapSerializer.construct(null,
                                         rowMapType,
                                         false,
-                                        _valueTypeSerializer,
+                                        null,
                                         _rowSerializer,
-                                        (JsonSerializer<Object>) _columnAndValueSerializer,
+                                        (JsonSerializer<Object>) columnAndValueSerializer,
                                         null);
-
     }
 
     protected TableSerializer(final TableSerializer src, TypeSerializer typeSer)
@@ -98,7 +101,6 @@ public class TableSerializer
         _valueTypeSerializer = typeSer;
         _valueSerializer = src._valueSerializer;
 
-        _columnAndValueSerializer = src._columnAndValueSerializer;
         _rowMapSerializer = src._rowMapSerializer;
 
     }
@@ -155,6 +157,12 @@ public class TableSerializer
         return withResolved(property, provider.getTypeFactory(), rowKeySer, columnKeySer, typeSer, valueSer);
     }
 
+    /*
+    /**********************************************************
+    /* Simple accessor API
+    /**********************************************************
+     */
+    
     @Override
     public JavaType getContentType() {
         return _type.getContentType();
@@ -166,17 +174,23 @@ public class TableSerializer
     }
 
     @Override
-    public boolean isEmpty( final Table<?, ?, ?> table )
+    public boolean isEmpty( final Table<?, ?, ?> table)
     {
         return table.isEmpty();
     }
 
     @Override
-    public boolean hasSingleElement(final Table<?, ?, ?> table )
+    public boolean hasSingleElement(final Table<?, ?, ?> table)
     {
         return table.size() == 1;
     }
 
+    /*
+    /**********************************************************
+    /* Main serialization methods
+    /**********************************************************
+     */
+    
     @Override
     public void serialize(final Table<?, ?, ?> value,
             final JsonGenerator gen, final SerializerProvider provider)
@@ -193,7 +207,7 @@ public class TableSerializer
     public void serializeWithType(final Table<?, ?, ?> value,
             final JsonGenerator gen,
             final SerializerProvider provider,
-            final TypeSerializer typeSer ) throws IOException
+            final TypeSerializer typeSer) throws IOException
     {
         typeSer.writeTypePrefixForObject(value, gen);
         serializeFields(value, gen, provider);
