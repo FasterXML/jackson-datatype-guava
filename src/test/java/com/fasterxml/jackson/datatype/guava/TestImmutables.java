@@ -185,6 +185,10 @@ public class TestImmutables extends ModuleTestBase
         map = MAPPER.readValue("{}", type);
         assertNotNull(map);
         assertEquals(0, map.size());
+
+        // and for [datatype-guava#52], verify allowance of JSON nulls
+        map = MAPPER.readValue("{\"12\":true,\"4\":null}", type);
+        assertEquals(1, map.size());
     }
 
     public void testTypedImmutableMap() throws Exception

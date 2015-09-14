@@ -6,6 +6,8 @@ Project: jackson-datatype-guava
 
 2.6.2 (not yet released)
 
+#52: Guava collection types do not allow null values
+ (contributed by Jose T)
 #80: Relax OSGi version constraints for Guava dependency.
  (requested by Benson M)
 #82: Problem with polymorphic value types for `Optional`, with 2.6

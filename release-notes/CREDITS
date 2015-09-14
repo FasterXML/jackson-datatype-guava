@@ -20,3 +20,6 @@ Alexey Kobyakov (akobiakov@github)
   * Reported #64: `@JsonUnwrapped` annotation is ignored when a field is an Optional
    (2.6.0)
 
+Jose Thomas (josethomas@github)
+  * Contributed #52: Guava collection types do not allow null values
+   (2.6.2)
