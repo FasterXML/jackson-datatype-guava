@@ -13,6 +13,7 @@ Project: jackson-datatype-guava
 
 #80: Relax OSGi version constraints for Guava dependency.
  (requested by Benson M)
+#82: Problem with polymorphic value types for `Optional`, with 2.6
 
 2.6.1 (09-Aug-2015)
 

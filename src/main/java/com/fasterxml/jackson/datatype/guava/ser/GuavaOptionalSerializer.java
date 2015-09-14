@@ -90,7 +90,7 @@ public final class GuavaOptionalSerializer
                     (provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
                     || _referredType.isFinal())) {
                 return withResolved(property,
-                        provider.findPrimaryPropertySerializer(_referredType, property),
+                        _findSerializer(provider, _referredType, _property),
                         _unwrapper);
             }
         } else {
@@ -130,6 +130,7 @@ public final class GuavaOptionalSerializer
         return (value == null) || !value.isPresent();
     }
 
+    @Override
     public boolean isUnwrappingSerializer() {
         return (_unwrapper != null);
     }
@@ -212,12 +213,26 @@ public final class GuavaOptionalSerializer
     {
         JsonSerializer<Object> ser = _dynamicSerializers.serializerFor(type);
         if (ser == null) {
-            ser = provider.findPrimaryPropertySerializer(type, _property);
+            ser = _findSerializer(provider, type, _property);
             if (_unwrapper != null) {
                 ser = ser.unwrappingSerializer(_unwrapper);
             }
             _dynamicSerializers = _dynamicSerializers.newWith(type, ser);
         }
         return ser;
+    }
+
+    private final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
+            Class<?> type, BeanProperty prop) throws JsonMappingException
+    {
+        // Important: ask for TYPED serializer, in case polymorphic handling is needed!
+        return provider.findTypedValueSerializer(type, true, prop);
+    }
+
+    private final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
+        JavaType type, BeanProperty prop) throws JsonMappingException
+    {
+        // Important: ask for TYPED serializer, in case polymorphic handling is needed!
+        return provider.findTypedValueSerializer(type, true, prop);
     }
 }
