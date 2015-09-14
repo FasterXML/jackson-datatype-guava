@@ -6,11 +6,11 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.type.TypeBindings;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.type.TypeModifier;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
+import com.google.common.collect.Table;
 
 /**
  * We need somewhat hacky support for following Guava types:
@@ -42,18 +42,24 @@ public class GuavaTypeModifier extends TypeModifier
     public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory)
     {
         final Class<?> raw = type.getRawClass();
+        // First: make Multimaps look more Map-like
         if (Multimap.class.isAssignableFrom(raw)) {
-            JavaType keyType = type.containedType(0);
-            JavaType contentType = type.containedType(1);
-
-            if (keyType == null) {
-                keyType = TypeFactory.unknownType();
-            }
-            if (contentType == null) {
-                contentType = TypeFactory.unknownType();
-            }
-            return typeFactory.constructMapLikeType(type.getRawClass(), keyType, contentType);
+            JavaType[] types = typeFactory.findTypeParameters(type, Multimap.class);
+            return typeFactory.constructMapLikeType(raw, _type(types, 0), _type(types, 1));
         }
+        // 14-Sep-2015, tatu: Pre-resolve type parameters for Tables as well
+        if (Table.class.isAssignableFrom(raw)) {
+            JavaType[] types = typeFactory.findTypeParameters(type, Table.class);
+            if (types == null || types.length != 3) {
+                types = new JavaType[] {
+                    _type(types, 0),
+                    _type(types, 1),
+                    _type(types, 2)
+                };
+            }
+            return typeFactory.constructParametrizedType(raw, Table.class, types);
+        }
+        
         /* Guava 12 changed the implementation of their {@link FluentIterable} to include a method named "isEmpty."  This method
          * causes Jackson to treat FluentIterables as a Bean instead of an {@link Iterable}.  Serialization of FluentIterables by
          * default result in a string like "{\"empty\":true}."  This module modifies the JavaType of FluentIterable to be
@@ -107,5 +113,12 @@ public class GuavaTypeModifier extends TypeModifier
             }
         }
         return type;
+    }
+
+    private static JavaType _type(JavaType[] types, int index) {
+        if (types == null || types.length <= index) {
+            return TypeFactory.unknownType();
+        }
+        return types[index];
     }
 }
