@@ -10,6 +10,8 @@ import com.google.common.base.Optional;
 
 public class GuavaUnwrappingOptionalBeanPropertyWriter extends UnwrappingBeanPropertyWriter
 {
+    private static final long serialVersionUID = 1L;
+
     public GuavaUnwrappingOptionalBeanPropertyWriter(BeanPropertyWriter base,
             NameTransformer transformer) {
         super(base, transformer);

@@ -159,17 +159,17 @@ public abstract class GuavaMultimapDeserializer<T extends Multimap<Object,
             @SuppressWarnings("unchecked") T map = (T) creatorMethod.invoke(null, multimap);
             return map;
         } catch (InvocationTargetException e) {
-            throw new JsonMappingException("Could not map to " + type, _peel(e));
+            throw new JsonMappingException(jp, "Could not map to " + type, _peel(e));
         } catch (IllegalArgumentException e) {
-            throw new JsonMappingException("Could not map to " + type, _peel(e));
+            throw new JsonMappingException(jp, "Could not map to " + type, _peel(e));
         } catch (IllegalAccessException e) {
-            throw new JsonMappingException("Could not map to " + type, _peel(e));
+            throw new JsonMappingException(jp, "Could not map to " + type, _peel(e));
         }
     }
 
     private void expect(JsonParser jp, JsonToken token) throws IOException {
         if (jp.getCurrentToken() != token) {
-            throw new JsonMappingException("Expecting " + token + ", found " + jp.getCurrentToken(),
+            throw new JsonMappingException(jp, "Expecting " + token + ", found " + jp.getCurrentToken(),
                     jp.getCurrentLocation());
         }
     }
