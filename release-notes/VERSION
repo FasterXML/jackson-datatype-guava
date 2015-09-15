@@ -4,7 +4,7 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
-2.6.2 (not yet released)
+2.6.2 (15-Sep-2015)
 
 #52: Guava collection types do not allow null values
  (contributed by Jose T)
