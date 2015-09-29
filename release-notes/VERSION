@@ -9,6 +9,12 @@ Project: jackson-datatype-guava
 #79: New configuration for Guava Range default bound type.
  (contributed by Jonathan R-d-O)
 (partial, serialization works) #11: Add support for Table<R, C, V>
+- Simplify OSGi settings for build.
+
+2.6.3 (not yet released)
+
+#84: Class not found exception in OSGi (com.fasterxml.jackson.databind.ser.impl.UnwrappingBeanPropertyWriter)
+ (reported by mjameson-se@github)
 
 2.6.2 (15-Sep-2015)
 
