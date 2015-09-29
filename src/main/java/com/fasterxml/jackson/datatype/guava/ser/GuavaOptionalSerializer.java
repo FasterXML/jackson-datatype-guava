@@ -185,7 +185,9 @@ public final class GuavaOptionalSerializer
     {
         JsonSerializer<?> ser = _valueSerializer;
         if (ser == null) {
-            ser = _findSerializer(visitor.getProvider(), _referredType.getRawClass());
+            // 28-Sep-2015, tatu: as per [datatype-guava#83] need to ensure we don't
+            //    accidentally drop parameterization
+            ser = _findSerializer(visitor.getProvider(), _referredType, _property);
         }
         ser.acceptJsonFormatVisitor(visitor, _referredType);
     }
@@ -208,8 +210,8 @@ public final class GuavaOptionalSerializer
      * Helper method that encapsulates logic of retrieving and caching required
      * serializer.
      */
-    protected final JsonSerializer<Object> _findSerializer(SerializerProvider provider, Class<?> type)
-        throws JsonMappingException
+    protected final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
+            Class<?> type) throws JsonMappingException
     {
         JsonSerializer<Object> ser = _dynamicSerializers.serializerFor(type);
         if (ser == null) {

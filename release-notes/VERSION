@@ -13,6 +13,8 @@ Project: jackson-datatype-guava
 
 2.6.3 (not yet released)
 
+#83: Generic type information for `Optional` wrapped generic type lost in visitor
+ (reported by vzx@github)
 #84: Class not found exception in OSGi (com.fasterxml.jackson.databind.ser.impl.UnwrappingBeanPropertyWriter)
  (reported by mjameson-se@github)
 
