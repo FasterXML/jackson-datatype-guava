@@ -36,8 +36,8 @@ public class IterablesTest extends ModuleTestBase
         Iterable<String> input = Iterables.transform(ImmutableList.of("mr", "bo", "jangles"),
                 new Function<String, String>() {
                   @Override
-                  public String apply(String input) {
-                    return new StringBuffer(input).reverse().toString();
+                  public String apply(String x) {
+                      return new StringBuffer(x).reverse().toString();
                   }
                 });
         String json = MAPPER.writeValueAsString(input);
