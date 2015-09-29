@@ -32,7 +32,6 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <version.jackson.core>2.7.0-SNAPSHOT</version.jackson.core>
 
     <version.guava>15.0</version.guava>
-    <version.guava.osgi>${version.guava}.0</version.guava.osgi>
 
     <!-- 11-Sep-2015, tatu: As per [datatype-guava#80] -->
     <version.guava.osgi>[${version.guava}.0,20)</version.guava.osgi>
@@ -40,28 +39,14 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/datatype/guava</packageVersion.dir>
     <packageVersion.package>${project.groupId}.guava</packageVersion.package>
-      <osgi.export>${project.groupId}.guava;version=${project.version},
-${project.groupId}.guava.*;version=${project.version}
-      </osgi.export>
-      <osgi.import>
-com.google.common.collect;version="${version.guava.osgi}",
-com.google.common.base;version="${version.guava.osgi}",
-com.google.common.cache;version="${version.guava.osgi}",
-com.google.common.hash;version="${version.guava.osgi}",
-com.google.common.net;version="${version.guava.osgi}",
-com.fasterxml.jackson.core,
-com.fasterxml.jackson.core.util,
-com.fasterxml.jackson.databind,
-com.fasterxml.jackson.databind.deser,
-com.fasterxml.jackson.databind.deser.std,
-com.fasterxml.jackson.databind.introspect,
-com.fasterxml.jackson.databind.jsonFormatVisitors,
-com.fasterxml.jackson.databind.jsontype,
-com.fasterxml.jackson.databind.ser,
-com.fasterxml.jackson.databind.ser.std,
-com.fasterxml.jackson.databind.type,
-com.fasterxml.jackson.databind.util
-      </osgi.import>
+      <!-- 28-Sep-2015, tatu: Export should work with defaults, but imports need
+          an override because we want wider range of versions for Guava
+        -->
+    <osgi.import>
+com.google.common.*;version="${version.guava.osgi}",
+com.fasterxml.jackson.core.*;version="${version.jackson.core}",
+com.fasterxml.jackson.databind.*;version="${version.jackson.core}"
+    </osgi.import>
   </properties>
 
   <dependencies>
