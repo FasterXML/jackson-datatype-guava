@@ -10,6 +10,7 @@ Project: jackson-datatype-guava
  (reported by vzx@github)
 #84: Class not found exception in OSGi (com.fasterxml.jackson.databind.ser.impl.UnwrappingBeanPropertyWriter)
  (reported by mjameson-se@github)
+- Allow use of `@JsonDeserializer(contentAs=...)` with `Optional`
 
 2.6.2 (15-Sep-2015)
 

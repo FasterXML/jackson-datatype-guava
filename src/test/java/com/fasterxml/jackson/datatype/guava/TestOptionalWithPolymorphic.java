@@ -3,7 +3,9 @@ package com.fasterxml.jackson.datatype.guava;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.*;
+
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -50,6 +52,11 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
         }
     }
 
+    static class AbstractOptional {
+        @JsonDeserialize(contentAs=Integer.class)
+        public Optional<java.io.Serializable> value;
+    }
+
     /*
     /**********************************************************************
     /* Test methods
@@ -92,7 +99,18 @@ public class TestOptionalWithPolymorphic extends ModuleTestBase
             .build();
         _test(MAPPER, baz);
     }
-         
+
+    public void testOptionalWithTypeAnnotation() throws Exception
+    {
+        AbstractOptional result = MAPPER.readValue("{\"value\" : 5}",
+                AbstractOptional.class);
+        assertNotNull(result);
+        assertNotNull(result.value);
+        Object ob = result.value.get();
+        assertEquals(Integer.class, ob.getClass());
+        assertEquals(Integer.valueOf(5), ob);
+    }
+
     private void _test(ObjectMapper m, Map<String, ?> map) throws Exception
     {
         String json = m.writeValueAsString(map);

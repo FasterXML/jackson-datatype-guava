@@ -5,14 +5,12 @@ import java.io.IOException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.databind.BeanProperty;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
+
 import com.google.common.base.Optional;
 
 public class GuavaOptionalDeserializer
@@ -45,17 +43,27 @@ public class GuavaOptionalDeserializer
     @Override
     public Optional<?> getNullValue() { return Optional.absent(); }
 
+    @Deprecated // since 2.6.3; internal, remove from 2.7
+    protected GuavaOptionalDeserializer withResolved(
+            TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser) {
+        return withResolved(_referenceType, typeDeser, valueDeser);
+    }
+            
+    
     /**
      * Overridable fluent factory method used for creating contextual
      * instances.
      */
-    protected GuavaOptionalDeserializer withResolved(
+    protected GuavaOptionalDeserializer withResolved(JavaType refType,
             TypeDeserializer typeDeser, JsonDeserializer<?> valueDeser)
     {
-        return new GuavaOptionalDeserializer(_fullType, _referenceType,
-                typeDeser, valueDeser);
+        if ((refType == _referenceType)
+                && (valueDeser == _valueDeserializer) && (typeDeser == _valueTypeDeserializer)) {
+            return this;
+        }
+        return new GuavaOptionalDeserializer(_fullType, refType, typeDeser, valueDeser);
     }
-    
+
     /*
     /**********************************************************
     /* Validation, post-processing
@@ -73,21 +81,33 @@ public class GuavaOptionalDeserializer
     {
         JsonDeserializer<?> deser = _valueDeserializer;
         TypeDeserializer typeDeser = _valueTypeDeserializer;
+        JavaType refType = _referenceType;
 
         if (deser == null) {
-            deser = ctxt.findContextualValueDeserializer(_referenceType, property);
+            // 08-Oct-2015, tatu: As per [datatype-jdk8#13], need to use type
+            //    override, if any
+            if (property != null) {
+                AnnotationIntrospector intr = ctxt.getAnnotationIntrospector();
+                AnnotatedMember member = property.getMember();
+                if ((intr != null)  && (member != null)) {
+                    Class<?> cc = intr.findDeserializationContentType(member, refType);
+                    if ((cc != null) && !refType.hasRawClass(cc)) {
+                        // 08-Oct-2015, tatu: One open question is whether we should also
+                        //   modify "full type"; seems like it's not needed quite yet
+                        refType = refType.narrowBy(cc);
+                    }
+                }
+            }
+            deser = ctxt.findContextualValueDeserializer(refType, property);
         } else { // otherwise directly assigned, probably not contextual yet:
-            deser = ctxt.handleSecondaryContextualization(deser, property, _fullType);
+            deser = ctxt.handleSecondaryContextualization(deser, property, refType);
         }
         if (typeDeser != null) {
             typeDeser = typeDeser.forProperty(property);
         }
-        if (deser == _valueDeserializer && typeDeser == _valueTypeDeserializer) {
-            return this;
-        }
-        return withResolved(typeDeser, deser);
+        return withResolved(refType, typeDeser, deser);
     }
-    
+
     @Override
     public Optional<?> deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
         JsonProcessingException
