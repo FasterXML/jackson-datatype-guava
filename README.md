@@ -53,5 +53,5 @@ Configurable settings of the module are:
 
 ## More
 
-See [Wiki](//github.com/FasterXML/jackson-datatype-guava/wiki) for more information (javadocs, downloads).
+See [Wiki](../../wiki) for more information (javadocs, downloads).
 
