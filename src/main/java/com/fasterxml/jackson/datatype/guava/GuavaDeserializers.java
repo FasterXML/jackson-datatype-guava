@@ -1,5 +1,9 @@
 package com.fasterxml.jackson.datatype.guava;
 
+import com.fasterxml.jackson.databind.deser.std.StdDelegatingDeserializer;
+import com.fasterxml.jackson.datatype.guava.deser.table.MapToArrayTableConverter;
+import com.fasterxml.jackson.datatype.guava.deser.table.MapToHashBasedTableConverter;
+import com.fasterxml.jackson.datatype.guava.deser.table.MapToImmutableTableConverter;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.google.common.hash.HashCode;
@@ -271,6 +275,18 @@ public class GuavaDeserializers
         }
         if (raw == HashCode.class) {
             return HashCodeDeserializer.std;
+        }
+        if (raw == Table.class || raw == ImmutableTable.class) {
+            return new StdDelegatingDeserializer<Table<Object, Object, Object>>(
+                new MapToImmutableTableConverter<Object, Object, Object>(type));
+        }
+        if (raw == HashBasedTable.class) {
+            return new StdDelegatingDeserializer<Table<Object, Object, Object>>(
+                new MapToHashBasedTableConverter<Object, Object, Object>(type));
+        }
+        if (raw == ArrayTable.class) {
+            return new StdDelegatingDeserializer<Table<Object, Object, Object>>(
+                new MapToArrayTableConverter<Object, Object, Object>(type));
         }
         return super.findBeanDeserializer(type, config, beanDesc);
     }
