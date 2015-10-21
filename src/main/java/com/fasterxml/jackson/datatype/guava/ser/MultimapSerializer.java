@@ -169,13 +169,14 @@ public class MultimapSerializer
         if (valueSer == null) {
             valueSer = _valueSerializer;
         }
-        // [Issue#124]: May have a content converter
+        // [datatype-guava#124]: May have a content converter
         valueSer = findConvertingContentSerializer(provider, property, valueSer);
         if (valueSer == null) {
             // One more thing -- if explicit content type is annotated,
             //   we can consider it a static case as well.
-            if (hasContentTypeAnnotation(provider, property)) {
-                valueSer = provider.findValueSerializer(_type.getContentType(), property);
+            JavaType valueType = _type.getContentType();
+            if (valueType.useStaticType()) {
+                valueSer = provider.findValueSerializer(valueType, property);
             }
         } else {
             valueSer = provider.handleSecondaryContextualization(valueSer, property);

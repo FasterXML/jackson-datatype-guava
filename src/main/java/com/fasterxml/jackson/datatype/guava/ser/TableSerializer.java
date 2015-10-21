@@ -24,7 +24,12 @@ public class TableSerializer
 {
     private static final long serialVersionUID = -1449462718192917949L;
 
+    /**
+     * Type declaration that defines parameters; may be a supertype of actual
+     * type of property being serialized.
+     */
     private final JavaType _type;
+
     private final BeanProperty _property;
 
     private final JsonSerializer<Object> _rowSerializer;
@@ -69,8 +74,9 @@ public class TableSerializer
         _columnSerializer = (JsonSerializer<Object>) columnKeySerializer;
         _valueTypeSerializer = valueTypeSerializer;
         _valueSerializer = (JsonSerializer<Object>) valueSerializer;
-
-        final MapType columnAndValueType = typeFactory.constructMapType(Map.class, _type.containedType(1), _type.containedType(2));
+        
+        final MapType columnAndValueType = typeFactory.constructMapType(Map.class,
+                _type.containedTypeOrUnknown(1), _type.containedTypeOrUnknown(2));
         JsonSerializer<?> columnAndValueSerializer = 
                 MapSerializer.construct(null,
                                         columnAndValueType,
@@ -80,7 +86,8 @@ public class TableSerializer
                                         _valueSerializer,
                                         null);
 
-        final MapType rowMapType = typeFactory.constructMapType(Map.class, _type.containedType(0), columnAndValueType);
+        final MapType rowMapType = typeFactory.constructMapType(Map.class,
+                _type.containedTypeOrUnknown(0), columnAndValueType);
         _rowMapSerializer =
                 MapSerializer.construct(null,
                                         rowMapType,
@@ -127,7 +134,7 @@ public class TableSerializer
     {
         JsonSerializer<?> valueSer = _valueSerializer;
         if (valueSer == null) { // if type is final, can actually resolve:
-            final JavaType valueType = _type.containedType(2);
+            final JavaType valueType = _type.containedTypeOrUnknown(2);
             if (valueType.isFinal()) {
                 valueSer = provider.findValueSerializer(valueType, property);
             }
@@ -137,14 +144,14 @@ public class TableSerializer
         }
         JsonSerializer<?> rowKeySer = _rowSerializer;
         if (rowKeySer == null) {
-            rowKeySer = provider.findKeySerializer(_type.containedType(0), property);
+            rowKeySer = provider.findKeySerializer(_type.containedTypeOrUnknown(0), property);
         }
         else if (rowKeySer instanceof ContextualSerializer) {
             rowKeySer = ((ContextualSerializer) rowKeySer).createContextual(provider, property);
         }
         JsonSerializer<?> columnKeySer = _columnSerializer;
         if (columnKeySer == null) {
-            columnKeySer = provider.findKeySerializer(_type.containedType(1), property);
+            columnKeySer = provider.findKeySerializer(_type.containedTypeOrUnknown(1), property);
         }
         else if (columnKeySer instanceof ContextualSerializer) {
             columnKeySer = ((ContextualSerializer) columnKeySer).createContextual(provider, property);

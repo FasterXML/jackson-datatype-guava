@@ -3,14 +3,10 @@ package com.fasterxml.jackson.datatype.guava;
 import java.lang.reflect.Type;
 
 import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.type.TypeBindings;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.databind.type.TypeModifier;
+import com.fasterxml.jackson.databind.type.*;
+
 import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Range;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 
 /**
  * We need somewhat hacky support for following Guava types:
@@ -30,95 +26,23 @@ import com.google.common.collect.Table;
  */
 public class GuavaTypeModifier extends TypeModifier
 {
-    /**
-     * Set of single-parameter-type types that we can handle using "standard" handling,
-     * no additional tricks needed.
-     */
-    private final static Class<?>[] SINGLE_PARAM_TYPES = new Class<?>[] {
-        Range.class, Optional.class
-    };
-    
     @Override
-    public JavaType modifyType(JavaType type, Type jdkType, TypeBindings context, TypeFactory typeFactory)
+    public JavaType modifyType(JavaType type, Type jdkType, TypeBindings bindings, TypeFactory typeFactory)
     {
+        if (type.isReferenceType() || type.isContainerType()) {
+            return type;
+        }
+
         final Class<?> raw = type.getRawClass();
         // First: make Multimaps look more Map-like
-        if (Multimap.class.isAssignableFrom(raw)) {
-            JavaType[] types = typeFactory.findTypeParameters(type, Multimap.class);
-            return typeFactory.constructMapLikeType(raw, _type(types, 0), _type(types, 1));
+        if (raw == Multimap.class) {
+            return MapLikeType.upgradeFrom(type,
+                            type.containedTypeOrUnknown(0),
+                            type.containedTypeOrUnknown(1));
         }
-        // 14-Sep-2015, tatu: Pre-resolve type parameters for Tables as well
-        if (Table.class.isAssignableFrom(raw)) {
-            JavaType[] types = typeFactory.findTypeParameters(type, Table.class);
-            if (types == null || types.length != 3) {
-                types = new JavaType[] {
-                    _type(types, 0),
-                    _type(types, 1),
-                    _type(types, 2)
-                };
-            }
-            return typeFactory.constructParametrizedType(raw, Table.class, types);
-        }
-        
-        /* Guava 12 changed the implementation of their {@link FluentIterable} to include a method named "isEmpty."  This method
-         * causes Jackson to treat FluentIterables as a Bean instead of an {@link Iterable}.  Serialization of FluentIterables by
-         * default result in a string like "{\"empty\":true}."  This module modifies the JavaType of FluentIterable to be
-         * the same as Iterable.
-         */
-        /* Hmmh. This won't work too well for deserialization. But I guess it'll
-         * have to do for now...
-         */
-        if (FluentIterable.class.isAssignableFrom(raw)) {
-            JavaType elemType = null;
-            JavaType[] types;
-            try {
-                types = typeFactory.findTypeParameters(type, Iterable.class);
-                if (types != null && types.length > 0) {
-                    elemType = types[0];
-                }
-            } catch (IllegalArgumentException e) {
-                /* 07-Aug-2015, tatu: Nasty hack, but until we get 100% functioning
-                 *   type resolution (from ClassMate project, f.ex.), need to work around
-                 *   edge cases with aliasing and/or unresolved type variables.
-                 *   So... here we go:
-                 */
-                String msg = e.getMessage();
-                if (msg == null || !msg.contains("Type variable 'T' can not be resolved")) {
-                    throw e;
-                }
-            }
-            if (elemType == null) {
-                elemType = TypeFactory.unknownType();
-            }
-            // 30-Dec-2014, tatu: This _should_ work; but if not, may need to consider making
-            //    first parameter same as second (old way)
-            return typeFactory.constructParametrizedType(FluentIterable.class, Iterable.class, elemType);
-        }
-        for (Class<?> target : SINGLE_PARAM_TYPES) {
-            if (target.isAssignableFrom(raw)) {
-                JavaType[] types = typeFactory.findTypeParameters(type, target);
-                JavaType t = (types == null || types.length == 0) ? null : types[0];
-                if (t == null) {
-                    t = TypeFactory.unknownType();
-                }
-                /* Downcasting is necessary with 'Optional', due to implementation details.
-                 * Not sure if it'd be with Range; but let's assume it is, for now: sub-classes
-                 * could eliminate/change type parameterization anyway.
-                 */
-                // 28-May-2015, tatu: Further, Optional needs to be a ReferenceType
-                if (target == Optional.class) {
-                    return typeFactory.constructReferenceType(raw, t);
-                }
-                return typeFactory.constructParametrizedType(raw, target, t);
-            }
+        if (raw == Optional.class) {
+            return ReferenceType.upgradeFrom(type, type.containedTypeOrUnknown(0));
         }
         return type;
-    }
-
-    private static JavaType _type(JavaType[] types, int index) {
-        if (types == null || types.length <= index) {
-            return TypeFactory.unknownType();
-        }
-        return types[index];
     }
 }

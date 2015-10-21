@@ -2,10 +2,16 @@ package com.fasterxml.jackson.datatype.guava;
 
 import java.util.HashSet;
 
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
+import com.fasterxml.jackson.databind.ser.Serializers;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.fasterxml.jackson.databind.util.StdConverter;
+
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
@@ -16,12 +22,7 @@ import com.google.common.collect.Table;
 import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.introspect.Annotated;
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
-import com.fasterxml.jackson.databind.ser.Serializers;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import com.fasterxml.jackson.databind.type.MapLikeType;
+
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
@@ -42,21 +43,20 @@ public class GuavaSerializers extends Serializers.Base
     public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc)
     {
         Class<?> raw = type.getRawClass();
-        if (Optional.class.isAssignableFrom(raw)){
-            return new GuavaOptionalSerializer(type);
+        if (Optional.class.isAssignableFrom(raw)) {
+            return new GuavaOptionalSerializer(_findDeclared(type, Optional.class));
         }
         if (Range.class.isAssignableFrom(raw)) {
-            return new RangeSerializer(type);
+            return new RangeSerializer(_findDeclared(type, Range.class));
         }
         if (Table.class.isAssignableFrom(raw)) {
-            return new TableSerializer(type);
+            return new TableSerializer(_findDeclared(type, Table.class));
         }
 
         // since 2.4
         if (HostAndPort.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
         }
-        // since 2.4.3
         if (InternetDomainName.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
         }
@@ -66,18 +66,10 @@ public class GuavaSerializers extends Serializers.Base
         }
         if (HashCode.class.isAssignableFrom(raw)) {
             return ToStringSerializer.instance;
-	}
-        // since 2.4.5
+        }
         if (FluentIterable.class.isAssignableFrom(raw)) {
-            // We can use parameter type that GuavaTypeModifier has kindly resolved for us
-            JavaType vt = type.containedType(0);
-            if (vt == null) { // should never happen but
-                vt = TypeFactory.unknownType();
-            }
-            // 04-Dec-2014, tatu: Not 100% sure why latter would fail... need to investigate when I have time
-            JavaType delegate = config.getTypeFactory().constructParametrizedType(Iterable.class, Iterable.class, vt);
-//            JavaType delegate = config.getTypeFactory().constructParametrizedType(FluentIterable.class, Iterable.class, vt);
-            return new StdDelegatingSerializer(FluentConverter.instance, delegate, null);
+            JavaType iterableType = _findDeclared(type, Iterable.class);
+            return new StdDelegatingSerializer(FluentConverter.instance, iterableType, null);
         }
         return super.findSerializer(config, type, beanDesc);
     }
@@ -98,5 +90,13 @@ public class GuavaSerializers extends Serializers.Base
                     keySerializer, elementTypeSerializer, elementValueSerializer, ignoredEntries, filterId);
         }
         return null;
+    }
+
+    private JavaType _findDeclared(JavaType subtype, Class<?> target) {
+        JavaType decl = subtype.findSuperType(target);
+        if (decl == null) { // should never happen but
+            throw new IllegalArgumentException("Strange "+target.getName()+" sub-type, "+subtype+", can not find type parameters");
+        }
+        return decl;
     }
 }

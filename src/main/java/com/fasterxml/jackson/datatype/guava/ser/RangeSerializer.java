@@ -57,7 +57,7 @@ public class RangeSerializer extends StdSerializer<Range<?>>
             BeanProperty property) throws JsonMappingException
     {
         if (_endpointSerializer == null) {
-            JavaType endpointType = _rangeType.containedType(0);
+            JavaType endpointType = _rangeType.containedTypeOrUnknown(0);
             // let's not consider "untyped" (java.lang.Object) to be meaningful here...
             if (endpointType != null && !endpointType.hasRawClass(Object.class)) {
                 JsonSerializer<?> ser = prov.findValueSerializer(endpointType, property);
@@ -83,24 +83,24 @@ public class RangeSerializer extends StdSerializer<Range<?>>
      */
 
     @Override
-    public void serialize(Range<?> value, JsonGenerator jgen, SerializerProvider provider)
+    public void serialize(Range<?> value, JsonGenerator gen, SerializerProvider provider)
         throws IOException, JsonGenerationException
     {
-        jgen.writeStartObject();
-        _writeContents(value, jgen, provider);
-        jgen.writeEndObject();
+        gen.writeStartObject();
+        _writeContents(value, gen, provider);
+        gen.writeEndObject();
 
     }
 
     @Override
-    public void serializeWithType(Range<?> value, JsonGenerator jgen, SerializerProvider provider,
+    public void serializeWithType(Range<?> value, JsonGenerator gen, SerializerProvider provider,
             TypeSerializer typeSer)
         throws IOException, JsonProcessingException
     {
         // Will be serialized as a JSON Object, so:
-        typeSer.writeTypePrefixForObject(value, jgen);
-        _writeContents(value, jgen, provider);
-        typeSer.writeTypeSuffixForObject(value, jgen);
+        typeSer.writeTypePrefixForObject(value, gen);
+        _writeContents(value, gen, provider);
+        typeSer.writeTypeSuffixForObject(value, gen);
     }
 
     @Override

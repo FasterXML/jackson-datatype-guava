@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.guava;
+package com.fasterxml.jackson.datatype.guava.optional;
 
 import java.util.*;
 
@@ -6,6 +6,7 @@ import com.google.common.base.Optional;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.*;
+import com.fasterxml.jackson.datatype.guava.ModuleTestBase;
 
 public class OptionalSchema83Test
     extends ModuleTestBase

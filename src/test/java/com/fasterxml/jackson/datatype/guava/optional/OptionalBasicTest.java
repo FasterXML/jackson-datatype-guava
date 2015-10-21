@@ -1,4 +1,4 @@
-package com.fasterxml.jackson.datatype.guava;
+package com.fasterxml.jackson.datatype.guava.optional;
 
 import java.util.*;
 
@@ -7,7 +7,8 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
-
+import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.guava.ModuleTestBase;
 import com.google.common.base.Optional;
 
 public class OptionalBasicTest extends ModuleTestBase

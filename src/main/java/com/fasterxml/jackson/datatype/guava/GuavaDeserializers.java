@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.datatype.guava.deser.*;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
@@ -247,18 +246,15 @@ public class GuavaDeserializers
     {
         Class<?> raw = type.getRawClass();
         if (raw == Optional.class){
-            // GuavaTypeModifier has introspector type parameters already so:
-            JavaType refType = type.containedType(0);
-            if (refType == null) {
-                refType = TypeFactory.unknownType();
-            }
             JsonDeserializer<?> valueDeser = type.getValueHandler();
             TypeDeserializer typeDeser = type.getTypeHandler();
-            // [Issue#42]: Polymorphic types need type deserializer
+            // [datatype-guava#42]: Polymorphic types need type deserializer
             if (typeDeser == null) {
+                // GuavaTypeModifier has introspector type parameters already so:
+                JavaType refType = type.containedTypeOrUnknown(0);
                 typeDeser = config.findTypeDeserializer(refType);
             }
-            return new GuavaOptionalDeserializer(type, refType, typeDeser, valueDeser);
+            return new GuavaOptionalDeserializer(type, typeDeser, valueDeser);
         }
         if (raw == Range.class) {
             return new RangeDeserializer(_defaultBoundType, type);

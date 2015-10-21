@@ -1,12 +1,11 @@
-package com.fasterxml.jackson.datatype.guava;
+package com.fasterxml.jackson.datatype.guava.optional;
 
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.*;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-
+import com.fasterxml.jackson.datatype.guava.ModuleTestBase;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
