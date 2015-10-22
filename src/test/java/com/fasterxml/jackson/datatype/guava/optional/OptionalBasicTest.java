@@ -3,26 +3,24 @@ package com.fasterxml.jackson.datatype.guava.optional;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.guava.ModuleTestBase;
+
 import com.google.common.base.Optional;
 
 public class OptionalBasicTest extends ModuleTestBase
 {
-    private final ObjectMapper MAPPER = mapperWithModule();
-
-    @JsonAutoDetect(fieldVisibility=Visibility.ANY)
     public static final class OptionalData {
-        private Optional<String> myString;
+        public Optional<String> myString;
     }
-    
-    @JsonAutoDetect(fieldVisibility=Visibility.ANY)
+
     public static final class OptionalGenericData<T>{
-        private Optional<T> myData;
+        public Optional<T> myData;
     }
 
     @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class)
@@ -59,6 +57,8 @@ public class OptionalBasicTest extends ModuleTestBase
     /**********************************************************************
      */
 
+    private final ObjectMapper MAPPER = mapperWithModule();
+    
     public void testOptionalTypeResolution() throws Exception
     {
         // With 2.6, we need to recognize it as ReferenceType
