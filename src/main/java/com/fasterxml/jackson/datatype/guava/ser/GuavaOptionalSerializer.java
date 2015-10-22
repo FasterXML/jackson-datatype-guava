@@ -259,18 +259,10 @@ public final class GuavaOptionalSerializer
             }
             return;
         }
-        Object value = opt.get();
-        JsonSerializer<Object> ser = _valueSerializer;
-        if (ser == null) {
-            ser = _findCachedSerializer(provider, value.getClass());
-        }
-        ser.serializeWithType(value, gen, provider, typeSer);
-        /*
         // Otherwise apply type-prefix/suffix, then std serialize:
         typeSer.writeTypePrefixForScalar(opt, gen, Optional.class);
         serialize(opt, gen, provider);
         typeSer.writeTypeSuffixForScalar(opt, gen);
-        */
     }
 
     /*

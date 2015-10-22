@@ -204,12 +204,11 @@ public class OptionalBasicTest extends ModuleTestBase
 		myData.myString = Optional.fromNullable("abc");
 
 		final String json = objectMapper.writeValueAsString(myData);
-//System.err.println("DEBUG: json == "+json);
 		final OptionalData deserializedMyData = objectMapper.readValue(json, OptionalData.class);
 		assertEquals(myData.myString, deserializedMyData.myString);
     }
 
-    // [Issue#17]
+    // [datatype-guava#17]
     public void testObjectId() throws Exception
     {
         final Unit input = new Unit();
