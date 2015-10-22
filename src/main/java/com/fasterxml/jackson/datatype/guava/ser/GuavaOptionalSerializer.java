@@ -2,13 +2,17 @@ package com.fasterxml.jackson.datatype.guava.ser;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.introspect.Annotated;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.fasterxml.jackson.databind.type.ReferenceType;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import com.google.common.base.Optional;
@@ -25,8 +29,17 @@ public final class GuavaOptionalSerializer
 
     protected final BeanProperty _property;
     
+    protected final TypeSerializer _valueTypeSerializer;
     protected final JsonSerializer<Object> _valueSerializer;
 
+    /**
+     * Further guidance on serialization-inclusion (or not), regarding
+     * contained value (if any).
+     *
+     * @since 2.7
+     */
+    protected final JsonInclude.Include _contentInclusion;
+    
     /**
      * To support unwrapped values of dynamic types, will need this:
      */
@@ -46,60 +59,39 @@ public final class GuavaOptionalSerializer
     /**********************************************************
      */
 
-    public GuavaOptionalSerializer(JavaType optionalType) {
-        super(optionalType);
-        _referredType = _valueType(optionalType);
+    @SuppressWarnings("unchecked")
+    public GuavaOptionalSerializer(ReferenceType fullType,
+            TypeSerializer vts, JsonSerializer<?> valueSer)
+    {
+        super(fullType);
+        _referredType = fullType.getReferencedType();
         _property = null;
-        _valueSerializer = null;
+        _valueTypeSerializer = vts;
+        _valueSerializer = (JsonSerializer<Object>) valueSer;
         _unwrapper = null;
+        _contentInclusion = null;
         _dynamicSerializers = PropertySerializerMap.emptyForProperties();
     }
 
     @SuppressWarnings("unchecked")
     protected GuavaOptionalSerializer(GuavaOptionalSerializer base,
-            BeanProperty property, JsonSerializer<?> valueSer, NameTransformer unwrapper)
+            BeanProperty property,
+            TypeSerializer vts, JsonSerializer<?> valueSer,
+            NameTransformer unwrapper, JsonInclude.Include contentIncl)
     {
         super(base);
         _referredType = base._referredType;
         _dynamicSerializers = base._dynamicSerializers;
         _property = property;
+        _valueTypeSerializer = vts;
         _valueSerializer = (JsonSerializer<Object>) valueSer;
         _unwrapper = unwrapper;
-    }
-
-    protected GuavaOptionalSerializer withResolved(BeanProperty prop,
-            JsonSerializer<?> ser, NameTransformer unwrapper)
-    {
-        if ((_property == prop) && (_valueSerializer == ser) && (_unwrapper == unwrapper)) {
-            return this;
-        }
-        return new GuavaOptionalSerializer(this, prop, ser, unwrapper);
-    }
-
-    @Override
-    public JsonSerializer<?> createContextual(SerializerProvider provider,
-            BeanProperty property) throws JsonMappingException
-    {
-        JsonSerializer<?> ser = _valueSerializer;
-        if (ser == null) {
-            // we'll have type parameter available due to GuavaTypeModifier making sure it is, so:
-            boolean realType = !_referredType.hasRawClass(Object.class);
-            // Can only assign serializer statically if the declared type is final,
-            // or if we are to use static typing (and type is not "untyped")
-            if (realType &&
-                    (provider.isEnabled(MapperFeature.USE_STATIC_TYPING)
-                    || _referredType.isFinal())) {
-                return withResolved(property,
-                        _findSerializer(provider, _referredType, _property),
-                        _unwrapper);
-            }
+        if ((contentIncl == JsonInclude.Include.USE_DEFAULTS)
+                || (contentIncl == JsonInclude.Include.ALWAYS)) {
+            _contentInclusion = null;
         } else {
-            // not sure if/when this should occur but proper way to deal would be:
-            return withResolved(property,
-                    provider.handlePrimaryContextualization(ser, property),
-                    _unwrapper);
+            _contentInclusion = contentIncl;
         }
-        return this;
     }
 
     @Override
@@ -110,9 +102,90 @@ public final class GuavaOptionalSerializer
         }
         NameTransformer unwrapper = (_unwrapper == null) ? transformer
                 : NameTransformer.chainedTransformer(transformer, _unwrapper);
-        return withResolved(_property, ser, unwrapper);
+        return withResolved(_property, _valueTypeSerializer, ser, unwrapper, _contentInclusion);
     }
 
+    protected GuavaOptionalSerializer withResolved(BeanProperty prop,
+            TypeSerializer vts, JsonSerializer<?> valueSer,
+            NameTransformer unwrapper, JsonInclude.Include contentIncl)
+    {
+        if ((_property == prop) && (contentIncl == _contentInclusion)
+                && (_valueTypeSerializer == vts) && (_valueSerializer == valueSer)
+                && (_unwrapper == unwrapper)) {
+            return this;
+        }
+        return new GuavaOptionalSerializer(this, prop, vts, valueSer, unwrapper, contentIncl);
+    }
+
+    /*
+    /**********************************************************
+    /* Contextualization (support for property annotations)
+    /**********************************************************
+     */
+    
+    @Override
+    public JsonSerializer<?> createContextual(SerializerProvider provider,
+            BeanProperty property) throws JsonMappingException
+    {
+        TypeSerializer vts = _valueTypeSerializer;
+        if (vts != null) {
+            vts = vts.forProperty(property);
+        }
+        JsonSerializer<?> ser = _valueSerializer;
+        if (ser == null) {
+            // A few conditions needed to be able to fetch serializer here:
+            if (_useStatic(provider, property, _referredType)) {
+                ser = _findSerializer(provider, _referredType, property);
+            }
+        } else {
+            ser = provider.handlePrimaryContextualization(ser, property);
+        }
+        // Also: may want to have more refined exclusion based on referenced value
+        JsonInclude.Include contentIncl = _contentInclusion;
+        if (property != null) {
+            JsonInclude.Value incl = property.findPropertyInclusion(provider.getConfig(),
+                    Optional.class);
+            JsonInclude.Include newIncl = incl.getContentInclusion();
+            if ((newIncl != contentIncl) && (newIncl != JsonInclude.Include.USE_DEFAULTS)) {
+                contentIncl = newIncl;
+            }
+        }
+        return withResolved(property, vts, ser, _unwrapper, contentIncl);
+    }
+
+    protected boolean _useStatic(SerializerProvider provider, BeanProperty property,
+            JavaType referredType)
+    {
+        // First: no serializer for `Object.class`, must be dynamic
+        if (referredType.isJavaLangObject()) {
+            return false;
+        }
+        // but if type is final, might as well fetch
+        if (referredType.isFinal()) { // or should we allow annotation override? (only if requested...)
+            return true;
+        }
+        // also: if indicated by typing, should be considered static
+        if (referredType.useStaticType()) {
+            return true;
+        }
+        // if neither, maybe explicit annotation?
+        AnnotationIntrospector intr = provider.getAnnotationIntrospector();
+        if ((intr != null) && (property != null)) {
+            Annotated ann = property.getMember();
+            if (ann != null) {
+                JsonSerialize.Typing t = intr.findSerializationTyping(property.getMember());
+                if (t == JsonSerialize.Typing.STATIC) {
+                    return true;
+                }
+                if (t == JsonSerialize.Typing.DYNAMIC) {
+                    return false;
+                }
+            }
+        }
+        // and finally, may be forced by global static typing (unlikely...)
+        return provider.isEnabled(MapperFeature.USE_STATIC_TYPING);
+    }
+    
     /*
     /**********************************************************
     /* API overrides
@@ -120,14 +193,24 @@ public final class GuavaOptionalSerializer
      */
 
     @Override
-    @Deprecated
-    public boolean isEmpty(Optional<?> value) {
-        return isEmpty(null, value);
-    }
-
-    @Override
-    public boolean isEmpty(SerializerProvider prov, Optional<?> value) {
-        return (value == null) || !value.isPresent();
+    public boolean isEmpty(SerializerProvider provider, Optional<?> value)
+    {
+        if ((value == null) || !value.isPresent()) {
+            return true;
+        }
+        if (_contentInclusion == null) {
+            return false;
+        }
+        Object contents = value.get();
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser == null) {
+            try {
+                ser = _findCachedSerializer(provider, value.getClass());
+            } catch (JsonMappingException e) { // nasty but necessary
+                throw new RuntimeJsonMappingException(e);
+            }
+        }
+        return ser.isEmpty(provider, contents);
     }
 
     @Override
@@ -145,15 +228,19 @@ public final class GuavaOptionalSerializer
     public void serialize(Optional<?> opt, JsonGenerator gen, SerializerProvider provider)
         throws IOException
     {
-        if (opt.isPresent()) {
-            Object value = opt.get();
-            JsonSerializer<Object> ser = _valueSerializer;
-            if (ser == null) {
-                ser = _findSerializer(provider, value.getClass());
-            }
-            ser.serialize(value, gen, provider);
-        } else {
+        if (!opt.isPresent()) {
             provider.defaultSerializeNull(gen);
+            return;
+        }
+        Object value = opt.get();
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser == null) {
+            ser = _findCachedSerializer(provider, value.getClass());
+        }
+        if (_valueTypeSerializer != null) {
+            ser.serializeWithType(value, gen, provider, _valueTypeSerializer);
+        } else {
+            ser.serialize(value, gen, provider);
         }
     }
 
@@ -162,16 +249,16 @@ public final class GuavaOptionalSerializer
             JsonGenerator gen, SerializerProvider provider,
             TypeSerializer typeSer) throws IOException
     {
-        if (opt.isPresent()) {
-            Object value = opt.get();
-            JsonSerializer<Object> ser = _valueSerializer;
-            if (ser == null) {
-                ser = _findSerializer(provider, value.getClass());
-            }
-            ser.serializeWithType(value, gen, provider, typeSer);
-        } else {
+        if (!opt.isPresent()) {
             provider.defaultSerializeNull(gen);
+            return;
         }
+        Object value = opt.get();
+        JsonSerializer<Object> ser = _valueSerializer;
+        if (ser == null) {
+            ser = _findCachedSerializer(provider, value.getClass());
+        }
+        ser.serializeWithType(value, gen, provider, typeSer);
     }
 
     /*
@@ -197,7 +284,7 @@ public final class GuavaOptionalSerializer
     /* Misc other
     /**********************************************************
      */
-    
+    /*
     protected static JavaType _valueType(JavaType optionalType) {
         JavaType valueType = optionalType.containedType(0);
         if (valueType == null) {
@@ -205,12 +292,13 @@ public final class GuavaOptionalSerializer
         }
         return valueType;
     }
+    */
 
     /**
      * Helper method that encapsulates logic of retrieving and caching required
      * serializer.
      */
-    protected final JsonSerializer<Object> _findSerializer(SerializerProvider provider,
+    protected final JsonSerializer<Object> _findCachedSerializer(SerializerProvider provider,
             Class<?> type) throws JsonMappingException
     {
         JsonSerializer<Object> ser = _dynamicSerializers.serializerFor(type);

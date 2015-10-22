@@ -5,13 +5,13 @@ import com.google.common.collect.*;
 import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.Deserializers;
 import com.fasterxml.jackson.databind.jsontype.TypeDeserializer;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.databind.type.MapLikeType;
 import com.fasterxml.jackson.databind.type.MapType;
+import com.fasterxml.jackson.databind.type.ReferenceType;
 import com.fasterxml.jackson.datatype.guava.deser.*;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.ArrayListMultimapDeserializer;
 import com.fasterxml.jackson.datatype.guava.deser.multimap.list.LinkedListMultimapDeserializer;
@@ -240,34 +240,36 @@ public class GuavaDeserializers
         return null;
     }
 
+    // 21-Oct-2015, tatu: Code much simplified with 2.7 where we should be getting much
+    //    of boilerplate handling automatically
+
+    @Override // since 2.7
+    public JsonDeserializer<?> findReferenceDeserializer(ReferenceType refType,
+            DeserializationConfig config, BeanDescription beanDesc,
+            TypeDeserializer contentTypeDeserializer, JsonDeserializer<?> contentDeserializer)
+    {
+        if (refType.hasRawClass(Optional.class)) {
+            return new GuavaOptionalDeserializer(refType, contentTypeDeserializer, contentDeserializer);
+        }
+        return null;
+    }
+    
     @Override
     public JsonDeserializer<?> findBeanDeserializer(final JavaType type, DeserializationConfig config,
-            BeanDescription beanDesc) throws JsonMappingException
+            BeanDescription beanDesc)
     {
-        Class<?> raw = type.getRawClass();
-        if (raw == Optional.class){
-            JsonDeserializer<?> valueDeser = type.getValueHandler();
-            TypeDeserializer typeDeser = type.getTypeHandler();
-            // [datatype-guava#42]: Polymorphic types need type deserializer
-            if (typeDeser == null) {
-                // GuavaTypeModifier has introspector type parameters already so:
-                JavaType refType = type.containedTypeOrUnknown(0);
-                typeDeser = config.findTypeDeserializer(refType);
-            }
-            return new GuavaOptionalDeserializer(type, typeDeser, valueDeser);
-        }
-        if (raw == Range.class) {
+        if (type.hasRawClass(Range.class)) {
             return new RangeDeserializer(_defaultBoundType, type);
         }
-        if (raw == HostAndPort.class) {
+        if (type.hasRawClass(HostAndPort.class)) {
             return HostAndPortDeserializer.std;
         }
-        if (raw == InternetDomainName.class) {
+        if (type.hasRawClass(InternetDomainName.class)) {
             return InternetDomainNameDeserializer.std;
         }
-        if (raw == HashCode.class) {
+        if (type.hasRawClass(HashCode.class)) {
             return HashCodeDeserializer.std;
         }
-        return super.findBeanDeserializer(type, config, beanDesc);
+        return null;
     }
 }

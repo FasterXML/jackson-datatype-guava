@@ -8,10 +8,10 @@ import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.Serializers;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.fasterxml.jackson.databind.type.MapLikeType;
+import com.fasterxml.jackson.databind.type.ReferenceType;
 import com.fasterxml.jackson.databind.ser.std.StdDelegatingSerializer;
 import com.fasterxml.jackson.databind.util.ArrayBuilders;
 import com.fasterxml.jackson.databind.util.StdConverter;
-
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheBuilderSpec;
@@ -22,7 +22,6 @@ import com.google.common.collect.Table;
 import com.google.common.hash.HashCode;
 import com.google.common.net.HostAndPort;
 import com.google.common.net.InternetDomainName;
-
 import com.fasterxml.jackson.datatype.guava.ser.GuavaOptionalSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.MultimapSerializer;
 import com.fasterxml.jackson.datatype.guava.ser.RangeSerializer;
@@ -40,12 +39,21 @@ public class GuavaSerializers extends Serializers.Base
     }
 
     @Override
+    public JsonSerializer<?> findReferenceSerializer(SerializationConfig config, 
+            ReferenceType refType, BeanDescription beanDesc,
+            TypeSerializer contentTypeSerializer, JsonSerializer<Object> contentValueSerializer)
+    {
+        final Class<?> raw = refType.getRawClass();
+        if (Optional.class.isAssignableFrom(raw)) {
+            return new GuavaOptionalSerializer(refType, contentTypeSerializer, contentValueSerializer);
+        }
+        return null;
+    }
+
+    @Override
     public JsonSerializer<?> findSerializer(SerializationConfig config, JavaType type, BeanDescription beanDesc)
     {
         Class<?> raw = type.getRawClass();
-        if (Optional.class.isAssignableFrom(raw)) {
-            return new GuavaOptionalSerializer(_findDeclared(type, Optional.class));
-        }
         if (Range.class.isAssignableFrom(raw)) {
             return new RangeSerializer(_findDeclared(type, Range.class));
         }
