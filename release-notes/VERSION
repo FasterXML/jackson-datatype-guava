@@ -4,6 +4,11 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
+2.6.4 (not yet released)
+
+- Small fix to unwrapped `Optional` serialization, should not fail when trying to
+  serialize empty unwrapped `Optional`.
+
 2.6.3 (12-Oct-2015)
 
 #83: Generic type information for `Optional` wrapped generic type lost in visitor

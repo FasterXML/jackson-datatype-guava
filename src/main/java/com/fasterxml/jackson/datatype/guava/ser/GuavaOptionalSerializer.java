@@ -153,7 +153,10 @@ public final class GuavaOptionalSerializer
             }
             ser.serialize(value, gen, provider);
         } else {
-            provider.defaultSerializeNull(gen);
+            // 22-Oct-2015, tatu: With unwrapping we can not serialize value, just key/value pairs so:
+            if (_unwrapper == null) {
+                provider.defaultSerializeNull(gen);
+            }
         }
     }
 
@@ -170,7 +173,9 @@ public final class GuavaOptionalSerializer
             }
             ser.serializeWithType(value, gen, provider, typeSer);
         } else {
-            provider.defaultSerializeNull(gen);
+            if (_unwrapper == null) {
+                provider.defaultSerializeNull(gen);
+            }
         }
     }
 
