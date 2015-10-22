@@ -3,7 +3,9 @@ package com.fasterxml.jackson.datatype.guava.ser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import com.fasterxml.jackson.core.JsonGenerator;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.Annotated;
@@ -13,7 +15,6 @@ import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import com.fasterxml.jackson.databind.ser.impl.PropertySerializerMap;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import com.fasterxml.jackson.databind.type.ReferenceType;
-import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.NameTransformer;
 import com.google.common.base.Optional;
 
@@ -284,15 +285,6 @@ public final class GuavaOptionalSerializer
     /* Misc other
     /**********************************************************
      */
-    /*
-    protected static JavaType _valueType(JavaType optionalType) {
-        JavaType valueType = optionalType.containedType(0);
-        if (valueType == null) {
-            valueType = TypeFactory.unknownType();
-        }
-        return valueType;
-    }
-    */
 
     /**
      * Helper method that encapsulates logic of retrieving and caching required
