@@ -230,7 +230,10 @@ public final class GuavaOptionalSerializer
         throws IOException
     {
         if (!opt.isPresent()) {
-            provider.defaultSerializeNull(gen);
+            // 22-Oct-2015, tatu: With unwrapping we can not serialize value, just key/value pairs so:
+            if (_unwrapper == null) {
+                provider.defaultSerializeNull(gen);
+            }
             return;
         }
         Object value = opt.get();
@@ -251,7 +254,9 @@ public final class GuavaOptionalSerializer
             TypeSerializer typeSer) throws IOException
     {
         if (!opt.isPresent()) {
-            provider.defaultSerializeNull(gen);
+            if (_unwrapper == null) {
+                provider.defaultSerializeNull(gen);
+            }
             return;
         }
         Object value = opt.get();
@@ -260,6 +265,12 @@ public final class GuavaOptionalSerializer
             ser = _findCachedSerializer(provider, value.getClass());
         }
         ser.serializeWithType(value, gen, provider, typeSer);
+        /*
+        // Otherwise apply type-prefix/suffix, then std serialize:
+        typeSer.writeTypePrefixForScalar(opt, gen, Optional.class);
+        serialize(opt, gen, provider);
+        typeSer.writeTypeSuffixForScalar(opt, gen);
+        */
     }
 
     /*

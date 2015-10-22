@@ -202,8 +202,9 @@ public class OptionalBasicTest extends ModuleTestBase
 
 		final OptionalData myData = new OptionalData();
 		myData.myString = Optional.fromNullable("abc");
-		
+
 		final String json = objectMapper.writeValueAsString(myData);
+//System.err.println("DEBUG: json == "+json);
 		final OptionalData deserializedMyData = objectMapper.readValue(json, OptionalData.class);
 		assertEquals(myData.myString, deserializedMyData.myString);
     }

@@ -30,7 +30,6 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
 
   <properties>
     <version.jackson.core>2.7.0-SNAPSHOT</version.jackson.core>
-
     <version.guava>15.0</version.guava>
 
     <!-- 11-Sep-2015, tatu: As per [datatype-guava#80] -->
