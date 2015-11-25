@@ -193,6 +193,9 @@ public final class GuavaOptionalSerializer
             // 28-Sep-2015, tatu: as per [datatype-guava#83] need to ensure we don't
             //    accidentally drop parameterization
             ser = _findSerializer(visitor.getProvider(), _referredType, _property);
+            if (_unwrapper != null) {
+                ser = ser.unwrappingSerializer(_unwrapper);
+            }
         }
         ser.acceptJsonFormatVisitor(visitor, _referredType);
     }
