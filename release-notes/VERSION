@@ -10,6 +10,7 @@ Project: jackson-datatype-guava
  (contributed by Jonathan R-d-O)
 (partial, serialization works) #11: Add support for Table<R, C, V>
 - Simplify OSGi settings for build.
+- Guava version now 16 (from 15); does not rely on new features yet
 
 2.6.4 (not yet released)
 
