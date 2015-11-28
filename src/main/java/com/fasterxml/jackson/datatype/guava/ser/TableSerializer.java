@@ -181,14 +181,18 @@ public class TableSerializer
     }
 
     @Override
-    public boolean isEmpty( final Table<?, ?, ?> table)
-    {
+    public boolean isEmpty(SerializerProvider provider, Table<?, ?, ?> table) {
         return table.isEmpty();
     }
 
     @Override
-    public boolean hasSingleElement(final Table<?, ?, ?> table)
-    {
+    @Deprecated // since 2.6, remove from 2.8
+    public boolean isEmpty(Table<?, ?, ?> table) {
+        return table.isEmpty();
+    }
+
+    @Override
+    public boolean hasSingleElement(final Table<?, ?, ?> table) {
         return table.size() == 1;
     }
 

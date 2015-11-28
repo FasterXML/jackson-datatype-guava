@@ -40,9 +40,17 @@ public class GuavaOptionalDeserializer
 
     @Override
     public JavaType getValueType() { return _fullType; }
-    
+
     @Override
-    public Optional<?> getNullValue() { return Optional.absent(); }
+    public Optional<?> getNullValue(DeserializationContext ctxt) {
+        return Optional.absent();
+    }
+
+    @Override
+    @Deprecated // since 2.6; remove from 2.8
+    public Optional<?> getNullValue() {
+        return Optional.absent();
+    }
 
     /**
      * Overridable fluent factory method used for creating contextual

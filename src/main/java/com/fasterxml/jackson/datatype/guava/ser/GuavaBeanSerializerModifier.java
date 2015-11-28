@@ -21,7 +21,7 @@ public class GuavaBeanSerializerModifier extends BeanSerializerModifier
     {
         for (int i = 0; i < beanProperties.size(); ++i) {
             final BeanPropertyWriter writer = beanProperties.get(i);
-            if (Optional.class.isAssignableFrom(writer.getPropertyType())) {
+            if (Optional.class.isAssignableFrom(writer.getType().getRawClass())) {
                 beanProperties.set(i, new GuavaOptionalBeanPropertyWriter(writer));
             }
         }
