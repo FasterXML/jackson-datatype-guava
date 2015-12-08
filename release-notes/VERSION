@@ -6,7 +6,7 @@ Project: jackson-datatype-guava
 
 2.6.0 (not yet released)
 
-2.5.5 (not yet released)
+2.5.5 (07-Dec-2015)
 
 #80: Relax OSGi version constraints for Guava dependency.
  (requested by Benson M)
