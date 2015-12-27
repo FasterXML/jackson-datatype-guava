@@ -83,14 +83,14 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     /**
      * Configuration method that may be used to change the {@link BoundType} to be used
      * when deserializing {@link com.google.common.collect.Range} objects. This configuration
-     * will is used when the object to be deserialied has no bound type attribute.
+     * will is used when the object to be deserialized has no bound type attribute.
      * The default {@link BoundType} is CLOSED.
      *
      * @param boundType {@link BoundType}
      *
      * @return This module instance, useful for chaining calls
-     *
-     * @since 2.6.1 ? FIXME
+     
+     * @since 2.7
      */
     public GuavaModule defaultBoundType(BoundType boundType) {
         checkNotNull(boundType);
@@ -99,14 +99,12 @@ public class GuavaModule extends Module // can't use just SimpleModule, due to g
     }
     
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         return NAME.hashCode();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
+    public boolean equals(Object o) {
         return this == o;
     }
 }

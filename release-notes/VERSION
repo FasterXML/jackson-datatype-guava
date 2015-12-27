@@ -6,7 +6,7 @@ Project: jackson-datatype-guava
 
 2.7.0 (not yet released)
 
-#79: New configuration for Guava Range default bound type.
+#76: New configuration for Guava Range default bound type.
  (contributed by Jonathan R-d-O)
 (partial, serialization works) #11: Add support for Table<R, C, V>
 - Simplify OSGi settings for build.
