@@ -29,7 +29,7 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
   </contributors>
 
   <properties>
-    <version.jackson.annotations>2.7.0-rc2</version.jackson.annotations>
+    <version.jackson.annotations>2.7.0-rc3</version.jackson.annotations>
     <version.jackson.core>2.7.0-rc3-SNAPSHOT</version.jackson.core>
     <!-- 27-Nov-2015, tatu: For Jackson 2.7, move guava dep from 15 to 16 -->
     <version.guava>16.0</version.guava>
