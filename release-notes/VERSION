@@ -4,7 +4,7 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
-2.7.0 (not yet released)
+2.7.0 (10-Jan-2016)
 
 #76: New configuration for Guava Range default bound type.
  (contributed by Jonathan R-d-O)
