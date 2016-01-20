@@ -1,4 +1,4 @@
-[Jackson](http://jackson.codehaus.org) module (jar)
+[Jackson](../../../jackson) datatype module (jar)
 to support JSON serialization and deserialization of
 [Guava](http://code.google.com/p/guava-libraries/) data types.
 
