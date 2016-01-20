@@ -27,3 +27,7 @@ Jose Thomas (josethomas@github)
 Jonathan Rodrigues de Oliveira (jorool@github)
   * Contributed #79: New configuration for Guava Range default bound type.
    (2.7.0)
+
+Micahel Jameson (mjameson-se@github)
+  * Reported #87: OSGi import missing for `com.fasterxml.jackson.annotation.JsonInclude$Value`
+   (2.7.1)

@@ -4,6 +4,11 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
+2.7.1 (not yet released)
+
+#87: OSGi import missing for `com.fasterxml.jackson.annotation.JsonInclude$Value`
+ (reported by Michael J)
+
 2.7.0 (10-Jan-2016)
 
 #76: New configuration for Guava Range default bound type.
