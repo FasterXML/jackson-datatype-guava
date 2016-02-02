@@ -4,7 +4,7 @@ Project: jackson-datatype-guava
 === Releases ===
 ------------------------------------------------------------------------
 
-2.7.1 (not yet released)
+2.7.1 (02-Feb-2016)
 
 #87, #88: OSGi import missing for `com.fasterxml.jackson.annotation.JsonInclude$Value`
  (reported by Michael J)
