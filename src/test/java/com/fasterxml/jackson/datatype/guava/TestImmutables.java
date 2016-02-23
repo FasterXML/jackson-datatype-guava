@@ -163,7 +163,7 @@ public class TestImmutables extends ModuleTestBase
         }
         assertEquals(0, ((ImmutableSet<?>) result.value).size());
     }
-    
+
     public void testImmutableSortedSet() throws Exception
     {
         ImmutableSortedSet<Integer> set = MAPPER.readValue("[5,1,2]", new TypeReference<ImmutableSortedSet<Integer>>() { });

@@ -36,6 +36,10 @@ Guava (http://code.google.com/p/guava-libraries/) types (currently mostly just c
     <!-- 11-Sep-2015, tatu: As per [datatype-guava#80] -->
     <version.guava.osgi>[${version.guava}.0,20)</version.guava.osgi>
 
+    <!-- 23-Feb-2016, tatu: Try to keep JDK6 runtime for 2.7 at least -->
+    <javac.src.version>1.6</javac.src.version>
+    <javac.target.version>1.6</javac.target.version>
+
     <!-- Generate PackageVersion.java into this directory. -->
     <packageVersion.dir>com/fasterxml/jackson/datatype/guava</packageVersion.dir>
     <packageVersion.package>${project.groupId}.guava</packageVersion.package>
