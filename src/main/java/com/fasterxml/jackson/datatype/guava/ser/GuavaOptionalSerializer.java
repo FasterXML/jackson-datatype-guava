@@ -3,12 +3,11 @@ package com.fasterxml.jackson.datatype.guava.ser;
 import java.io.IOException;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-
 import com.fasterxml.jackson.core.JsonGenerator;
-
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.introspect.Annotated;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonFormatVisitorWrapper;
 import com.fasterxml.jackson.databind.jsontype.TypeSerializer;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
@@ -132,14 +131,17 @@ public final class GuavaOptionalSerializer
         if (vts != null) {
             vts = vts.forProperty(property);
         }
-        JsonSerializer<?> ser = _valueSerializer;
+        JsonSerializer<?> ser = findContentSerializer(provider, property);
         if (ser == null) {
-            // A few conditions needed to be able to fetch serializer here:
-            if (_useStatic(provider, property, _referredType)) {
-                ser = _findSerializer(provider, _referredType, property);
+            ser = _valueSerializer;
+            if (ser == null) {
+                // A few conditions needed to be able to fetch serializer here:
+                if (_useStatic(provider, property, _referredType)) {
+                    ser = _findSerializer(provider, _referredType, property);
+                }
+            } else {
+                ser = provider.handlePrimaryContextualization(ser, property);
             }
-        } else {
-            ser = provider.handlePrimaryContextualization(ser, property);
         }
         // Also: may want to have more refined exclusion based on referenced value
         JsonInclude.Include contentIncl = _contentInclusion;
@@ -323,4 +325,23 @@ public final class GuavaOptionalSerializer
         // Important: ask for TYPED serializer, in case polymorphic handling is needed!
         return provider.findTypedValueSerializer(type, true, prop);
     }
+
+    // !!! TODO: added late in 2.7 in `jackson-databind`: remove from 2.8
+    protected JsonSerializer<?> findContentSerializer(SerializerProvider serializers,
+            BeanProperty property)
+        throws JsonMappingException
+    {
+        if (property != null) {
+            AnnotatedMember m = property.getMember();
+            final AnnotationIntrospector intr = serializers.getAnnotationIntrospector();
+            if (m != null) {
+                Object serDef = intr.findContentSerializer(m);
+                if (serDef != null) {
+                    return serializers.serializerInstance(m, serDef);
+                }
+            }
+        }
+        return null;
+    }
+
 }
