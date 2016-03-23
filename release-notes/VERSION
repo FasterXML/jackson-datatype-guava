@@ -6,6 +6,9 @@ Project: jackson-datatype-guava
 
 2.7.4 (not yet released)
 
+- Improve handling of `Optional` to ensure custom content serializer/deserializer
+  is used.
+
 2.7.3 (16-Mar-2016)
 
 No changes since 2.7.2

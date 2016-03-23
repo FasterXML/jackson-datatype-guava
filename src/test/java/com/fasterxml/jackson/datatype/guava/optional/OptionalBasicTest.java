@@ -1,13 +1,21 @@
 package com.fasterxml.jackson.datatype.guava.optional;
 
+import java.io.IOException;
 import java.util.*;
 
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
+import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.guava.ModuleTestBase;
 
@@ -50,7 +58,40 @@ public class OptionalBasicTest extends ModuleTestBase
     public static interface Contained { }
 
     public static class ContainedImpl implements Contained { }
-    
+
+    static class CaseChangingStringWrapper {
+        @JsonSerialize(contentUsing=UpperCasingSerializer.class)
+        @JsonDeserialize(contentUsing=LowerCasingDeserializer.class)
+        public Optional<String> value;
+
+        CaseChangingStringWrapper() { }
+        public CaseChangingStringWrapper(String s) { value = Optional.of(s); }
+    }
+
+    @SuppressWarnings("serial")
+    public static class UpperCasingSerializer extends StdScalarSerializer<String>
+    {
+        public UpperCasingSerializer() { super(String.class); }
+
+        @Override
+        public void serialize(String value, JsonGenerator gen,
+                SerializerProvider provider) throws IOException {
+            gen.writeString(value.toUpperCase());
+        }
+    }
+
+    @SuppressWarnings("serial")
+    public static class LowerCasingDeserializer extends StdScalarDeserializer<String>
+    {
+        public LowerCasingDeserializer() { super(String.class); }
+
+        @Override
+        public String deserialize(JsonParser p, DeserializationContext ctxt)
+                throws IOException, JsonProcessingException {
+            return p.getText().toLowerCase();
+        }
+    }
+
     /*
     /**********************************************************************
     /* Test methods
@@ -262,5 +303,19 @@ public class OptionalBasicTest extends ModuleTestBase
         assertNotNull(fromJson.contained);
         assertTrue(fromJson.contained.isPresent());
         assertSame(ContainedImpl.class, fromJson.contained.get().getClass());
+    }
+
+    public void testWithCustomDeserializer() throws Exception
+    {
+        CaseChangingStringWrapper w = MAPPER.readValue(aposToQuotes("{'value':'FoobaR'}"),
+                CaseChangingStringWrapper.class);
+        assertEquals("foobar", w.value.get());
+    }
+
+    public void testCustomSerializer() throws Exception
+    {
+        final String VALUE = "fooBAR";
+        String json = MAPPER.writeValueAsString(new CaseChangingStringWrapper(VALUE));
+        assertEquals(json, aposToQuotes("{'value':'FOOBAR'}"));
     }
 }
